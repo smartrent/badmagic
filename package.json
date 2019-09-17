@@ -1,0 +1,51 @@
+{
+  "name": "badmagic",
+  "version": "0.0.2",
+  "description": "Swagger UI alternative written in React",
+  "scripts": {
+    "build": "npm run clean && tsc -p ./",
+    "start": "npm run clean && tsc --watch",
+    "clean": "rimraf dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smartrent/badmagic.git"
+  },
+  "bugs": {
+    "url": "https://github.com/smartrent/badmagic/issues"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/lodash-es": "^4.17.3",
+    "@types/react": "^16.9.2",
+    "@types/react-dom": "^16.9.0",
+    "prettier": "^1.18.2",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "rimraf": "^3.0.0",
+    "typescript": "^3.6.3"
+  },
+  "peerDependencies": {
+    "@smartrent/use-axios": "^1.2.2",
+    "axios": "^0.19.0",
+    "lodash-es": "^4.17.15",
+    "querystring": "^0.2.0",
+    "react": ">= 16.8.x",
+    "react-dom": ">= 16.8.x"
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": false,
+    "trailingComma": "es5",
+    "arrowParens": "always"
+  }
+}
