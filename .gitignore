@@ -51,7 +51,6 @@ webpack-assets.json
 *report*
 dist
 yarn.lock
-lib
 .rts2_cache_*
 .env
 .vscode
