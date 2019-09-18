@@ -43,6 +43,9 @@ export default function Route({ route }: { route: Route }) {
         onClick={() => setCollapsed(!collapsed)}
       >
         <div style={{ fontSize: "12px" }}>
+          <div style={{ fontSize: "10px", color: "#444", marginBottom: "4px" }}>
+            {route.name}
+          </div>
           {Helpers.buildUrl({
             route,
             urlParams: routeConfigVars.urlParams,

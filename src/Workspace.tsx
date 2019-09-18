@@ -8,8 +8,8 @@ import Route from "./Route";
 import { Route as RouteProps } from "./types";
 
 export default function Workspace() {
-  const { workspace } = useContext(Context);
-  const [routeFilter, setRouteFilter] = useState("");
+  const { workspace, setEnvVar, environment } = useContext(Context);
+  const [routeFilter, setRouteFilter] = useState(environment.routeFilter || "");
 
   if (!workspace) {
     return <div>Select a workspace to get started.</div>;
@@ -41,13 +41,18 @@ export default function Workspace() {
             type="text"
             placeholder="Search Routes"
             value={routeFilter}
-            onChange={(e) => setRouteFilter(e.currentTarget.value)}
+            onChange={(e) => {
+              setEnvVar({ key: "routeFilter", value: e.currentTarget.value });
+              setRouteFilter(e.currentTarget.value);
+            }}
           />
         </div>
       </div>
 
-      {map(filteredRoutes, (r) => {
-        return <Route key={`${r.method || "GET"}-${r.path}`} route={r} />;
+      {map(filteredRoutes, (r, idx) => {
+        return (
+          <Route key={`${r.method || "GET"}-${r.path}-${idx}`} route={r} />
+        );
       })}
     </div>
   );

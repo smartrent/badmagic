@@ -64,7 +64,7 @@ export default function QSParams({
                 {map(param.options, ({ label, value }) => {
                   return (
                     <option value={value} key={value}>
-                      {label}
+                      {label || startCase(value)}
                     </option>
                   );
                 })}
