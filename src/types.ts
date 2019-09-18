@@ -1,11 +1,11 @@
 export type UrlParam = {
   name: string;
-  label: string;
+  label?: string;
 };
 
 export type QSParam = {
   name: string;
-  label: string;
+  label?: string;
   required?: boolean;
   type?: string;
   placeholder?: string;
@@ -13,7 +13,7 @@ export type QSParam = {
 };
 
 export type Option = {
-  label: string;
+  label?: string;
   value: any;
 };
 

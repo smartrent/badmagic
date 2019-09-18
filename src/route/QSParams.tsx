@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { map } from "lodash-es";
+import { map, startCase } from "lodash-es";
 
 import Context from "../Context";
 import Label from "../common/Label";
@@ -27,15 +27,16 @@ export default function QSParams({
       }}
     >
       {map(route.qsParams || [], (param: QSParam, idx) => {
+        const label = param.label ? param.label : startCase(param.name);
         return (
           <div key={idx} style={{ marginTop: "4px", marginBottom: "4px" }}>
             <Label>
-              {param.label} {param.required && <Required />}
+              {label} {param.required && <Required />}
             </Label>
             {!param.options && (
               <input
                 type={param.type}
-                placeholder={param.placeholder}
+                placeholder={param.placeholder || label}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     reFetch();

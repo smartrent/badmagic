@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { map } from "lodash-es";
+import { map, startCase } from "lodash-es";
 
 import Label from "../common/Label";
 import Required from "../common/Required";
@@ -28,14 +28,18 @@ export default function UrlParams({
       }}
     >
       {map(urlParams, (urlParam, idx) => {
+        const label = urlParam.label
+          ? urlParam.label
+          : startCase(urlParam.name);
+
         return (
           <div key={idx} style={{ marginBottom: "4px" }}>
             <Label>
-              {urlParam.label} <Required />
+              {label} <Required />
             </Label>
             <input
               type="text"
-              placeholder={urlParam.label}
+              placeholder={label}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   reFetch();

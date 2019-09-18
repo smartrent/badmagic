@@ -47,7 +47,7 @@ export default function Workspace() {
       </div>
 
       {map(filteredRoutes, (r) => {
-        return <Route key={r.path} route={r} />;
+        return <Route key={`${r.method || "GET"}-${r.path}`} route={r} />;
       })}
     </div>
   );
