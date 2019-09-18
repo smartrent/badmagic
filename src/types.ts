@@ -19,7 +19,7 @@ export type Option = {
 
 export type BodyParam = {
   name: string;
-  label: string;
+  label?: string;
   required?: boolean;
   type?: string;
   placeholder?: string;
