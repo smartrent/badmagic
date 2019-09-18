@@ -54,3 +54,4 @@ yarn.lock
 lib
 .rts2_cache_*
 .env
+.vscode
