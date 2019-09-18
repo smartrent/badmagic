@@ -1,12 +1,13 @@
 {
   "name": "badmagic",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "Swagger UI alternative written in React",
   "scripts": {
     "build": "npm run clean && tsc -p ./",
     "start": "npm run clean && tsc --watch",
     "clean": "rimraf dist",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "npm run build"
   },
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",

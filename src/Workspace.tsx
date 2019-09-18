@@ -9,7 +9,9 @@ import { Route as RouteProps } from "./types";
 
 export default function Workspace() {
   const { workspace, setEnvVar, environment } = useContext(Context);
-  const [routeFilter, setRouteFilter] = useState(environment.routeFilter || "");
+  const [routeFilter, setRouteFilter] = useState(
+    environment && environment.routeFilter ? environment.routeFilter : ""
+  );
 
   if (!workspace) {
     return <div>Select a workspace to get started.</div>;

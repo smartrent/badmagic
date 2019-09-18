@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { omit } from "lodash-es";
+import { get, omit } from "lodash-es";
 
 import Context from "./Context";
 
@@ -109,13 +109,11 @@ export default function ContextProvider({
         },
 
         getUrlParam: ({ route, urlParam }) => {
-          if (!routeConfig[route.name]) {
-            const newRouteConfig = { ...routeConfig };
-            Helpers.initializeRoute(newRouteConfig, route);
-            setRouteConfig(newRouteConfig);
-            return "";
-          }
-          return routeConfig[route.name].urlParams[urlParam.name] || "";
+          return get(
+            routeConfig,
+            `[${route.name}].urlParams[${urlParam.name}]`,
+            ""
+          );
         },
 
         setApiResponse: ({ route, response, error, loading }) => {
@@ -155,13 +153,7 @@ export default function ContextProvider({
         },
 
         getBody: ({ route, param }) => {
-          if (!routeConfig[route.name]) {
-            const newRouteConfig = { ...routeConfig };
-            Helpers.initializeRoute(newRouteConfig, route);
-            setRouteConfig(newRouteConfig);
-            return "";
-          }
-          return routeConfig[route.name].body[param.name] || "";
+          return get(routeConfig, `[${route.name}].body[${param.name}]`, "");
         },
 
         setQSParam: ({ route, param, value }) => {
@@ -184,13 +176,11 @@ export default function ContextProvider({
         },
 
         getQSParam: ({ route, param }) => {
-          if (!routeConfig[route.name]) {
-            const newRouteConfig = { ...routeConfig };
-            Helpers.initializeRoute(newRouteConfig, route);
-            setRouteConfig(newRouteConfig);
-            return "";
-          }
-          return routeConfig[route.name].qsParams[param.name] || "";
+          return get(
+            routeConfig,
+            `[${route.name}].qsParams[${param.name}]`,
+            ""
+          );
         },
       }}
     >

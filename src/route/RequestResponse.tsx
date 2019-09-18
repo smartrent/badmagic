@@ -16,6 +16,9 @@ import Helpers from "../lib/helpers";
 import { Route } from "../types";
 
 export default function RequestResponse({ route }: { route: Route }) {
+  if (!route) {
+    return null;
+  }
   const context = useContext(Context);
   const { routeConfig, setApiResponse, workspace } = context;
   const routeConfigVars = get(routeConfig, route.name, {
@@ -42,7 +45,9 @@ export default function RequestResponse({ route }: { route: Route }) {
   });
 
   useEffect(() => {
-    setApiResponse({ route, response, loading, error });
+    if (response || error || loading) {
+      setApiResponse({ route, response, loading, error });
+    }
   }, [response, loading, error, route]);
 
   return (
@@ -59,12 +64,7 @@ export default function RequestResponse({ route }: { route: Route }) {
           <Body route={route} reFetch={reFetch} />
           <QSParams route={route} reFetch={reFetch} />
           <InjectPlugins injectAfter="request" route={route} />
-          <button
-            disabled={loading}
-            onClick={() => {
-              reFetch();
-            }}
-          >
+          <button disabled={loading} onClick={reFetch}>
             {loading ? "Loading..." : "Try"}
           </button>
         </div>

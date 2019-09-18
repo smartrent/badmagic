@@ -7,6 +7,7 @@ import {
   map,
   startCase,
   omitBy,
+  transform,
 } from "lodash-es";
 import { stringify } from "querystring";
 
@@ -62,7 +63,36 @@ export default {
     const routeConfig = Storage.get({
       key: `${workspace.id}-route-config`,
     });
-    return routeConfig || {};
+
+    if (routeConfig) {
+      return routeConfig;
+    }
+
+    // stub out routeConfig
+
+    const initialRouteConfig = transform(
+      workspace.routes,
+      (memo, route) => {
+        memo[route.name] = {
+          headers: {},
+          urlParams: {},
+          body: {},
+          queryParams: {},
+          error: {},
+          response: {},
+          loading: false,
+        };
+        return memo;
+      },
+      {}
+    );
+
+    Storage.set({
+      key: `${workspace.id}-route-config`,
+      value: initialRouteConfig,
+    });
+
+    return initialRouteConfig;
   },
 
   buildUrl({
