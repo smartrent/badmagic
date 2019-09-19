@@ -17,7 +17,7 @@ export type Param = {
   placeholder?: string;
   options?: Option[];
   defaultValue?: string;
-  json: boolean; // value should be stringified
+  json?: boolean; // value should be stringified
 };
 
 export enum Method {
