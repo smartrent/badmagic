@@ -121,12 +121,17 @@ export default function ContextProvider({
             return;
           }
 
+          let newValue = value;
+          try {
+            newValue = param.json ? JSON.parse(value) : value;
+          } catch (err) {}
+
           const newRouteConfig = { ...routeConfig };
           if (!newRouteConfig[route.name]) {
             Helpers.initializeRoute(newRouteConfig, route);
           }
 
-          newRouteConfig[route.name][paramType][param.name] = value;
+          newRouteConfig[route.name][paramType][param.name] = newValue;
           Storage.set({
             key: `${workspace.id}-route-config`,
             value: newRouteConfig,

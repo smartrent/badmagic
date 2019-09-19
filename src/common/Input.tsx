@@ -24,9 +24,7 @@ export default function Input({
 
   const value = getParam({ route, param, paramType });
   const onChange = (e: any) => {
-    const newValue = param.json
-      ? JSON.stringify(e.currentTarget.value)
-      : e.currentTarget.value;
+    const newValue = e.currentTarget.value;
     setParam({ route, param, value: newValue, paramType });
   };
   const onKeyDown = (e: any) => {
@@ -50,7 +48,14 @@ export default function Input({
       </select>
     );
   } else if (param.type === "textarea") {
-    inputDOM = <textarea onChange={onChange} value={value}></textarea>;
+    inputDOM = (
+      <textarea
+        onChange={onChange}
+        value={
+          typeof value === "object" ? JSON.stringify(value, null, 2) : value
+        }
+      ></textarea>
+    );
   } else {
     inputDOM = (
       <input
