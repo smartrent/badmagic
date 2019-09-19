@@ -5,6 +5,10 @@ import Label from "../common/Label";
 
 export default function Headers({ headers }: { headers: any }) {
   const [collapsed, setCollapsed] = useState(true);
+  if (!headers) {
+    return null;
+  }
+
   return (
     <div style={{ marginTop: "4px" }}>
       <div

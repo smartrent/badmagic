@@ -1,24 +1,55 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { get } from "lodash-es";
+import useAxios from "@smartrent/use-axios";
+import axios from "axios";
 
 import Context from "./Context";
-import RequestResponse from "./route/RequestResponse";
+import Request from "./route/Request";
+import Response from "./route/Response";
 import Helpers from "./lib/helpers";
 
 import { Route } from "./types";
 
 export default function Route({ route }: { route: Route }) {
-  const { routeConfig } = useContext(Context);
+  const { routeConfig, setApiResponse, workspace } = useContext(Context);
   const [collapsed, setCollapsed] = useState(false);
+  const routeConfigVars = get(routeConfig, route.name, {
+    headers: {},
+    urlParams: {},
+    body: {},
+  });
+  const method = route.method ? route.method.toLowerCase() : "get";
+  const { response, loading, error, reFetch } = useAxios({
+    axios: axios.create({
+      baseURL: workspace.config.baseUrl,
+      headers: routeConfigVars.headers,
+    }),
+    method: route.method || "GET",
+    url: Helpers.buildUrl({
+      route,
+      urlParams: routeConfigVars.urlParams,
+      baseUrl: workspace.config.baseUrl,
+      qsParams: routeConfigVars.qsParams,
+    }),
+    options: {
+      data: routeConfigVars.body,
+    },
+  });
+
+  useEffect(() => {
+    if (response || error || loading) {
+      setApiResponse({ route, response, loading, error });
+    }
+  }, [response, loading, error, route]);
 
   if (!route) {
     return null;
   }
 
-  const routeConfigVars = get(routeConfig, route.name, {
-    urlParams: {},
-  });
-  const method = route.method ? route.method.toLowerCase() : "get";
+  // Route plugins completely override workspace plugins
+  // If Route plugins are not specified, this will default to workspace plugins
+  const plugins =
+    route.plugins && route.plugins.length ? route.plugins : workspace.plugins;
 
   return (
     <div
@@ -57,14 +88,25 @@ export default function Route({ route }: { route: Route }) {
       </div>
       <div
         style={{
-          display: collapsed ? "none" : "block",
+          display: collapsed ? "none" : "flex",
           padding: "16px",
           borderRight: "1px solid #eee",
           borderBottom: "1px solid #eee",
           borderLeft: "1px solid #eee",
         }}
       >
-        <RequestResponse route={route} />
+        <Request
+          route={route}
+          loading={loading}
+          reFetch={reFetch}
+          plugins={plugins}
+        />
+        <Response
+          route={route}
+          loading={loading}
+          reFetch={reFetch}
+          plugins={plugins}
+        />
       </div>
     </div>
   );

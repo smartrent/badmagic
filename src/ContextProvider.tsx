@@ -72,23 +72,6 @@ export default function ContextProvider({
 
         routeConfig,
 
-        setUrlParam: ({ route, urlParam, value }) => {
-          if (!workspace) {
-            return;
-          }
-          const key = `${workspace.id}-route-config`;
-
-          const newRouteConfig = { ...routeConfig };
-          if (!newRouteConfig[route.name]) {
-            Helpers.initializeRoute(newRouteConfig, route);
-          }
-
-          newRouteConfig[route.name].urlParams[urlParam.name] = value;
-          Storage.set({ key, value: newRouteConfig });
-
-          setRouteConfig(newRouteConfig);
-        },
-
         setHeader: ({ route, key, value }) => {
           if (!workspace) {
             return;
@@ -108,14 +91,6 @@ export default function ContextProvider({
           setRouteConfig(newRouteConfig);
         },
 
-        getUrlParam: ({ route, urlParam }) => {
-          return get(
-            routeConfig,
-            `[${route.name}].urlParams[${urlParam.name}]`,
-            ""
-          );
-        },
-
         setApiResponse: ({ route, response, error, loading }) => {
           if (!workspace) {
             return;
@@ -133,54 +108,31 @@ export default function ContextProvider({
           setRouteConfig(newRouteConfig);
         },
 
-        setBody: ({ route, param, value }) => {
-          if (!workspace) {
-            return;
-          }
-
-          const newRouteConfig = { ...routeConfig };
-          if (!newRouteConfig[route.name]) {
-            Helpers.initializeRoute(newRouteConfig, route);
-          }
-
-          newRouteConfig[route.name].body[param.name] = value;
-          Storage.set({
-            key: `${workspace.id}-route-config`,
-            value: newRouteConfig,
-          });
-
-          setRouteConfig(newRouteConfig);
-        },
-
-        getBody: ({ route, param }) => {
-          return get(routeConfig, `[${route.name}].body[${param.name}]`, "");
-        },
-
-        setQSParam: ({ route, param, value }) => {
-          if (!workspace) {
-            return;
-          }
-
-          const newRouteConfig = { ...routeConfig };
-          if (!newRouteConfig[route.name]) {
-            Helpers.initializeRoute(newRouteConfig, route);
-          }
-
-          newRouteConfig[route.name].qsParams[param.name] = value;
-          Storage.set({
-            key: `${workspace.id}-route-config`,
-            value: newRouteConfig,
-          });
-
-          setRouteConfig(newRouteConfig);
-        },
-
-        getQSParam: ({ route, param }) => {
+        getParam: ({ route, param, paramType }) => {
           return get(
             routeConfig,
-            `[${route.name}].qsParams[${param.name}]`,
-            ""
+            `[${route.name}][${paramType}][${param.name}]`,
+            param.defaultValue || ""
           );
+        },
+
+        setParam: ({ route, param, value, paramType }) => {
+          if (!workspace) {
+            return;
+          }
+
+          const newRouteConfig = { ...routeConfig };
+          if (!newRouteConfig[route.name]) {
+            Helpers.initializeRoute(newRouteConfig, route);
+          }
+
+          newRouteConfig[route.name][paramType][param.name] = value;
+          Storage.set({
+            key: `${workspace.id}-route-config`,
+            value: newRouteConfig,
+          });
+
+          setRouteConfig(newRouteConfig);
         },
       }}
     >

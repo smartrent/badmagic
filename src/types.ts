@@ -1,29 +1,23 @@
-export type UrlParam = {
-  name: string;
-  label?: string;
-};
-
-export type QSParam = {
-  name: string;
-  label?: string;
-  required?: boolean;
-  type?: string;
-  placeholder?: string;
-  options?: Option[];
-};
-
 export type Option = {
   label?: string;
   value: any;
 };
 
-export type BodyParam = {
+export enum ParamType {
+  qsParams = "qsParams",
+  body = "body",
+  urlParams = "urlParams",
+}
+
+export type Param = {
   name: string;
   label?: string;
   required?: boolean;
   type?: string;
   placeholder?: string;
   options?: Option[];
+  defaultValue?: string;
+  json: boolean; // value should be stringified
 };
 
 export enum Method {
@@ -37,15 +31,27 @@ export enum Method {
 export type Route = {
   name: string;
   path: string;
-  body?: BodyParam[];
-  qsParams?: QSParam[];
+  body?: Param[];
+  qsParams?: Param[];
   method?: Method;
   plugins?: Plugin[];
 };
 
+export enum Inject {
+  asRequest = "asRequest",
+  asResponse = "asResponse",
+}
+
 export type Plugin = {
-  injectAfter: string;
+  inject: Inject;
   Component: any;
+};
+
+export type PluginProps = {
+  route: Route;
+  context: any;
+  loading: boolean;
+  reFetch: () => void;
 };
 
 export type Workspace = {
