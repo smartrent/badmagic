@@ -32,7 +32,7 @@ export default function Route({ route }: { route: Route }) {
       qsParams: routeConfigVars.qsParams,
     }),
     options: {
-      data: routeConfigVars.body,
+      data: route.body ? routeConfigVars.body : null,
     },
   });
 
