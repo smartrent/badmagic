@@ -77,7 +77,7 @@ export default {
           headers: {},
           urlParams: {},
           body: {},
-          queryParams: {},
+          qsParams: {},
           error: {},
           response: {},
           loading: false,
