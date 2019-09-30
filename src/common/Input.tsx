@@ -23,10 +23,8 @@ export default function Input({
   const label = param.label ? param.label : startCase(param.name);
 
   const value = getParam({ route, param, paramType });
-  const onChange = (e: any) => {
-    const newValue = e.currentTarget.value;
-    setParam({ route, param, value: newValue, paramType });
-  };
+
+  const onChange = (value: any) => setParam({ route, param, value, paramType });
   const onKeyDown = (e: any) => {
     if (e.key === "Enter") {
       reFetch();
@@ -36,7 +34,18 @@ export default function Input({
 
   if (param.options && !!param.options.length) {
     inputDOM = (
-      <select onKeyDown={onKeyDown} onChange={onChange} value={value}>
+      <select
+        onKeyDown={onKeyDown}
+        onChange={(e) => {
+          const index = e.currentTarget.selectedIndex;
+          let value = e.currentTarget.value;
+          try {
+            value = param.options[index - 1].value;
+          } catch (err) {}
+          onChange(value);
+        }}
+        value={value}
+      >
         <option value="">Select One</option>
         {map(param.options, ({ label, value }) => {
           return (
@@ -50,7 +59,7 @@ export default function Input({
   } else if (param.type === "textarea") {
     inputDOM = (
       <textarea
-        onChange={onChange}
+        onChange={(e) => onChange(e.currentTarget.value)}
         value={
           typeof value === "object" ? JSON.stringify(value, null, 2) : value
         }
@@ -62,7 +71,7 @@ export default function Input({
         type={param.type || "text"}
         placeholder={param.placeholder || label}
         onKeyDown={onKeyDown}
-        onChange={onChange}
+        onChange={(e) => onChange(e.currentTarget.value)}
         value={value}
       />
     );
