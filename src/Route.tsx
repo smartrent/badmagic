@@ -12,7 +12,7 @@ import { Route } from "./types";
 
 export default function Route({ route }: { route: Route }) {
   const { routeConfig, setApiResponse, workspace } = useContext(Context);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const routeConfigVars = get(routeConfig, route.name, {
     headers: {},
     urlParams: {},
