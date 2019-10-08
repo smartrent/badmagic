@@ -112,7 +112,7 @@ export default function ContextProvider({
           return get(
             routeConfig,
             `[${route.name}][${paramType}][${param.name}]`,
-            param.defaultValue || ""
+            param.defaultValue
           );
         },
 
