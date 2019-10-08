@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { map, startCase } from "lodash-es";
 
 import Context from "../Context";
@@ -25,6 +25,11 @@ export default function Input({
   const value = getParam({ route, param, paramType });
 
   const onChange = (value: any) => setParam({ route, param, value, paramType });
+
+  useEffect(() => {
+    setParam({ route, param, value, paramType });
+  }, []);
+
   const onKeyDown = (e: any) => {
     if (e.key === "Enter") {
       reFetch();
@@ -63,7 +68,7 @@ export default function Input({
         value={
           typeof value === "object" ? JSON.stringify(value, null, 2) : value
         }
-      ></textarea>
+      />
     );
   } else {
     inputDOM = (
