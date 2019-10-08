@@ -8,11 +8,11 @@ import Required from "./Required";
 import { Route, Param, ParamType } from "../types";
 
 export default function Input({
-  param,
-  reFetch,
-  route,
-  paramType,
-}: {
+                                param,
+                                reFetch,
+                                route,
+                                paramType,
+                              }: {
   param: Param;
   route: Route;
   reFetch: () => void;
@@ -46,10 +46,11 @@ export default function Input({
           let value = e.currentTarget.value;
           try {
             value = param.options[index - 1].value;
-          } catch (err) {}
+          } catch (err) {
+          }
           onChange(value);
         }}
-        value={value}
+        value={value ? value : ""}
       >
         <option value="">Select One</option>
         {map(param.options, ({ label, value }) => {
@@ -66,7 +67,7 @@ export default function Input({
       <textarea
         onChange={(e) => onChange(e.currentTarget.value)}
         value={
-          typeof value === "object" ? JSON.stringify(value, null, 2) : value
+          value ? (typeof value === "object" ? JSON.stringify(value, null, 2) : value) : ""
         }
       />
     );
@@ -77,7 +78,7 @@ export default function Input({
         placeholder={param.placeholder || label}
         onKeyDown={onKeyDown}
         onChange={(e) => onChange(e.currentTarget.value)}
-        value={value}
+        value={value ? value : ""}
       />
     );
   }
@@ -85,9 +86,13 @@ export default function Input({
   return (
     <div style={{ marginTop: "4px", marginBottom: "4px" }}>
       <Label>
-        {label} {param.required && <Required />}
+        {label} {param.required && <Required/>}
       </Label>
       {inputDOM}
+      <button onClick={() => {
+        setParam({ route, param, value: null, paramType });
+      }}>Set Null
+      </button>
     </div>
   );
 }
