@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { get, omit } from "lodash-es";
+import { get, set, omit } from "lodash-es";
 
 import Context from "./Context";
 
@@ -131,7 +131,12 @@ export default function ContextProvider({
             Helpers.initializeRoute(newRouteConfig, route);
           }
 
-          newRouteConfig[route.name][paramType][param.name] = newValue;
+          set(
+            newRouteConfig,
+            `[${route.name}][${paramType}][${param.name}]`,
+            newValue
+          );
+
           Storage.set({
             key: `${workspace.id}-route-config`,
             value: newRouteConfig,

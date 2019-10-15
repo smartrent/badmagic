@@ -76,8 +76,20 @@ export default {
         memo[route.name] = {
           headers: {},
           urlParams: {},
-          body: {},
-          qsParams: {},
+          body: transform(
+            route.body,
+            (memo, param) => {
+              memo[param.name] = param.defaultValue;
+            },
+            {}
+          ),
+          qsParams: transform(
+            route.qsParams,
+            (memo, param) => {
+              memo[param.name] = param.defaultValue;
+            },
+            {}
+          ),
           error: {},
           response: {},
           loading: false,
