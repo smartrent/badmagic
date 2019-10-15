@@ -4,6 +4,7 @@ import Params from "./Params";
 import InjectPlugins from "./InjectPlugins";
 import { Inject, ParamType, Plugin, Route } from "../types";
 import Context from "../Context";
+import Helpers from "../lib/helpers";
 
 export default function Request({
   route,
@@ -30,9 +31,7 @@ export default function Request({
       <Params paramType={ParamType.urlParams} reFetch={reFetch} route={route} />
       <Params paramType={ParamType.body} reFetch={reFetch} route={route} />
       <Params paramType={ParamType.qsParams} reFetch={reFetch} route={route} />
-      <button onClick={()=> {
-        route.body.forEach(param => {setParam({route, param, value: null, paramType: ParamType.body})})
-      }}>Reset</button>
+      <button onClick={() => Helpers.resetRequest(route, setParam)}>Reset</button>
       <button disabled={loading} onClick={reFetch}>
         {loading ? "Loading..." : "Try"}
       </button>
