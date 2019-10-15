@@ -13,7 +13,7 @@ import { stringify } from "querystring";
 
 import Storage from "./storage";
 
-import { Route, Workspace } from "../types";
+import { Route, Workspace, ParamType } from "../types";
 
 export default {
   initializeRoute(routeConfig: any, route: Route) {
@@ -156,5 +156,34 @@ export default {
       put: "rgb(255, 234, 195)",
       patch: "rgb(255, 234, 195)",
     },
+  },
+
+  resetRequest (route, setParamFunc) {
+    const url_params = this.getUrlParamsFromPath(route.path);
+    if (url_params) {
+      url_params.forEach((param) => {
+        setParamFunc({
+          route,
+          param,
+          value: null,
+          paramType: ParamType.urlParams,
+        });
+      });
+    }
+    if (route.body) {
+      route.body.forEach((param) => {
+        setParamFunc({ route, param, value: null, paramType: ParamType.body });
+      });
+    }
+    if (route.qsParams) {
+      route.qsParams.forEach((param) => {
+        setParamFunc({
+          route,
+          param,
+          value: null,
+          paramType: ParamType.qsParams,
+        });
+      });
+    }
   },
 };
