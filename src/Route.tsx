@@ -95,18 +95,22 @@ export default function Route({ route }: { route: Route }) {
           borderLeft: "1px solid #eee",
         }}
       >
-        <Request
-          route={route}
-          loading={loading}
-          reFetch={reFetch}
-          plugins={plugins}
-        />
-        <Response
-          route={route}
-          loading={loading}
-          reFetch={reFetch}
-          plugins={plugins}
-        />
+        {!collapsed && (
+          <>
+            <Request
+              route={route}
+              loading={loading}
+              reFetch={reFetch}
+              plugins={plugins}
+            />
+            <Response
+              route={route}
+              loading={loading}
+              reFetch={reFetch}
+              plugins={plugins}
+            />
+          </>
+        )}
       </div>
     </div>
   );
