@@ -31,8 +31,14 @@ export default function Request({
       <Params paramType={ParamType.urlParams} reFetch={reFetch} route={route} />
       <Params paramType={ParamType.body} reFetch={reFetch} route={route} />
       <Params paramType={ParamType.qsParams} reFetch={reFetch} route={route} />
-      <button onClick={() => Helpers.resetRequest(route, setParam)}>Reset</button>
-      <button disabled={loading} onClick={reFetch}>
+      <button onClick={() => Helpers.resetRequest(route, setParam)}>
+        Reset
+      </button>
+      <button
+        disabled={loading}
+        onClick={reFetch}
+        style={{ marginLeft: "4px" }}
+      >
         {loading ? "Loading..." : "Try"}
       </button>
     </InjectPlugins>
