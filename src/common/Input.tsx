@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { map, startCase } from "lodash-es";
 
 import Context from "../Context";
@@ -25,6 +25,11 @@ export default function Input({
   const value = getParam({ route, param, paramType });
 
   const onChange = (value: any) => setParam({ route, param, value, paramType });
+
+  useEffect(() => {
+    setParam({ route, param, value, paramType });
+  }, []);
+
   const onKeyDown = (e: any) => {
     if (e.key === "Enter") {
       reFetch();
@@ -44,7 +49,7 @@ export default function Input({
           } catch (err) {}
           onChange(value);
         }}
-        value={value}
+        value={value ? value : ""}
       >
         <option value="">Select One</option>
         {map(param.options, ({ label, value }) => {
@@ -61,9 +66,13 @@ export default function Input({
       <textarea
         onChange={(e) => onChange(e.currentTarget.value)}
         value={
-          typeof value === "object" ? JSON.stringify(value, null, 2) : value
+          value
+            ? typeof value === "object"
+              ? JSON.stringify(value, null, 2)
+              : value
+            : ""
         }
-      ></textarea>
+      />
     );
   } else {
     inputDOM = (
@@ -72,7 +81,7 @@ export default function Input({
         placeholder={param.placeholder || label}
         onKeyDown={onKeyDown}
         onChange={(e) => onChange(e.currentTarget.value)}
-        value={value}
+        value={value ? value : ""}
       />
     );
   }
@@ -83,6 +92,14 @@ export default function Input({
         {label} {param.required && <Required />}
       </Label>
       {inputDOM}
+      <button
+        style={{ marginLeft: "4px" }}
+        onClick={() => {
+          setParam({ route, param, value: null, paramType });
+        }}
+      >
+        Set Null
+      </button>
     </div>
   );
 }

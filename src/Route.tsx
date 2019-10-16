@@ -12,7 +12,7 @@ import { Route } from "./types";
 
 export default function Route({ route }: { route: Route }) {
   const { routeConfig, setApiResponse, workspace } = useContext(Context);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const routeConfigVars = get(routeConfig, route.name, {
     headers: {},
     urlParams: {},
@@ -95,18 +95,22 @@ export default function Route({ route }: { route: Route }) {
           borderLeft: "1px solid #eee",
         }}
       >
-        <Request
-          route={route}
-          loading={loading}
-          reFetch={reFetch}
-          plugins={plugins}
-        />
-        <Response
-          route={route}
-          loading={loading}
-          reFetch={reFetch}
-          plugins={plugins}
-        />
+        {!collapsed && (
+          <>
+            <Request
+              route={route}
+              loading={loading}
+              reFetch={reFetch}
+              plugins={plugins}
+            />
+            <Response
+              route={route}
+              loading={loading}
+              reFetch={reFetch}
+              plugins={plugins}
+            />
+          </>
+        )}
       </div>
     </div>
   );
