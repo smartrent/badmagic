@@ -93,6 +93,7 @@ export default function Input({
       </Label>
       {inputDOM}
       <button
+        style={{ marginLeft: "4px" }}
         onClick={() => {
           setParam({ route, param, value: null, paramType });
         }}
