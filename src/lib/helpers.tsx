@@ -161,7 +161,7 @@ export default {
   resetRequest (route, setParamFunc) {
     const urlParams = this.getUrlParamsFromPath(route.path);
     if (urlParams) {
-      url_params.forEach((param) => {
+      urlParams.forEach((param) => {
         setParamFunc({
           route,
           param,
