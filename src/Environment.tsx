@@ -6,7 +6,13 @@ import Label from "./common/Label";
 import Helpers from "./lib/helpers";
 
 export default function Environment() {
-  const { environment, setEnvVar, deleteEnvVar } = useContext(Context);
+  const {
+    environment,
+    setEnvVar,
+    deleteEnvVar,
+    setDarkMode,
+    darkMode,
+  } = useContext(Context);
   const [collapsed, setCollapsed] = useState(true);
   const [newVarName, setNewVarName] = useState("");
 
@@ -20,6 +26,17 @@ export default function Environment() {
       </Label>
       {!collapsed && (
         <div style={{ border: "1px solid #eee", padding: "16px" }}>
+          <div
+            style={{
+              fontSize: "9px",
+              cursor: "pointer",
+              marginBottom: "8px",
+              textAlign: "right",
+            }}
+            onClick={() => setDarkMode(!darkMode)}
+          >
+            Toggle Dark Mode
+          </div>
           {map(environment, (value: string, key: string) => {
             return (
               <div

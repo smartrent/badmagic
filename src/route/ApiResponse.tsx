@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { get } from "lodash-es";
+import ReactJson from "react-json-view";
 
 import Headers from "./Headers";
 import Context from "../Context";
@@ -7,7 +8,7 @@ import Helpers from "../lib/helpers";
 import { Route } from "../types";
 
 export default function ApiResponse({ route }: { route: Route }) {
-  const { routeConfig } = useContext(Context);
+  const { routeConfig, darkMode } = useContext(Context);
   const routeConfigVars = get(routeConfig, route.name, {
     response: {
       status: 0,
@@ -33,26 +34,32 @@ export default function ApiResponse({ route }: { route: Route }) {
 
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          fontSize: "10px",
-          color: responseColor,
-        }}
-      >
-        {response.status}
-      </div>
+      {response && response.status && (
+        <div
+          style={{
+            ...Helpers.getStyles(darkMode, "responseStatusCode"),
+            ...{
+              color: responseColor,
+              padding: "4px",
+              borderRadius: "4px",
+              width: "25px",
+              textAlign: "center",
+              fontSize: "12px",
+              marginBottom: "4px",
+            },
+          }}
+        >
+          {response.status}
+        </div>
+      )}
 
       {response.data && (
-        <textarea
-          value={JSON.stringify(response.data, null, 2)}
-          readOnly
-          style={{
-            width: "100%",
-            height: "auto",
-            minHeight: "125px",
-          }}
+        <ReactJson
+          enableClipboard={false}
+          displayObjectSize={false}
+          displayDataTypes={false}
+          src={response.data}
+          theme={darkMode ? "bright" : "rjv-default"}
         />
       )}
 

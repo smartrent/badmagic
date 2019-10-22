@@ -17,11 +17,11 @@ export default function Request({
   loading: boolean;
   plugins?: Plugin[];
 }) {
-  const { setParam, getParam } = useContext(Context);
+  const { setParam } = useContext(Context);
 
   return (
     <InjectPlugins
-      style={{ paddingRight: "8px", flexGrow: 1, flexShrink: 1 }}
+      style={{ overflow: "unset" }}
       inject={Inject.asRequest}
       route={route}
       reFetch={reFetch}

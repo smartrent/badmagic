@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { get } from "lodash-es";
+import ReactJson from "react-json-view";
 
 import Headers from "./Headers";
 import Context from "../Context";
@@ -39,9 +40,6 @@ export default function ApiError({ route }: { route: Route }) {
     <div>
       <div
         style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          fontSize: "10px",
           color: responseColor,
         }}
       >
@@ -49,14 +47,12 @@ export default function ApiError({ route }: { route: Route }) {
       </div>
 
       {error.response.data && (
-        <textarea
-          value={JSON.stringify(error.response.data, null, 2)}
-          readOnly
-          style={{
-            width: "100%",
-            height: "auto",
-            minHeight: "125px",
-          }}
+        <ReactJson
+          enableClipboard={false}
+          displayObjectSize={false}
+          displayDataTypes={false}
+          src={error.response.data}
+          theme={context.darkMode ? "bright" : "rjv-default"}
         />
       )}
 

@@ -15,6 +15,7 @@ export default function ContextProvider({
   children: any;
   workspaces: Workspace[];
 }) {
+  const [darkMode, setDarkMode] = useState(Storage.get({ key: "darkMode" }));
   const [workspaceName, setWorkspaceName] = useState(
     Storage.get({ key: "workspaceName" })
   ); // Load last used workspace
@@ -22,9 +23,26 @@ export default function ContextProvider({
   const [environment, setEnvironment] = useState(
     Helpers.getEnvForWorkspace(workspace)
   );
+  const [routeFilter, setRouteFilter] = useState(
+    environment && environment.routeFilter ? environment.routeFilter : ""
+  );
   const [routeConfig, setRouteConfig] = useState(
     Helpers.findRouteConfigByWorkspace(workspace)
   );
+
+  const setEnvVar = ({ key, value }) => {
+    if (!workspace) {
+      return;
+    }
+    const newEnv = { ...environment };
+    newEnv[key] = value;
+
+    Storage.set({
+      key: `${workspace.id}-env`,
+      value: newEnv,
+    });
+    setEnvironment(newEnv);
+  };
 
   return (
     <Context.Provider
@@ -43,19 +61,19 @@ export default function ContextProvider({
         },
         environment,
 
-        setEnvVar: ({ key, value }) => {
-          if (!workspace) {
-            return;
-          }
-          const newEnv = { ...environment };
-          newEnv[key] = value;
-
-          Storage.set({
-            key: `${workspace.id}-env`,
-            value: newEnv,
-          });
-          setEnvironment(newEnv);
+        darkMode,
+        setDarkMode: (darkMode) => {
+          Storage.set({ key: "darkMode", value: darkMode });
+          setDarkMode(darkMode);
         },
+
+        setEnvVar,
+
+        setRouteFilter: (keywords) => {
+          setEnvVar({ key: "routeFilter", value: keywords });
+          setRouteFilter(keywords);
+        },
+        routeFilter,
 
         deleteEnvVar: ({ key }) => {
           if (!workspace) {

@@ -22,19 +22,19 @@ export default function InjectPlugins({
   plugins: Plugin[];
 }) {
   const context = useContext(Context);
-
   const filteredPlugins = filter(plugins, { inject });
+  const styles = {
+    margin: "8px",
+    overflow: "hidden",
+    ...(style || {}),
+  };
 
   if (!(filteredPlugins && filteredPlugins.length)) {
-    return (
-      <div style={{ marginTop: "8px", marginBottom: "8px", ...(style || {}) }}>
-        {children}
-      </div>
-    );
+    return <div style={styles}>{children}</div>;
   }
 
   return (
-    <div style={{ marginTop: "8px", marginBottom: "8px", ...(style || {}) }}>
+    <div style={styles}>
       {map(filteredPlugins, (plugin, idx) => {
         const Component = plugin.Component;
         return Component ? (

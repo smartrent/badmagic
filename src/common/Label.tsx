@@ -1,4 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
+
+import Context from "../Context";
+import Helpers from "../lib/helpers";
 
 type Props = {
   children: any;
@@ -7,10 +10,12 @@ type Props = {
 };
 
 export default function Label({ children, onClick, style }: Props) {
+  const { darkMode } = useContext(Context);
+
   return (
     <div
       onClick={onClick}
-      style={{ color: "#555", fontSize: "11px", ...(style || {}) }}
+      style={{ ...Helpers.getStyles(darkMode, "label"), ...(style || {}) }}
     >
       {children}
     </div>

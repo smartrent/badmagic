@@ -1,18 +1,13 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { map, filter } from "lodash-es";
 
-import Environment from "./Environment";
 import Context from "./Context";
 import Route from "./Route";
 
 import { Route as RouteProps } from "./types";
 
 export default function Workspace() {
-  const { workspace, setEnvVar, environment } = useContext(Context);
-  const [routeFilter, setRouteFilter] = useState(
-    environment && environment.routeFilter ? environment.routeFilter : ""
-  );
-
+  const { workspace, routeFilter } = useContext(Context);
   if (!workspace) {
     return <div>Select a workspace to get started.</div>;
   }
@@ -29,28 +24,7 @@ export default function Workspace() {
   });
 
   return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-end",
-        }}
-      >
-        <Environment />
-        <div>
-          <input
-            type="text"
-            placeholder="Search Routes"
-            value={routeFilter}
-            onChange={(e) => {
-              setEnvVar({ key: "routeFilter", value: e.currentTarget.value });
-              setRouteFilter(e.currentTarget.value);
-            }}
-          />
-        </div>
-      </div>
-
+    <div style={{ marginTop: "40px" }}>
       {map(filteredRoutes, (r, idx) => {
         return (
           <Route key={`${r.method || "GET"}-${r.path}-${idx}`} route={r} />

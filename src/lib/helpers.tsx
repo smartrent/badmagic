@@ -158,7 +158,7 @@ export default {
     },
   },
 
-  resetRequest (route, setParamFunc) {
+  resetRequest(route, setParamFunc) {
     const urlParams = this.getUrlParamsFromPath(route.path);
     if (urlParams) {
       urlParams.forEach((param) => {
@@ -184,6 +184,53 @@ export default {
           paramType: ParamType.qsParams,
         });
       });
+    }
+  },
+
+  getStyles(darkMode: boolean, category: string) {
+    switch (category) {
+      case "themeContainer":
+        return darkMode
+          ? {
+              backgroundColor: "#1A1F27",
+              color: "#fff",
+            }
+          : {};
+      case "fixedHeader":
+        return darkMode
+          ? {
+              backgroundColor: "#1A1F27",
+              borderBottom: "1px solid rgb(56, 56, 56)",
+            }
+          : {
+              backgroundColor: "#fff",
+              borderBottom: "1px solid #eee",
+            };
+
+      case "routePanelHeader":
+      case "responseStatusCode":
+        return darkMode
+          ? { border: "1px solid rgb(56, 56, 56)" }
+          : { border: "1px solid #eee" };
+
+      case "routePanelBody":
+        return darkMode
+          ? {
+              borderRight: "1px solid rgb(56, 56, 56)",
+              borderLeft: "1px solid rgb(56, 56, 56)",
+              borderBottom: "1px solid rgb(56, 56, 56)",
+            }
+          : {
+              borderRight: "1px solid #eee",
+              borderBottom: "1px solid #eee",
+              borderLeft: "1px solid #eee",
+            };
+      case "label":
+        return darkMode
+          ? { color: "rgb(206, 206, 206)", fontSize: "13px" }
+          : { color: "#555", fontSize: "13px" };
+      default:
+        return {};
     }
   },
 };
