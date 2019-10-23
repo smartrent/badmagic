@@ -30,8 +30,7 @@ export default function Headers({ headers }: { headers: any }) {
           {map(headers, (value, name) => {
             return (
               <div key={name} style={{ marginBottom: "4px" }}>
-                <span style={{ color: "#111" }}>{name}</span>:{" "}
-                <span style={{ color: "#333" }}>{value}</span>
+                {name}: {value}
               </div>
             );
           })}

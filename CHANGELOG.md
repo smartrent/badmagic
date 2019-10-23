@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.0.14
+
+### Features
+
+- Dark Mode
+- Fixed header for workspaces, search, and env
+- Adds ReactJsonView for responses
+
 ## v0.0.13
 
 ### Features

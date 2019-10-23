@@ -1,6 +1,6 @@
 {
   "name": "badmagic",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Swagger UI alternative written in React",
   "scripts": {
     "build": "npm run clean && tsc -p ./",
@@ -52,5 +52,8 @@
     "singleQuote": false,
     "trailingComma": "es5",
     "arrowParens": "always"
+  },
+  "dependencies": {
+    "react-json-view": "^1.19.1"
   }
 }

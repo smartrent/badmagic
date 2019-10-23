@@ -11,7 +11,9 @@ import Helpers from "./lib/helpers";
 import { Route } from "./types";
 
 export default function Route({ route }: { route: Route }) {
-  const { routeConfig, setApiResponse, workspace } = useContext(Context);
+  const { routeConfig, setApiResponse, workspace, darkMode } = useContext(
+    Context
+  );
   const [collapsed, setCollapsed] = useState(true);
   const routeConfigVars = get(routeConfig, route.name, {
     headers: {},
@@ -63,20 +65,37 @@ export default function Route({ route }: { route: Route }) {
     >
       <div
         style={{
-          color: "#333",
-          padding: "8px",
-          cursor: "pointer",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          backgroundColor: get(Helpers.colors.routes, method),
+          ...Helpers.getStyles(darkMode, "routePanelHeader"),
+          ...{
+            padding: "8px",
+            cursor: "pointer",
+            display: "flex",
+            justifyContent: "flex-start",
+            alignItems: "center",
+          },
         }}
         onClick={() => setCollapsed(!collapsed)}
       >
-        <div style={{ fontSize: "12px" }}>
-          <div style={{ fontSize: "10px", color: "#444", marginBottom: "4px" }}>
-            {route.name}
-          </div>
+        <div
+          style={{
+            fontSize: "12px",
+            backgroundColor: get(Helpers.colors.routes, method),
+            border: "1px solid #333",
+            borderRadius: "4px",
+            padding: "4px",
+            marginRight: "8px",
+            width: "50px",
+            textAlign: "center",
+            whiteSpace: "nowrap",
+            textOverflow: "clip",
+            overflow: "hidden",
+            color: "#333",
+          }}
+        >
+          {method.toUpperCase()}
+        </div>
+
+        <div style={{ marginRight: "4px", flexGrow: 2 }}>
           {Helpers.buildUrl({
             route,
             urlParams: routeConfigVars.urlParams,
@@ -84,15 +103,15 @@ export default function Route({ route }: { route: Route }) {
             qsParams: routeConfigVars.qsParams,
           })}
         </div>
-        <div style={{ fontSize: "10px" }}>{method.toUpperCase()}</div>
+        <div>{route.name}</div>
       </div>
       <div
         style={{
-          display: collapsed ? "none" : "flex",
-          padding: "16px",
-          borderRight: "1px solid #eee",
-          borderBottom: "1px solid #eee",
-          borderLeft: "1px solid #eee",
+          ...Helpers.getStyles(darkMode, "routePanelBody"),
+          ...{
+            display: collapsed ? "none" : "flex",
+            padding: "16px",
+          },
         }}
       >
         {!collapsed && (

@@ -87,16 +87,14 @@ export default function Input({
   }
 
   return (
-    <div style={{ marginTop: "4px", marginBottom: "4px" }}>
+    <div style={{ marginTop: "8px", marginBottom: "8px" }}>
       <Label>
         {label} {param.required && <Required />}
       </Label>
       {inputDOM}
       <button
         style={{ marginLeft: "4px" }}
-        onClick={() => {
-          setParam({ route, param, value: null, paramType });
-        }}
+        onClick={() => setParam({ route, param, value: null, paramType })}
       >
         Set Null
       </button>

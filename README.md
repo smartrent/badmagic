@@ -3,7 +3,7 @@
 ## General Usage
 
 ```javascript
-import { ContextProvider, Workspaces, Workspace } from "badmagic";
+import { ContextProvider, Workspaces, Workspace, Theme } from "badmagic";
 import { Method } from "badmagic/dist/types";
 
 export default function BadMagic() {
@@ -76,8 +76,10 @@ export default function BadMagic() {
 
   return (
     <ContextProvider workspaces={[superheroes]}>
-      <Workspaces />
-      <Workspace />
+      <Theme>
+        <Workspaces />
+        <Workspace />
+      </Theme>
     </ContextProvider>
   );
 }
