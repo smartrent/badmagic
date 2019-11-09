@@ -21,6 +21,7 @@ export default function Request({
 
   return (
     <InjectPlugins
+      className="w-128"
       style={{ overflow: "unset" }}
       inject={Inject.asRequest}
       route={route}
@@ -31,13 +32,16 @@ export default function Request({
       <Params paramType={ParamType.urlParams} reFetch={reFetch} route={route} />
       <Params paramType={ParamType.body} reFetch={reFetch} route={route} />
       <Params paramType={ParamType.qsParams} reFetch={reFetch} route={route} />
-      <button onClick={() => Helpers.resetRequest(route, setParam)}>
+      <button
+        className="flex-shrink-0 bg-transparent hover:bg-gray-100 text-gray-600 py-2 px-4 border border-gray-500 rounded"
+        onClick={() => Helpers.resetRequest(route, setParam)}
+      >
         Reset
       </button>
       <button
         disabled={loading}
         onClick={reFetch}
-        style={{ marginLeft: "4px" }}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"
       >
         {loading ? "Loading..." : "Try"}
       </button>

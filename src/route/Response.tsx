@@ -18,10 +18,13 @@ export default function Request({
 }) {
   return (
     <InjectPlugins
-      style={{
-        flexGrow: 3,
-        flexShrink: 1,
-      }}
+      className="w-full"
+      style={
+        {
+          // flexGrow: 3,
+          // flexShrink: 1,
+        }
+      }
       inject={Inject.asResponse}
       route={route}
       reFetch={reFetch}

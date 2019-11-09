@@ -12,6 +12,7 @@ export default function InjectPlugins({
   children,
   loading,
   plugins,
+  className,
 }: {
   inject?: Inject;
   route: Route;
@@ -20,6 +21,7 @@ export default function InjectPlugins({
   children: any;
   loading: boolean;
   plugins: Plugin[];
+  className?: string;
 }) {
   const context = useContext(Context);
   const filteredPlugins = filter(plugins, { inject });
@@ -30,11 +32,15 @@ export default function InjectPlugins({
   };
 
   if (!(filteredPlugins && filteredPlugins.length)) {
-    return <div style={styles}>{children}</div>;
+    return (
+      <div className={className} style={styles}>
+        {children}
+      </div>
+    );
   }
 
   return (
-    <div style={styles}>
+    <div className={className} style={styles}>
       {map(filteredPlugins, (plugin, idx) => {
         const Component = plugin.Component;
         return Component ? (

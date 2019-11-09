@@ -15,6 +15,7 @@ export default function Label({ children, onClick, style }: Props) {
   return (
     <div
       onClick={onClick}
+      className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-1"
       style={{ ...Helpers.getStyles(darkMode, "label"), ...(style || {}) }}
     >
       {children}

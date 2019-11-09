@@ -50,6 +50,7 @@ export default function Environment() {
                 <div style={{ marginRight: "8px" }}>
                   <Label>Name</Label>
                   <input
+                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     style={{ marginRight: "8px" }}
                     type="text"
                     readOnly
@@ -60,6 +61,7 @@ export default function Environment() {
                   <Label>Value</Label>
                   <input
                     type="text"
+                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     value={value || ""}
                     onChange={(e) =>
                       setEnvVar({ key, value: e.currentTarget.value })
@@ -79,6 +81,7 @@ export default function Environment() {
             <Label>New Env Var</Label>
             <input
               type="text"
+              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
               value={newVarName}
               onChange={(e) => setNewVarName(e.currentTarget.value)}
               style={{ marginRight: "4px" }}
