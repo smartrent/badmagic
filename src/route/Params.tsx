@@ -29,11 +29,7 @@ export default function Params({
   }
 
   return (
-    <div
-      style={{
-        marginBottom: "8px",
-      }}
-    >
+    <div className="mb-2">
       {map(inputs, (param: Param, idx) => (
         <Input
           key={idx}

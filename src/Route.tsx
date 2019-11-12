@@ -58,12 +58,13 @@ export default function Route({ route }: { route: Route }) {
       style={{
         marginTop: "8px",
         marginBottom: "8px",
-        boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.2)",
+        // boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.2)",
         overflowX: "hidden",
         textOverflow: "wrap",
       }}
     >
       <div
+        className="bg-white rounded-t-lg overflow-hidden border-t border-l border-r border-gray-400 p-4 p-8 bg-white"
         style={{
           ...Helpers.getStyles(darkMode, "routePanelHeader"),
           ...{
@@ -84,7 +85,7 @@ export default function Route({ route }: { route: Route }) {
             borderRadius: "4px",
             padding: "4px",
             marginRight: "8px",
-            width: "50px",
+            width: "60px",
             textAlign: "center",
             whiteSpace: "nowrap",
             textOverflow: "clip",
