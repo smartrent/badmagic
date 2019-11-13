@@ -6,6 +6,7 @@ import Label from "./Label";
 import Required from "./Required";
 import Select from "./Select";
 import TextInput from "./TextInput";
+import Button from "./Button";
 
 import { Route, Param, ParamType } from "../types";
 
@@ -97,12 +98,13 @@ export default function Input({
       <div className="flex">
         {inputDOM}
         {value && (
-          <button
-            className="flex-shrink-0 bg-transparent hover:bg-gray-100 text-gray-600 px-2 border border-gray-500 ml-2 rounded"
+          <Button
+            outline
+            className="flex-shrink-0 ml-2"
             onClick={() => setParam({ route, param, value: null, paramType })}
           >
             Clear
-          </button>
+          </Button>
         )}
       </div>
     </div>

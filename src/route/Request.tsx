@@ -5,6 +5,7 @@ import InjectPlugins from "./InjectPlugins";
 import { Inject, ParamType, Plugin, Route } from "../types";
 import Context from "../Context";
 import Helpers from "../lib/helpers";
+import Button from "../common/Button";
 
 export default function Request({
   route,
@@ -31,19 +32,16 @@ export default function Request({
       <Params paramType={ParamType.urlParams} reFetch={reFetch} route={route} />
       <Params paramType={ParamType.body} reFetch={reFetch} route={route} />
       <Params paramType={ParamType.qsParams} reFetch={reFetch} route={route} />
-      <button
-        className="flex-shrink-0 bg-transparent hover:bg-gray-100 text-gray-600 py-2 px-4 border border-gray-500 rounded"
+      <Button
+        outline
+        className="flex-shrink-0"
         onClick={() => Helpers.resetRequest(route, setParam)}
       >
         Reset
-      </button>
-      <button
-        disabled={loading}
-        onClick={reFetch}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"
-      >
+      </Button>
+      <Button className="ml-2" disabled={loading} onClick={reFetch}>
         {loading ? "Loading..." : "Try"}
-      </button>
+      </Button>
     </InjectPlugins>
   );
 }
