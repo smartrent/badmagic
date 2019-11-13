@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.0.15
+
+### Features
+
+- Style refactor using TailwindCSS
+
 ## v0.0.14
 
 ### Features
