@@ -55,47 +55,36 @@ export default function Route({ route }: { route: Route }) {
 
   return (
     <div
-      style={{
-        marginTop: "8px",
-        marginBottom: "8px",
-        boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.2)",
-        overflowX: "hidden",
-        textOverflow: "wrap",
-      }}
+      className={
+        darkMode
+          ? "bg-gray-900 border border-gray-700 rounded overflow-x-hidden my-2"
+          : "bg-white border border-gray-300 rounded overflow-x-hidden my-2"
+      }
     >
       <div
-        style={{
-          ...Helpers.getStyles(darkMode, "routePanelHeader"),
-          ...{
-            padding: "8px",
-            cursor: "pointer",
-            display: "flex",
-            justifyContent: "flex-start",
-            alignItems: "center",
-          },
-        }}
+        className="flex justify-start items-center overflow-hidden p-2"
         onClick={() => setCollapsed(!collapsed)}
       >
         <div
+          className={
+            darkMode
+              ? "w-16 flex flex-shrink-0 items-center justify-center text-xs text-gray-700 font-semibold p-1 mr-2 border border-gray-700 rounded"
+              : "w-16 flex flex-shrink-0 items-center justify-center text-xs text-gray-700 font-semibold p-1 mr-2 border border-gray-300 rounded"
+          }
           style={{
-            fontSize: "12px",
             backgroundColor: get(Helpers.colors.routes, method),
-            border: "1px solid #333",
-            borderRadius: "4px",
-            padding: "4px",
-            marginRight: "8px",
-            width: "50px",
-            textAlign: "center",
-            whiteSpace: "nowrap",
-            textOverflow: "clip",
-            overflow: "hidden",
-            color: "#333",
           }}
         >
           {method.toUpperCase()}
         </div>
 
-        <div style={{ marginRight: "4px", flexGrow: 2 }}>
+        <div
+          className={
+            darkMode
+              ? "flex flex-grow-2 text-gray-100 mr-auto"
+              : "flex flex-grow-2 text-gray-800 mr-auto"
+          }
+        >
           {Helpers.buildUrl({
             route,
             urlParams: routeConfigVars.urlParams,
@@ -103,17 +92,17 @@ export default function Route({ route }: { route: Route }) {
             qsParams: routeConfigVars.qsParams,
           })}
         </div>
-        <div>{route.name}</div>
+        <div
+          className={
+            darkMode
+              ? "flex text-right text-gray-100 ml-2 mr-1"
+              : "flex text-right text-gray-800 ml-2 mr-1"
+          }
+        >
+          {route.name}
+        </div>
       </div>
-      <div
-        style={{
-          ...Helpers.getStyles(darkMode, "routePanelBody"),
-          ...{
-            display: collapsed ? "none" : "flex",
-            padding: "16px",
-          },
-        }}
-      >
+      <div className={collapsed ? "none" : "flex p-2"}>
         {!collapsed && (
           <>
             <Request

@@ -4,6 +4,9 @@ import { map, startCase } from "lodash-es";
 import Context from "../Context";
 import Label from "./Label";
 import Required from "./Required";
+import Select from "./Select";
+import TextInput from "./TextInput";
+import Button from "./Button";
 
 import { Route, Param, ParamType } from "../types";
 
@@ -39,7 +42,7 @@ export default function Input({
 
   if (param.options && !!param.options.length) {
     inputDOM = (
-      <select
+      <Select
         onKeyDown={onKeyDown}
         onChange={(e) => {
           const index = e.currentTarget.selectedIndex;
@@ -59,11 +62,12 @@ export default function Input({
             </option>
           );
         })}
-      </select>
+      </Select>
     );
   } else if (param.type === "textarea") {
     inputDOM = (
       <textarea
+        className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
         onChange={(e) => onChange(e.currentTarget.value)}
         value={
           value
@@ -76,7 +80,7 @@ export default function Input({
     );
   } else {
     inputDOM = (
-      <input
+      <TextInput
         type={param.type || "text"}
         placeholder={param.placeholder || label}
         onKeyDown={onKeyDown}
@@ -87,17 +91,22 @@ export default function Input({
   }
 
   return (
-    <div style={{ marginTop: "8px", marginBottom: "8px" }}>
+    <div className="my-8">
       <Label>
         {label} {param.required && <Required />}
       </Label>
-      {inputDOM}
-      <button
-        style={{ marginLeft: "4px" }}
-        onClick={() => setParam({ route, param, value: null, paramType })}
-      >
-        Set Null
-      </button>
+      <div className="flex">
+        {inputDOM}
+        {value && (
+          <Button
+            outline
+            className="flex-shrink-0 ml-2"
+            onClick={() => setParam({ route, param, value: null, paramType })}
+          >
+            Clear
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

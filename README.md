@@ -1,4 +1,23 @@
-# Bad Magic
+# 🔮 Bad Magic
+
+Bad Magic is a Swagger-UI alternative that allows developers to visualize and test their API resources from a convenient web interface.
+
+<img src="./demo-screenshot.png" alt="Demo screenshot of Bad Magic">
+
+## Installation
+
+```
+yarn add badmagic
+```
+
+**You will also need to include the TailwindCSS stylesheet on the page you plan to use Bad Magic**
+
+```html
+<link
+  href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
+  rel="stylesheet"
+/>
+```
 
 ## General Usage
 
@@ -97,7 +116,7 @@ Here is an example `BearerAuth.tsx` plugin that will prompt the user to select a
 import React, { useState } from "react";
 import { map, get, omitBy } from "lodash-es";
 
-import { Success, Params } from "badmagic";
+import { Button, Select, Success, Params } from "badmagic";
 import { ParamType } from "badmagic/dist/types";
 
 export default function BearerAuthorization({
@@ -120,7 +139,7 @@ export default function BearerAuthorization({
       <Params paramType={ParamType.urlParams} reFetch={reFetch} route={route} />
       <Params paramType={ParamType.body} reFetch={reFetch} route={route} />
       <Params paramType={ParamType.qsParams} reFetch={reFetch} route={route} />
-      <select
+      <Select
         value={bearerAuth ? bearerAuth.replace("Bearer ", "") : ""}
         style={{ marginRight: "4px" }}
         onKeyDown={(e) => {
@@ -152,11 +171,11 @@ export default function BearerAuthorization({
             {key.replace("Access - ", "")}
           </option>
         ))}
-      </select>
+      </Select>
       <Success>{success}</Success>
-      <button disabled={loading} onClick={reFetch}>
+      <Button disabled={loading} onClick={reFetch}>
         {loading ? "Loading..." : "Try"}
-      </button>
+      </Button>
     </div>
   );
 }

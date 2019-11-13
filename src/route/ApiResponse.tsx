@@ -36,17 +36,10 @@ export default function ApiResponse({ route }: { route: Route }) {
     <div>
       {response && response.status && (
         <div
+          className="flex-shrink-0 inline-flex text-xs font-bold bg-transparent border rounded py-1 px-2 mb-2"
           style={{
             ...Helpers.getStyles(darkMode, "responseStatusCode"),
-            ...{
-              color: responseColor,
-              padding: "4px",
-              borderRadius: "4px",
-              width: "25px",
-              textAlign: "center",
-              fontSize: "12px",
-              marginBottom: "4px",
-            },
+            color: responseColor,
           }}
         >
           {response.status}

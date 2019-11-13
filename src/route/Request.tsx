@@ -5,6 +5,7 @@ import InjectPlugins from "./InjectPlugins";
 import { Inject, ParamType, Plugin, Route } from "../types";
 import Context from "../Context";
 import Helpers from "../lib/helpers";
+import Button from "../common/Button";
 
 export default function Request({
   route,
@@ -21,7 +22,7 @@ export default function Request({
 
   return (
     <InjectPlugins
-      style={{ overflow: "unset" }}
+      style={{ flex: 1, marginRight: "1rem" }}
       inject={Inject.asRequest}
       route={route}
       reFetch={reFetch}
@@ -31,16 +32,16 @@ export default function Request({
       <Params paramType={ParamType.urlParams} reFetch={reFetch} route={route} />
       <Params paramType={ParamType.body} reFetch={reFetch} route={route} />
       <Params paramType={ParamType.qsParams} reFetch={reFetch} route={route} />
-      <button onClick={() => Helpers.resetRequest(route, setParam)}>
-        Reset
-      </button>
-      <button
-        disabled={loading}
-        onClick={reFetch}
-        style={{ marginLeft: "4px" }}
+      <Button
+        outline
+        className="flex-shrink-0"
+        onClick={() => Helpers.resetRequest(route, setParam)}
       >
+        Reset
+      </Button>
+      <Button className="ml-2" disabled={loading} onClick={reFetch}>
         {loading ? "Loading..." : "Try"}
-      </button>
+      </Button>
     </InjectPlugins>
   );
 }
