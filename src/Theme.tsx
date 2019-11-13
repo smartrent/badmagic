@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 
 import Context from "./Context";
-import Helpers from "./lib/helpers";
 
 export default function Theme({ children }) {
   const { darkMode } = useContext(Context);

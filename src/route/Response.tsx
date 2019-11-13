@@ -18,13 +18,7 @@ export default function Request({
 }) {
   return (
     <InjectPlugins
-      className="w-full"
-      style={
-        {
-          // flexGrow: 3,
-          // flexShrink: 1,
-        }
-      }
+      style={{ flex: 3 }}
       inject={Inject.asResponse}
       route={route}
       reFetch={reFetch}

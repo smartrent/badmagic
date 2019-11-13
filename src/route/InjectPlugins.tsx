@@ -8,39 +8,34 @@ export default function InjectPlugins({
   inject,
   route,
   reFetch,
-  style,
   children,
   loading,
   plugins,
   className,
+  style,
 }: {
   inject?: Inject;
   route: Route;
   reFetch: () => void;
-  style: any;
   children: any;
   loading: boolean;
   plugins: Plugin[];
   className?: string;
+  style?: any;
 }) {
   const context = useContext(Context);
   const filteredPlugins = filter(plugins, { inject });
-  const styles = {
-    margin: "8px",
-    overflow: "hidden",
-    ...(style || {}),
-  };
 
   if (!(filteredPlugins && filteredPlugins.length)) {
     return (
-      <div className={className} style={styles}>
+      <div className={className} style={style}>
         {children}
       </div>
     );
   }
 
   return (
-    <div className={className} style={styles}>
+    <div className={"flex flex-col overflow-hidden " + className} style={style}>
       {map(filteredPlugins, (plugin, idx) => {
         const Component = plugin.Component;
         return Component ? (

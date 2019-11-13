@@ -21,8 +21,7 @@ export default function Request({
 
   return (
     <InjectPlugins
-      className="w-128"
-      style={{ overflow: "unset" }}
+      style={{ flex: 1, marginRight: "1rem" }}
       inject={Inject.asRequest}
       route={route}
       reFetch={reFetch}

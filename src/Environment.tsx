@@ -81,8 +81,7 @@ export default function Environment() {
                   />
                 </div>
                 <button
-                  className="mb-1" // Offset to align with text inputs
-                  style={{ color: Helpers.colors.red }}
+                  className="text-red-500 mb-1" // Slight margin-bottom to faux-align with text inputs
                   onClick={() => deleteEnvVar({ key })}
                 >
                   <svg
