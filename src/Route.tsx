@@ -8,6 +8,8 @@ import Request from "./route/Request";
 import Response from "./route/Response";
 import Helpers from "./lib/helpers";
 
+import Navigation from "./common/Navigation";
+
 import { Route } from "./types";
 
 export default function Route({ route }: { route: Route }) {
@@ -15,6 +17,8 @@ export default function Route({ route }: { route: Route }) {
     Context
   );
   const [collapsed, setCollapsed] = useState(true);
+  const [activeTab, setActiveTab] = useState('request');
+
   const routeConfigVars = get(routeConfig, route.name, {
     headers: {},
     urlParams: {},
@@ -52,6 +56,43 @@ export default function Route({ route }: { route: Route }) {
   // If Route plugins are not specified, this will default to workspace plugins
   const plugins =
     route.plugins && route.plugins.length ? route.plugins : workspace.plugins;
+
+  // Tabs for the navigation component for each route
+  const tabs = [
+    {
+      key: "request",
+      label: "Try Request",
+      enabled: true,
+    }
+  ]
+
+  const renderBody = (activeTab: string) => {
+    let content;
+
+    switch (activeTab) {
+      case "request":
+        content = 
+          <>
+            <Request
+              route={route}
+              loading={loading}
+              reFetch={reFetch}
+              plugins={plugins}
+            />
+            <Response
+              route={route}
+              loading={loading}
+              reFetch={reFetch}
+              plugins={plugins}
+            />
+          </>
+        break;
+      default:
+        content = <p className="italic p-2">Something went wrong...</p>;
+    }
+
+    return content;
+  }
 
   return (
     <div
@@ -102,23 +143,13 @@ export default function Route({ route }: { route: Route }) {
           {route.name}
         </div>
       </div>
-      <div className={collapsed ? "none" : "flex p-2"}>
+      <div className={collapsed ? "none" : "w-full p-2"}>
         {!collapsed && (
-          <>
-            <Request
-              route={route}
-              loading={loading}
-              reFetch={reFetch}
-              plugins={plugins}
-            />
-            <Response
-              route={route}
-              loading={loading}
-              reFetch={reFetch}
-              plugins={plugins}
-            />
-          </>
+          <Navigation tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
         )}
+      </div>
+      <div className={collapsed ? "none" : "flex p-2"}>
+        {!collapsed && renderBody(activeTab)}
       </div>
     </div>
   );
