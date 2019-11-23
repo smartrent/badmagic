@@ -14,7 +14,7 @@ type Props = {
   setActiveTab: (key:string) => void;
 };
 
-export default function Label({ tabs, activeTab, setActiveTab }: Props) {
+export default ({ tabs, activeTab, setActiveTab }: Props) => {
   const renderTabs = (tab: Tab, activeTab: string, setActiveTab: (key:string) => void) => {
     let anchorClasses = Helpers.classes.tabs.inactive;
     let liClasses = 'mr -1';

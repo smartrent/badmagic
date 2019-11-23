@@ -35,6 +35,7 @@ export type Route = {
   qsParams?: Param[];
   method?: Method;
   plugins?: Plugin[];
+  documentation?: string;
 };
 
 export enum Inject {
