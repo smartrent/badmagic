@@ -35,7 +35,7 @@
 .badmagic-markdown h1,
 .badmagic-markdown h2 {
   border-bottom: 1px solid #eaecef;
-  padding-bottom: .3em;
+  padding-bottom: 0.3em;
 }
 
 .badmagic-markdown h2 {
@@ -51,12 +51,12 @@
 }
 
 .badmagic-markdown h5 {
-  font-size: .875em;
+  font-size: 0.875em;
 }
 
 .badmagic-markdown h6 {
   color: #6a737d;
-  font-size: .85em;
+  font-size: 0.85em;
 }
 
 .badmagic-markdown a {
@@ -91,7 +91,7 @@
   overflow: hidden;
   background-color: #e1e4e8;
   border-bottom-color: #eee;
-  height: .25em;
+  height: 0.25em;
   margin: 1.25em 0;
   padding: 0;
 }
@@ -118,7 +118,7 @@
 }
 
 .badmagic-markdown p {
-  margin-bottom: .6em;
+  margin-bottom: 0.6em;
   margin-top: 0;
 }
 
@@ -150,7 +150,7 @@
 }
 
 .badmagic-markdown blockquote {
-  border-left: .25em solid #dfe2e5;
+  border-left: 0.25em solid #dfe2e5;
   color: #6a737d;
   padding: 0 1em;
   margin: 0;
@@ -181,7 +181,7 @@
 }
 
 .badmagic-markdown li + li {
-  margin-top: .25em;
+  margin-top: 0.25em;
 }
 
 .badmagic-markdown table {
@@ -197,7 +197,7 @@
 .badmagic-markdown table td,
 .badmagic-markdown table th {
   border: 1px solid #dfe2e5;
-  padding: .2em .4em;
+  padding: 0.2em 0.4em;
 }
 
 .badmagic-markdown table tr {
@@ -210,24 +210,24 @@
 }
 
 .badmagic-markdown code {
-  background-color: rgba(27,31,35,.05);
-  border-radius: .25em;
+  background-color: rgba(27, 31, 35, 0.05);
+  border-radius: 0.25em;
   font-size: 85%;
   margin: 0;
-  padding: .2em .4em;
+  padding: 0.2em 0.4em;
 }
 
 .badmagic-markdown pre {
   word-wrap: normal;
   background-color: #f6f8fa;
-  border-radius: .25em;
+  border-radius: 0.25em;
   font-size: 85%;
   line-height: 1.45;
   overflow: auto;
   padding: 1rem;
 }
 
-.badmagic-markdown pre>code {
+.badmagic-markdown pre > code {
   background: transparent;
   border: 0;
   font-size: 100%;
@@ -256,5 +256,5 @@
 }
 
 .badmagic-markdown.dark {
-  color: rgb(206, 206, 206)
+  color: rgb(206, 206, 206);
 }
