@@ -257,6 +257,61 @@ const superheroes = {
   };
 ```
 
+## Route Documentation 
+- Each route can specify documentation by adding a `documentation` key to the object.
+- `documentation` accepts a string literal template that will render into markdown
+- Styling
+  - Your own styles can be applied to the markdown by prefixing the styles with `.badmagic-markdown`
+  - Alternatively, you can import BadMagic's stylesheet for default styling:
+    ```html
+    <link
+      href="https://unpkg.com/badmagic^@0.0.15/dist/css/markdown.min.css"
+      rel="stylesheet"
+    />
+    ```
+
+
+  Usage:
+
+  ```javascript
+  const superheroes = {
+    id: "superheroes",
+    name: "Superheroes",
+    config: {
+      baseUrl: `${window.location.origin}/api`,
+    },
+    plugins: [
+      {
+        Component: BearerAuthorization,
+        inject: Inject.asRequest,
+      },
+    ],
+    routes: [
+      {
+        name: "Search Superheroes",
+        path: "/v1/superheroes",
+        documentation: `
+        # Fetches list of all super heros
+        ## Reponse
+        \`\`\`json
+        [
+          {
+            "name": "Spiderman",
+            "age": "29",
+            "location": "Forest Hills"
+          }
+        ]
+        \`\`\`
+        `
+      },
+      {
+        name: "Fetch Superhero",
+        path: "/v1/superheroes/:superhero_id",
+      },
+    ],
+  };
+  ```
+
 ## Questions
 
 > Why did you name this `badmagic`?

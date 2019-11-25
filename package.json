@@ -3,11 +3,12 @@
   "version": "0.0.15",
   "description": "Swagger UI alternative written in React",
   "scripts": {
-    "build": "npm run clean && tsc -p ./",
-    "start": "npm run clean && tsc --watch",
+    "build": "npm run clean && npm run copy-css && tsc -p ./",
+    "start": "npm run clean && npm run copy-css && tsc --watch",
     "clean": "rimraf dist",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "copy-css": "mkdir -p dist/css && cp ./src/css/*.min.css ./dist/css/"
   },
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
@@ -54,6 +55,7 @@
     "arrowParens": "always"
   },
   "dependencies": {
-    "react-json-view": "^1.19.1"
+    "react-json-view": "^1.19.1",
+    "react-markdown": "^4.2.2"
   }
 }

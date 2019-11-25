@@ -3,7 +3,6 @@ import { map } from "lodash-es";
 
 import Environment from "./Environment";
 import Context from "./Context";
-import Helpers from "./lib/helpers";
 import { Workspace } from "./types";
 import TextInput from "./common/TextInput";
 import Select from "./common/Select";
