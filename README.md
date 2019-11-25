@@ -265,7 +265,7 @@ const superheroes = {
   - Alternatively, you can import BadMagic's stylesheet for default styling:
     ```html
     <link
-      href="https://unpkg.com/badmagic^@0.0.15/dist/css/markdown.min.css"
+      href="https://unpkg.com/badmagic@^0.0.16/dist/css/markdown.min.css"
       rel="stylesheet"
     />
     ```
