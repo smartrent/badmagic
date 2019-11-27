@@ -1,5 +1,5 @@
 import React from "react";
-import { map } from "lodash-es";
+import { map, assign } from "lodash-es";
 
 import Input from "../common/Input";
 import Helpers from "../lib/helpers";
@@ -30,15 +30,21 @@ export default function Params({
 
   return (
     <div className="mb-2">
-      {map(inputs, (param: Param, idx) => (
-        <Input
-          key={idx}
-          route={route}
-          param={param}
-          reFetch={reFetch}
-          paramType={paramType}
-        />
-      ))}
+      {map(inputs, (param: Param, idx) => {
+        return (
+          <Input
+            key={idx}
+            route={route}
+            param={
+              paramType === ParamType.urlParams
+                ? assign(param, { required: true })
+                : param
+            }
+            reFetch={reFetch}
+            paramType={paramType}
+          />
+        );
+      })}
     </div>
   );
 }

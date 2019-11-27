@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { get } from "lodash-es";
+import { get, isObject } from "lodash-es";
 import ReactJson from "react-json-view";
 
 import Headers from "./Headers";
@@ -36,6 +36,8 @@ export default function ApiError({ route }: { route: Route }) {
     responseColor = Helpers.colors.red;
   }
 
+  const isJSON = error.response.data && isObject(error.response.data);
+
   return (
     <div>
       <div
@@ -46,7 +48,7 @@ export default function ApiError({ route }: { route: Route }) {
         {error.response.status}
       </div>
 
-      {error.response.data && (
+      {error.response.data && isJSON && (
         <ReactJson
           enableClipboard={false}
           displayObjectSize={false}
@@ -54,6 +56,16 @@ export default function ApiError({ route }: { route: Route }) {
           src={error.response.data}
           theme={context.darkMode ? "bright" : "rjv-default"}
         />
+      )}
+
+      {error.response.data && !isJSON && (
+        <div
+          className={`border border-gray-400 p-2 ${
+            context.darkMode ? "text-white" : ""
+          }`}
+        >
+          {error.response.data}
+        </div>
       )}
 
       <Headers headers={error.config.headers} />

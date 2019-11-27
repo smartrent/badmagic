@@ -18,7 +18,7 @@ export default function Request({
 }) {
   return (
     <InjectPlugins
-      style={{ flex: 3 }}
+      style={{ flex: 3, overflow: "hidden" }}
       inject={Inject.asResponse}
       route={route}
       reFetch={reFetch}

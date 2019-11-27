@@ -118,17 +118,18 @@ export default {
     urlParams: Object;
     qsParams?: Object;
   }) {
+    const stringifiedQS =
+      qsParams && !!Object.keys(qsParams).length
+        ? stringify(omitBy(qsParams, (p) => !p))
+        : "";
+
     return reduce(
       this.getUrlParamsFromPath(route.path),
       (memo, urlParam) => {
         const value = get(urlParams || {}, urlParam.name);
         return memo.replace(`:${urlParam.name}`, value || `:${urlParam.name}`);
       },
-      `${baseUrl}${route.path}${
-        qsParams && !!Object.keys(qsParams).length
-          ? `?${stringify(omitBy(qsParams, (p) => !p))}`
-          : ""
-      }`
+      `${baseUrl}${route.path}${stringifiedQS ? `?${stringifiedQS}` : ""}`
     );
   },
 

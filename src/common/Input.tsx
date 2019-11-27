@@ -81,6 +81,7 @@ export default function Input({
   } else {
     inputDOM = (
       <TextInput
+        required={param.required}
         type={param.type || "text"}
         placeholder={param.placeholder || label}
         onKeyDown={onKeyDown}
