@@ -2,9 +2,46 @@ import React from "react";
 import { map, assign } from "lodash-es";
 
 import Input from "../common/Input";
+import Label from "../common/Label";
 import Helpers from "../lib/helpers";
 
 import { Route, Param, ParamType } from "../types";
+
+function mapInputs({ inputs, route, paramType, reFetch, parent }) {
+  return map(inputs, (param: Param, idx: number) => {
+    // Object datatype
+    if (param.properties) {
+      return (
+        <div className="mb-2" key={idx}>
+          <Label size="lg">{param.label}</Label>
+          {mapInputs({
+            inputs: param.properties,
+            route,
+            paramType,
+            reFetch,
+            parent: param.name,
+          })}
+        </div>
+      );
+    }
+
+    // Other data types
+    return (
+      <Input
+        key={idx}
+        route={route}
+        param={
+          paramType === ParamType.urlParams
+            ? assign(param, { required: true })
+            : param
+        }
+        reFetch={reFetch}
+        paramType={paramType}
+        parent={parent}
+      />
+    );
+  });
+}
 
 export default function Params({
   route,
@@ -30,21 +67,7 @@ export default function Params({
 
   return (
     <div className="mb-2">
-      {map(inputs, (param: Param, idx) => {
-        return (
-          <Input
-            key={idx}
-            route={route}
-            param={
-              paramType === ParamType.urlParams
-                ? assign(param, { required: true })
-                : param
-            }
-            reFetch={reFetch}
-            paramType={paramType}
-          />
-        );
-      })}
+      {mapInputs({ inputs, route, paramType, reFetch, parent: null })}
     </div>
   );
 }

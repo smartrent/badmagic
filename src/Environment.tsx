@@ -18,6 +18,13 @@ export default function Environment() {
   const [collapsed, setCollapsed] = useState(true);
   const [newVarName, setNewVarName] = useState("");
 
+  const checkIfSubmitted = (e) => {
+    if (e && e.key === "Enter") {
+      setEnvVar({ key: newVarName, value: "" });
+      setNewVarName("");
+    }
+  };
+
   return (
     <>
       <button
@@ -107,16 +114,9 @@ export default function Environment() {
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 value={newVarName}
                 onChange={(e) => setNewVarName(e.currentTarget.value)}
+                onKeyDown={(e) => checkIfSubmitted(e)}
+                placeholder="Specify env var name and press Enter to continue"
               />
-              <Button
-                className="ml-2"
-                onClick={() => {
-                  setEnvVar({ key: newVarName, value: "" });
-                  setNewVarName("");
-                }}
-              >
-                Create
-              </Button>
             </div>
             <div className="flex mt-2 pt-2 border-t">
               <Button

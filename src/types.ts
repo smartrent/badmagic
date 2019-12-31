@@ -17,7 +17,8 @@ export type Param = {
   placeholder?: string;
   options?: Option[];
   defaultValue?: string;
-  json?: boolean; // value should be stringified
+  json?: boolean; // value should be stringified, deprecated -- use `properties`
+  properties?: Param[]; // if working with json, pass in array of properties
 };
 
 export enum Method {
@@ -36,6 +37,7 @@ export type Route = {
   method?: Method;
   plugins?: Plugin[];
   documentation?: string;
+  sticky?: boolean;
 };
 
 export enum Inject {

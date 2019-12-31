@@ -15,22 +15,25 @@ export default function Input({
   reFetch,
   route,
   paramType,
+  parent,
 }: {
   param: Param;
   route: Route;
   reFetch: () => void;
   paramType: ParamType;
+  parent?: string;
 }) {
   const { setParam, getParam } = useContext(Context);
 
   const label = param.label ? param.label : startCase(param.name);
 
-  const value = getParam({ route, param, paramType });
+  const value = getParam({ route, param, paramType, parent });
 
-  const onChange = (value: any) => setParam({ route, param, value, paramType });
+  const onChange = (value: any) =>
+    setParam({ route, param, value, paramType, parent });
 
   useEffect(() => {
-    setParam({ route, param, value, paramType });
+    setParam({ route, param, value, paramType, parent });
   }, []);
 
   const onKeyDown = (e: any) => {
