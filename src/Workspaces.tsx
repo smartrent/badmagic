@@ -13,9 +13,12 @@ export default function Workspaces() {
     setWorkspaceName,
     workspace,
     darkMode,
-    setRouteFilter,
-    routeFilter,
+    getWorkspaceSearchKeywords,
+    setWorkspaceSearchKeywords,
   } = useContext(Context);
+
+  const keywords = getWorkspaceSearchKeywords();
+
   return (
     <div
       className={
@@ -47,14 +50,19 @@ export default function Workspaces() {
               ))}
             </Select>
           </div>
-          <div className="ml-2">
-            <TextInput
-              type="text"
-              placeholder="Search Routes"
-              value={routeFilter}
-              onChange={(e) => setRouteFilter(e.currentTarget.value)}
-            />
-          </div>
+          {workspace && workspace.name && (
+            <div className="ml-2">
+              <TextInput
+                type="text"
+                placeholder="Search Routes"
+                value={keywords}
+                onChange={(e) =>
+                  setWorkspaceSearchKeywords(e.currentTarget.value)
+                }
+              />
+            </div>
+          )}
+
           <div className="flex items-center ml-2">
             <Environment />
           </div>

@@ -5,7 +5,6 @@ import Helpers from "../lib/helpers";
 type Tab = {
   key: string;
   label: string;
-  enabled: boolean;
 };
 
 type Props = {
@@ -28,15 +27,11 @@ export default ({ tabs, activeTab, setActiveTab }: Props) => {
       liClasses = "-mb-px mr-1";
     }
 
-    if (!tab.enabled) {
-      anchorClasses = Helpers.classes.tabs.disabled;
-    }
-
     return (
       <li className={liClasses} key={`navigation_tab_${tab.key}`}>
         <a
           className={anchorClasses}
-          onClick={tab.enabled ? () => setActiveTab(tab.key) : null}
+          onClick={() => setActiveTab(tab.key)}
           href="#"
         >
           {tab.label}

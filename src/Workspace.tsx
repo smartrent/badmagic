@@ -7,21 +7,26 @@ import Route from "./Route";
 import { Route as RouteProps } from "./types";
 
 export default function Workspace() {
-  const { workspace, routeFilter } = useContext(Context);
+  const { workspace, getWorkspaceSearchKeywords } = useContext(Context);
   if (!workspace) {
     return <div>Select a workspace to get started.</div>;
   }
 
   const allRoutes = workspace && workspace.routes ? workspace.routes : [];
-  const filteredRoutes = filter(allRoutes, ({ name, path }: RouteProps) => {
-    if (!routeFilter) {
-      return true;
+  const filteredRoutes = filter(
+    allRoutes,
+    ({ name, path, sticky }: RouteProps) => {
+      const keywords: string = getWorkspaceSearchKeywords();
+      if (!keywords) {
+        return true;
+      }
+      return (
+        name.toLowerCase().includes(keywords.toLowerCase()) ||
+        path.toLowerCase().includes(keywords.toLowerCase()) ||
+        sticky
+      );
     }
-    return (
-      name.toLowerCase().includes(routeFilter.toLowerCase()) ||
-      path.toLowerCase().includes(routeFilter.toLowerCase())
-    );
-  });
+  );
 
   return (
     <div className="p-4 mt-12">

@@ -23,9 +23,6 @@ export default function ContextProvider({
   const [environment, setEnvironment] = useState(
     Helpers.getEnvForWorkspace(workspace)
   );
-  const [routeFilter, setRouteFilter] = useState(
-    environment && environment.routeFilter ? environment.routeFilter : ""
-  );
   const [routeConfig, setRouteConfig] = useState(
     Helpers.findRouteConfigByWorkspace(workspace)
   );
@@ -49,7 +46,7 @@ export default function ContextProvider({
       value={{
         workspaces,
         workspace,
-        setWorkspaceName: (name) => {
+        setWorkspaceName: (name: string) => {
           Storage.set({
             key: "workspaceName",
             value: name,
@@ -62,18 +59,27 @@ export default function ContextProvider({
         environment,
 
         darkMode,
-        setDarkMode: (darkMode) => {
+        setDarkMode: (darkMode: boolean) => {
           Storage.set({ key: "darkMode", value: darkMode });
           setDarkMode(darkMode);
         },
 
         setEnvVar,
 
-        setRouteFilter: (keywords) => {
-          setEnvVar({ key: "routeFilter", value: keywords });
-          setRouteFilter(keywords);
+        getWorkspaceSearchKeywords() {
+          return environment && workspace && workspace.name
+            ? environment[`${workspace.name}-route-filter`]
+            : "";
         },
-        routeFilter,
+
+        setWorkspaceSearchKeywords(value: string) {
+          if (workspace && workspace.name) {
+            setEnvVar({
+              key: `${workspace.name}-route-filter`,
+              value,
+            });
+          }
+        },
 
         deleteEnvVar: ({ key }) => {
           if (!workspace) {
@@ -126,15 +132,21 @@ export default function ContextProvider({
           setRouteConfig(newRouteConfig);
         },
 
-        getParam: ({ route, param, paramType }) => {
+        getParam: ({ route, param, paramType, parent }) => {
+          let propertyPath = `[${param.name}]`;
+          // parent is used for json objects in body params
+          if (parent) {
+            propertyPath = `[${parent}]${propertyPath}`;
+          }
+
           return get(
             routeConfig,
-            `[${route.name}][${paramType}][${param.name}]`,
+            `[${route.name}][${paramType}]${propertyPath}`,
             param.defaultValue
           );
         },
 
-        setParam: ({ route, param, value, paramType }) => {
+        setParam: ({ route, param, value, paramType, parent }) => {
           if (!workspace) {
             return;
           }
@@ -149,9 +161,15 @@ export default function ContextProvider({
             Helpers.initializeRoute(newRouteConfig, route);
           }
 
+          let propertyPath = `[${param.name}]`;
+          // parent is used for json objects in body params
+          if (parent) {
+            propertyPath = `[${parent}]${propertyPath}`;
+          }
+
           set(
             newRouteConfig,
-            `[${route.name}][${paramType}][${param.name}]`,
+            `[${route.name}][${paramType}]${propertyPath}`,
             newValue
           );
 

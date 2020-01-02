@@ -12,18 +12,21 @@ export default React.createContext({
   environment: null,
   darkMode: null,
   setDarkMode: (darkMode: boolean) => {},
-  routeFilter: null,
-  setRouteFilter: (keywords: string) => {},
   setEnvVar: (payload: { key: string; value: any }) => {},
   deleteEnvVar: (payload: { key: string }) => {},
   routeConfig: {},
-  getParam: (filters: { route: Route; param: Param; paramType: ParamType }) =>
-    "",
+  getParam: (filters: {
+    route: Route;
+    param: Param;
+    paramType: ParamType;
+    parent?: string;
+  }) => "",
   setParam: (payload: {
     route: Route;
     param: Param;
     value: any;
     paramType: ParamType;
+    parent?: string;
   }) => {},
   setHeader: (payload: { route: Route; key: string; value: string }) => {},
   setApiResponse: (payload: {
@@ -32,4 +35,6 @@ export default React.createContext({
     error: any;
     loading: boolean;
   }) => {},
+  getWorkspaceSearchKeywords: () => "",
+  setWorkspaceSearchKeywords: (keywords: string) => {},
 });

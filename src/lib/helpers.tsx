@@ -38,9 +38,9 @@ export default {
 
   getDefaultWorkspace(): Workspace {
     return {
-      id: "default",
+      id: "",
       routes: [],
-      name: "default",
+      name: "",
       plugins: [],
       config: {
         baseUrl: "",
@@ -227,9 +227,7 @@ export default {
               borderLeft: "1px solid #eee",
             };
       case "label":
-        return darkMode
-          ? { color: "rgb(206, 206, 206)", fontSize: "13px" }
-          : { color: "#555", fontSize: "13px" };
+        return darkMode ? { color: "rgb(206, 206, 206)" } : { color: "#555" };
       default:
         return {};
     }

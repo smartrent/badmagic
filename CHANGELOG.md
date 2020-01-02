@@ -1,5 +1,45 @@
 # Changelog
 
+## v0.0.18
+
+### Features
+
+- Keyword search is workspace specific now
+- Better object params support: specifying a key of `properties` will infer that the param is an object (see example below)
+- A route can have `sticky: true` added to it so that it cannot be filtered with keyword search
+- `Documentation` tab is hidden if there is no documentation specified
+- Environment variables previously needed to be saved through click of a button, we've removed the button in favor of using the Enter key
+
+#### New Object Support
+
+```javascript
+{
+  name: "Create User",
+  path: "/v1/users",
+  method: Method.POST,
+  body: [
+    {
+      name: "user",
+      label: "User",
+      properties: [
+        { name: "first_name", required: true },
+        { name: "last_name", required: true },
+        { name: "email", required: true },
+        { name: "dob", type: "date" },
+      ],
+    },
+  ]
+}
+```
+
+### Breaking Changes
+
+- Context no longer has support for `setRouteFilter` and `routeFilter` since it's now namespaced to a workspace. Please use `setWorkspaceSearchKeywords(keywords)` and `getWorkspaceSearchKeywords()` instead
+
+### Notes
+
+- We are going to deprecate `json` as a param option in a future version in favor of a param that has `properties`. We will probably need to do something to have stronger array support so we will leave `json` for now
+
 ## v0.0.17
 
 ### Features
