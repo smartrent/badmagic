@@ -1,11 +1,13 @@
 import React, { useContext, useState } from "react";
-import { map } from "lodash-es";
 
-import Context from "./Context";
-import Helpers from "./lib/helpers";
-import Label from "./common/Label";
-import TextInput from "./common/TextInput";
 import Button from "./common/Button";
+import Context from "./Context";
+import Label from "./common/Label";
+import PrintPage from "./common/PrintPage";
+import SelectionModal from "./common/SelectionModal";
+import TextInput from "./common/TextInput";
+
+import { map } from "lodash-es";
 
 export default function Environment() {
   const {
@@ -14,8 +16,11 @@ export default function Environment() {
     deleteEnvVar,
     setDarkMode,
     darkMode,
+    workspace,
   } = useContext(Context);
   const [collapsed, setCollapsed] = useState(true);
+  const [modalShowing, setModalShowing] = useState(true);
+  const [printPageShowing, setPrintPageShowing] = useState(false);
   const [newVarName, setNewVarName] = useState("");
 
   const checkIfSubmitted = (e) => {
@@ -118,18 +123,41 @@ export default function Environment() {
                 placeholder="Specify env var name and press Enter to continue"
               />
             </div>
-            <div className="flex mt-2 pt-2 border-t">
+            <div
+              className="flex mt-2 pt-2 border-t"
+              style={{ flexDirection: "column" }}
+            >
               <Button
                 className="w-full"
                 onClick={() => setDarkMode(!darkMode)}
                 outline
+                style={{ marginBottom: 8 }}
               >
                 Toggle Dark Mode
+              </Button>
+              <Button
+                className="w-full"
+                onClick={() => {
+                  setModalShowing(!modalShowing);
+                  setCollapsed(true);
+                }}
+                outline
+              >
+                Export Workspace
               </Button>
             </div>
           </div>
         </div>
       )}
+      {modalShowing && (
+        <SelectionModal
+          darkMode={darkMode}
+          setModalShowing={() => setModalShowing(!modalShowing)}
+          setPrintPageShowing={() => setPrintPageShowing(true)}
+          workspaceRoutes={workspace.routes}
+        />
+      )}
+      {printPageShowing && <PrintPage />}
     </>
   );
 }

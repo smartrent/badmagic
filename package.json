@@ -55,6 +55,7 @@
     "arrowParens": "always"
   },
   "dependencies": {
+    "@react-pdf/renderer": "^1.6.8",
     "react-json-view": "^1.19.1",
     "react-markdown": "^4.2.2"
   }

@@ -1,11 +1,12 @@
 import React, { useContext } from "react";
-import { map } from "lodash-es";
 
-import Environment from "./Environment";
 import Context from "./Context";
-import { Workspace } from "./types";
+import Environment from "./Environment";
 import TextInput from "./common/TextInput";
 import Select from "./common/Select";
+import { Workspace } from "./types";
+
+import { map } from "lodash-es";
 
 export default function Workspaces() {
   const {
@@ -62,7 +63,6 @@ export default function Workspaces() {
               />
             </div>
           )}
-
           <div className="flex items-center ml-2">
             <Environment />
           </div>
