@@ -255,11 +255,6 @@ const SelectionModal = ({ darkMode, setModalShowing, workspaceRoutes }) => {
                 />
               }
               fileName="badmagic_export.pdf"
-
-              // onClick={() => {
-              //   setModalShowing(false);
-              //   setPrintPageShowing(true);
-              // }}
             >
               {({ blob, url, loading, error }) =>
                 loading ? <p>Loading...</p> : <p>Export Selection</p>

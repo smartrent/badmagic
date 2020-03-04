@@ -153,11 +153,9 @@ export default function Environment() {
         <SelectionModal
           darkMode={darkMode}
           setModalShowing={() => setModalShowing(!modalShowing)}
-          setPrintPageShowing={() => setPrintPageShowing(true)}
           workspaceRoutes={workspace.routes}
         />
       )}
-      {printPageShowing && <PrintPage />}
     </>
   );
 }
