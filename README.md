@@ -19,6 +19,32 @@ yarn add badmagic
 />
 ```
 
+## Badmagic Example
+
+Clone `badmagic`, then run the following commands:
+
+- `cd example`
+- `yarn`
+- `yarn start`
+
+### Testing Locally
+
+#### Terminal Window 1
+
+In the `root badmagic directory` run the following commands:
+
+- `yarn`
+- `yarn link`
+- `yarn start`
+
+#### Terminal Window 2
+
+In the `example directory` run the follow commands:
+
+- `yarn` to install node modules in the example folder
+- `yarn link "badmagic"`
+- `yarn start` (to start the example that will be running on port 3000 by default)
+
 ## General Usage
 
 ```javascript
@@ -108,9 +134,9 @@ export default function BadMagic() {
 
 `badmagic` supports plugins at the workspace level or plugins specific to routes. If plugins are specified for a route, they will override all plugins at the workspace level.
 
-### Example
+### Sample Startup
 
-Here is an example `BearerAuth.tsx` plugin that will prompt the user to select a named access token from env vars that will then inject as an `Authorization` header with any routes that utilize this plugin:
+Here is a sample `BearerAuth.tsx` plugin that will prompt the user to select a named access token from env vars that will then inject as an `Authorization` header with any routes that utilize this plugin:
 
 ```javascript
 import React, { useState } from "react";
@@ -257,7 +283,8 @@ const superheroes = {
   };
 ```
 
-## Route Documentation 
+## Route Documentation
+
 - Each route can specify documentation by adding a `documentation` key to the object.
 - `documentation` accepts a string literal template that will render into markdown
 - Styling
@@ -270,47 +297,46 @@ const superheroes = {
     />
     ```
 
+Usage:
 
-  Usage:
-
-  ```javascript
-  const superheroes = {
-    id: "superheroes",
-    name: "Superheroes",
-    config: {
-      baseUrl: `${window.location.origin}/api`,
+```javascript
+const superheroes = {
+  id: "superheroes",
+  name: "Superheroes",
+  config: {
+    baseUrl: `${window.location.origin}/api`,
+  },
+  plugins: [
+    {
+      Component: BearerAuthorization,
+      inject: Inject.asRequest,
     },
-    plugins: [
-      {
-        Component: BearerAuthorization,
-        inject: Inject.asRequest,
-      },
-    ],
-    routes: [
-      {
-        name: "Search Superheroes",
-        path: "/v1/superheroes",
-        documentation: `
-        # Fetches list of all super heros
-        ## Reponse
-        \`\`\`json
-        [
-          {
-            "name": "Spiderman",
-            "age": "29",
-            "location": "Forest Hills"
-          }
-        ]
-        \`\`\`
-        `
-      },
-      {
-        name: "Fetch Superhero",
-        path: "/v1/superheroes/:superhero_id",
-      },
-    ],
-  };
-  ```
+  ],
+  routes: [
+    {
+      name: "Search Superheroes",
+      path: "/v1/superheroes",
+      documentation: `
+      # Fetches list of all super heros
+      ## Reponse
+      \`\`\`json
+      [
+        {
+          "name": "Spiderman",
+          "age": "29",
+          "location": "Forest Hills"
+        }
+      ]
+      \`\`\`
+      `,
+    },
+    {
+      name: "Fetch Superhero",
+      path: "/v1/superheroes/:superhero_id",
+    },
+  ],
+};
+```
 
 ## Questions
 
