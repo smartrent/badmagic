@@ -15,10 +15,11 @@ export default function ContextProvider({
   children: any;
   workspaces: Workspace[];
 }) {
-  const [darkMode, setDarkMode] = useState(Storage.get({ key: "darkMode" }));
-  const [workspaceName, setWorkspaceName] = useState(
-    Storage.get({ key: "workspaceName" })
-  ); // Load last used workspace
+  const initialDarkMode = Storage.get({ key: "darkMode" });
+  const initialWorkspace = Storage.get({ key: "workspaceName" });
+
+  const [darkMode, setDarkMode] = useState(initialDarkMode);
+  const [workspaceName, setWorkspaceName] = useState(initialWorkspace); // Load last used workspace
   const workspace = Helpers.findWorkspaceByName(workspaces, workspaceName);
   const [environment, setEnvironment] = useState(
     Helpers.getEnvForWorkspace(workspace)
