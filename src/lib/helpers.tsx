@@ -15,7 +15,7 @@ import Storage from "./storage";
 
 import { Route, Workspace, ParamType } from "../types";
 
-export default {
+const Helpers = {
   initializeRoute(routeConfig: any, route: Route) {
     set(routeConfig, route.name, {
       urlParams: {},
@@ -53,7 +53,7 @@ export default {
     if (name) {
       workspace = find(workspaces, { name });
     }
-    return workspace || this.getDefaultWorkspace();
+    return workspace || Helpers.getDefaultWorkspace();
   },
 
   findRouteConfigByWorkspace(workspace: Workspace) {
@@ -124,7 +124,7 @@ export default {
         : "";
 
     return reduce(
-      this.getUrlParamsFromPath(route.path),
+      Helpers.getUrlParamsFromPath(route.path),
       (memo, urlParam) => {
         const value = get(urlParams || {}, urlParam.name);
         return memo.replace(`:${urlParam.name}`, value || `:${urlParam.name}`);
@@ -160,7 +160,7 @@ export default {
   },
 
   resetRequest(route, setParamFunc) {
-    const urlParams = this.getUrlParamsFromPath(route.path);
+    const urlParams = Helpers.getUrlParamsFromPath(route.path);
     if (urlParams) {
       urlParams.forEach((param) => {
         setParamFunc({
@@ -244,3 +244,5 @@ export default {
     },
   },
 };
+
+export default Helpers;
