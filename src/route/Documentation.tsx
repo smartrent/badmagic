@@ -11,5 +11,6 @@ export default ({ documentation, darkMode }: Props) => (
   <ReactMarkdown
     className={`badmagic-markdown ${darkMode ? "dark" : ""}`}
     source={documentation}
+    escapeHtml={false}
   />
 );

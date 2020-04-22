@@ -55,7 +55,8 @@ export default function Input({
           } catch (err) {}
           onChange(value);
         }}
-        value={value ? value : ""}
+        // allow value of false for boolean options
+        value={value !== undefined && value !== null ? value : ""}
       >
         <option value="">Select One</option>
         {map(param.options, ({ label, value }) => {
@@ -101,7 +102,7 @@ export default function Input({
       </Label>
       <div className="flex">
         {inputDOM}
-        {value && (
+        {value !== undefined && value !== null && (
           <Button
             outline
             className="flex-shrink-0 ml-2"
