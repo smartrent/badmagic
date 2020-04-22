@@ -343,3 +343,13 @@ const superheroes = {
 > Why did you name this `badmagic`?
 
 Right before a production deploy, I was contemplating an easy to implement API interface that can be consumed by engineers during local testing and by QA teams during the QA phase of the SDLC and is pluggable. As the deploy was kicked off, my Macbook crashed and when I rebooted, my crash report said "Bad magic! Kernel panic!" and in that moment, the package name had been decided.
+
+## Local Testing
+
+The below assumes you have `wml` installed:
+
+- `yarn` to get dependencies for `badmagic`
+- In one terminal window with `badmagic` in the CWD run `wml add . ../path/to/your/project/node_modules`
+- Then in that same window run `wml start`
+- In a second terminal window with `badmagic` in the CWD run `yarn start`
+- Restart the frontend of your project. Now anytime you save a file in this project it will get applied to your other project that had `badmagic` installed
