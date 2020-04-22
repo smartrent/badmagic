@@ -3,6 +3,7 @@ import { map, filter } from "lodash-es";
 
 import Context from "./Context";
 import Route from "./Route";
+import ExportModal from "./common/ExportModal";
 
 import { Route as RouteProps } from "./types";
 
@@ -35,6 +36,8 @@ export default function Workspace() {
           <Route key={`${r.method || "GET"}-${r.path}-${idx}`} route={r} />
         );
       })}
+
+      <ExportModal />
     </div>
   );
 }

@@ -1,10 +1,10 @@
-import React, { useState, useReducer, useEffect } from "react";
-
-import PrintPage from "./PrintPage";
-
-import { PDFDownloadLink } from "@react-pdf/renderer";
+import React, { useState, useReducer, useEffect, useContext } from "react";
 import { get } from "lodash-es";
-import helpers from "../lib/helpers";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+
+import Helpers from "../lib/helpers";
+import PrintPage from "./PrintPage";
+import Context from "../Context";
 
 interface ListSelectionReducerEvent {
   shiftActive?: boolean;
@@ -100,29 +100,38 @@ function listSelectionReducer(
   return { ...state, lastSelectedIndex: event.index, selectedItems };
 }
 
-const SelectionModal = ({ darkMode, setModalShowing, workspaceRoutes }) => {
+export default function ExportModal() {
+  const {
+    darkMode,
+    workspace,
+    exportModalShowing,
+    setExportModalShowing,
+  } = useContext(Context);
   const [selectAll, setSelectAll] = useState(false);
+
+  const routes = workspace.routes || [];
+
   const [{ selectedItems }, dispatch] = useReducer(listSelectionReducer, {
-    items: workspaceRoutes.map((_item, index) => index),
+    items: routes.map((_item, index) => index),
     selectedItems: [],
     lastSelectedIndex: undefined,
   });
 
   useEffect(() => {
     addEventListener("keydown", (event) => {
-      if (event.key === "Escape") setModalShowing(false);
+      if (event.key === "Escape") setExportModalShowing(false);
     });
     return function() {
       removeEventListener("keydown", (event) => {
-        if (event.key === "Escape") setModalShowing(false);
+        if (event.key === "Escape") setExportModalShowing(false);
       });
     };
   }, []);
 
   const renderList = () => {
     return (
-      workspaceRoutes &&
-      workspaceRoutes.map((item, index) => {
+      routes &&
+      routes.map((item, index) => {
         const isSelected = selectedItems.includes(index);
         const method = item.method ? item.method : "GET";
 
@@ -172,7 +181,7 @@ const SelectionModal = ({ darkMode, setModalShowing, workspaceRoutes }) => {
                 }`}
                 style={{
                   backgroundColor: get(
-                    helpers.colors.routes,
+                    Helpers.colors.routes,
                     method.toLowerCase()
                   ),
                 }}
@@ -187,6 +196,10 @@ const SelectionModal = ({ darkMode, setModalShowing, workspaceRoutes }) => {
       })
     );
   };
+
+  if (!(routes.length && exportModalShowing)) {
+    return null;
+  }
 
   return (
     <div
@@ -206,7 +219,7 @@ const SelectionModal = ({ darkMode, setModalShowing, workspaceRoutes }) => {
     >
       <div
         style={{ cursor: "pointer", position: "absolute", top: 15, right: 15 }}
-        onClick={() => setModalShowing(false)}
+        onClick={() => setExportModalShowing(false)}
       >
         <svg
           clipRule="evenodd"
@@ -268,6 +281,4 @@ const SelectionModal = ({ darkMode, setModalShowing, workspaceRoutes }) => {
       </div>
     </div>
   );
-};
-
-export default SelectionModal;
+}

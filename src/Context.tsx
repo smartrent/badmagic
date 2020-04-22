@@ -37,4 +37,6 @@ export default React.createContext({
   }) => {},
   getWorkspaceSearchKeywords: () => "",
   setWorkspaceSearchKeywords: (keywords: string) => {},
+  exportModalShowing: false,
+  setExportModalShowing: (showing: boolean) => {},
 });

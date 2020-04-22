@@ -19,6 +19,7 @@ export default function ContextProvider({
   const initialWorkspace = Storage.get({ key: "workspaceName" });
 
   const [darkMode, setDarkMode] = useState(initialDarkMode);
+  const [exportModalShowing, setExportModalShowing] = useState(false);
   const [workspaceName, setWorkspaceName] = useState(initialWorkspace); // Load last used workspace
   const workspace = Helpers.findWorkspaceByName(workspaces, workspaceName);
   const [environment, setEnvironment] = useState(
@@ -45,6 +46,8 @@ export default function ContextProvider({
   return (
     <Context.Provider
       value={{
+        exportModalShowing,
+        setExportModalShowing,
         workspaces,
         workspace,
         setWorkspaceName: (name: string) => {
