@@ -31,7 +31,10 @@ export default ({ tabs, activeTab, setActiveTab }: Props) => {
       <li className={liClasses} key={`navigation_tab_${tab.key}`}>
         <a
           className={anchorClasses}
-          onClick={() => setActiveTab(tab.key)}
+          onClick={(e) => {
+            e.preventDefault();
+            setActiveTab(tab.key);
+          }}
           href="#"
         >
           {tab.label}
