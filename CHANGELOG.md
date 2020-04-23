@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.0.20
+
+### Bugfixes
+
+- Fix clicking on tab such as `Documentation` scrolling to the top of the page
+
 ## v0.0.19
 
 ### Bugfixes
