@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { get, set, omit } from "lodash-es";
+import { get, set, unset, omit } from "lodash-es";
 
 import Context from "./Context";
 
@@ -168,11 +168,12 @@ export default function ContextProvider({
             propertyPath = `[${parent}]${propertyPath}`;
           }
 
-          set(
-            newRouteConfig,
-            `[${route.name}][${paramType}]${propertyPath}`,
-            newValue
-          );
+          const fullParamPath = `[${route.name}][${paramType}]${propertyPath}`;
+          if (typeof value === "undefined") {
+            unset(newRouteConfig, fullParamPath);
+          } else {
+            set(newRouteConfig, fullParamPath, newValue);
+          }
 
           Storage.set({
             key: `${workspace.id}-route-config`,

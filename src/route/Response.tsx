@@ -4,8 +4,9 @@ import ApiError from "./ApiError";
 import ApiResponse from "./ApiResponse";
 import InjectPlugins from "./InjectPlugins";
 import { Route, Inject, Plugin } from "../types";
+import BodyPreview from "./BodyPreview";
 
-export default function Request({
+export default function Response({
   route,
   reFetch,
   loading,
@@ -25,6 +26,7 @@ export default function Request({
       loading={loading}
       plugins={plugins || []}
     >
+      <BodyPreview route={route} />
       <ApiResponse route={route} />
       <ApiError route={route} />
     </InjectPlugins>

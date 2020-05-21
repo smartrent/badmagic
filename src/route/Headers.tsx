@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { map } from "lodash-es";
 
 import Label from "../common/Label";
+import Context from "../Context";
 
 export default function Headers({ headers }: { headers: any }) {
+  const { darkMode } = useContext(Context);
   const [collapsed, setCollapsed] = useState(true);
   if (!headers) {
     return null;
@@ -19,6 +21,7 @@ export default function Headers({ headers }: { headers: any }) {
       </div>
       {!collapsed && (
         <div
+          className={darkMode ? "text-gray-100" : "text-gray-800"}
           style={{
             padding: "8px",
             border: "1px solid #eee",
