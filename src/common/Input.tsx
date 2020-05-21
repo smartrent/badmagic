@@ -87,7 +87,7 @@ export default function Input({
       <TextInput
         required={param.required}
         type={param.type || "text"}
-        placeholder={param.placeholder || label}
+        placeholder={value === null ? "(null)" : param.placeholder || label}
         onKeyDown={onKeyDown}
         onChange={(e) => onChange(e.currentTarget.value)}
         value={value ? value : ""}
@@ -102,13 +102,23 @@ export default function Input({
       </Label>
       <div className="flex">
         {inputDOM}
-        {value !== undefined && value !== null && (
+        {typeof value !== "undefined" ? (
+          <Button
+            outline
+            className="flex-shrink-0 ml-2"
+            onClick={() =>
+              setParam({ route, param, value: undefined, paramType })
+            }
+          >
+            Clear
+          </Button>
+        ) : (
           <Button
             outline
             className="flex-shrink-0 ml-2"
             onClick={() => setParam({ route, param, value: null, paramType })}
           >
-            Clear
+            Null
           </Button>
         )}
       </div>
