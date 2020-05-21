@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.0.21
+
+### Features
+
+- Added a button to explicitly set request param values to `null`
+- Added a preview of the request body
+
+### Bugfixes
+
+- Clearing a param value removes it from the request instead of setting the value to `null` ([#26](https://github.com/smartrent/badmagic/issues/26))
+- Headers render with a light font color in dark mode
+
 ## v0.0.20
 
 ### Bugfixes
