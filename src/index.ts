@@ -7,6 +7,7 @@ export { default as Workspaces } from "./Workspaces";
 export { default as Workspace } from "./Workspace";
 export { default as ContextProvider } from "./ContextProvider";
 export { default as Theme } from "./Theme";
+export { default as BodyPreview } from "./route/BodyPreview";
 export { default as ApiResponse } from "./route/ApiResponse";
 export { default as ApiError } from "./route/ApiError";
 
