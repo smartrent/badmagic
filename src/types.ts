@@ -1,3 +1,7 @@
+export interface GenericObject {
+  [key: string]: any;
+}
+
 export type Option = {
   label?: string;
   value: any;
@@ -19,6 +23,7 @@ export type Param = {
   defaultValue?: string;
   json?: boolean; // value should be stringified, deprecated -- use `properties`
   properties?: Param[]; // if working with json, pass in array of properties
+  description?: string;
 };
 
 export enum Method {
@@ -30,7 +35,7 @@ export enum Method {
 }
 
 export type Route = {
-  name: string;
+  name: string; // must be unique
   path: string;
   body?: Param[];
   qsParams?: Param[];
@@ -38,6 +43,9 @@ export type Route = {
   plugins?: Plugin[];
   documentation?: string;
   sticky?: boolean;
+  description?: string;
+  responses?: OpenApiResponses; // OpenApi Responses
+  tags?: string[];
 };
 
 export enum Inject {
@@ -59,6 +67,7 @@ export type PluginProps = {
 
 export type Workspace = {
   id: string;
+  version?: string; // semver
   routes: Route[];
   name: string;
   plugins: Plugin[];
@@ -66,3 +75,18 @@ export type Workspace = {
     baseUrl: string;
   };
 };
+
+// @todo
+// {
+//   "200": {
+//     content: {
+//       "application/json": {
+//         schema: {
+//           $ref: string;
+//         };
+//       };
+//     };
+//     description: string;
+//   };
+// }
+export type OpenApiResponses = GenericObject;

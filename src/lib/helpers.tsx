@@ -12,10 +12,31 @@ import {
 import { stringify } from "querystring";
 
 import Storage from "./storage";
+import OpenApi from "./openapi";
 
 import { Route, Workspace, ParamType } from "../types";
 
 const Helpers = {
+  downloadOpenApiJson: ({ workspace }: { workspace: Workspace }) => {
+    const openApiResult = OpenApi.downloadOpenApiJson({
+      workspace,
+    });
+
+    const openApiJson = JSON.stringify(openApiResult);
+
+    const type = "application/json";
+    const downloadReportUrl = window.URL.createObjectURL(
+      new Blob([openApiJson], { type })
+    );
+
+    const aLink = document.createElement("a");
+    aLink.download = `${workspace.name.toLowerCase()}-openapi.json`;
+    aLink.href = downloadReportUrl;
+
+    const event = new MouseEvent("click");
+    aLink.dispatchEvent(event);
+  },
+
   initializeRoute(routeConfig: any, route: Route) {
     set(routeConfig, route.name, {
       urlParams: {},

@@ -3,12 +3,14 @@ import { map } from "lodash-es";
 
 import Environment from "./Environment";
 import Context from "./Context";
+import Helpers from "./lib/helpers";
 import { Workspace } from "./types";
 import TextInput from "./common/TextInput";
 import Select from "./common/Select";
 
 export default function Workspaces() {
   const {
+    routeConfig,
     workspaces,
     setWorkspaceName,
     workspace,
@@ -36,6 +38,12 @@ export default function Workspaces() {
             🔮
           </a>
         </div>
+        <button
+          className="m-2"
+          onClick={() => Helpers.downloadOpenApiJson({ workspace })}
+        >
+          Download OpenAPI
+        </button>
         <div className="flex items-center">
           <div>
             <Select
