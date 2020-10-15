@@ -9,7 +9,7 @@ import {
   omitBy,
   transform,
 } from "lodash-es";
-import { stringify } from "querystring";
+import { ParsedUrlQueryInput, stringify } from "querystring";
 
 import Storage from "./storage";
 
@@ -72,20 +72,20 @@ const Helpers = {
 
     const initialRouteConfig = transform(
       workspace.routes,
-      (memo, route) => {
+      (memo: FIXME_any, route) => {
         memo[route.name] = {
           headers: {},
           urlParams: {},
           body: transform(
-            route.body,
-            (memo, param) => {
+            route.body ? route.body : [],
+            (memo: FIXME_any, param: FIXME_any) => {
               memo[param.name] = param.defaultValue;
             },
             {}
           ),
           qsParams: transform(
-            route.qsParams,
-            (memo, param) => {
+            route.qsParams ? route.qsParams : [],
+            (memo: FIXME_any, param: FIXME_any) => {
               memo[param.name] = param.defaultValue;
             },
             {}
@@ -120,7 +120,7 @@ const Helpers = {
   }) {
     const stringifiedQS =
       qsParams && !!Object.keys(qsParams).length
-        ? stringify(omitBy(qsParams, (p) => !p))
+        ? stringify(omitBy(qsParams, (p) => !p) as ParsedUrlQueryInput)
         : "";
 
     return reduce(
@@ -159,7 +159,7 @@ const Helpers = {
     },
   },
 
-  resetRequest(route, setParamFunc) {
+  resetRequest(route: FIXME_any, setParamFunc: FIXME_any) {
     const urlParams = Helpers.getUrlParamsFromPath(route.path);
     if (urlParams) {
       urlParams.forEach((param) => {
@@ -172,12 +172,12 @@ const Helpers = {
       });
     }
     if (route.body) {
-      route.body.forEach((param) => {
+      route.body.forEach((param: FIXME_any) => {
         setParamFunc({ route, param, value: null, paramType: ParamType.body });
       });
     }
     if (route.qsParams) {
-      route.qsParams.forEach((param) => {
+      route.qsParams.forEach((param: FIXME_any) => {
         setParamFunc({
           route,
           param,

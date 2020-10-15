@@ -3,7 +3,7 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 
 type Props = {
-  documentation: string;
+  documentation: string | undefined;
   darkMode: boolean;
 };
 

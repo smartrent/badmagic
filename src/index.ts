@@ -22,4 +22,4 @@ export { default as Required } from "./common/Required";
 export { default as Helpers } from "./lib/helpers";
 export { default as Storage } from "./lib/storage";
 
-export { Workspace as WorkspaceProps, Method } from "./types";
+export { Inject, Method, ParamType, PluginProps, Workspace as WorkspaceProps } from "./types";
