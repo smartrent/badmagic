@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.0.22
+
+### Features
+
+- Adds `useGlobalContext` as well as `OpenApi` to exports
+- Adds support for `Download OpenApi` json
+  - If OpenApi specs are not passed in, OpenApi JSON is derived from the workspace information. Note: Badmagic cannot derive responses
+
+### Enhancements
+
+- Adds `Jest` for testability
+- Adds more Typescript strictness by reducing implicit anys
+
 ## v0.0.21
 
 ### Features

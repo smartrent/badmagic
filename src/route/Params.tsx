@@ -7,7 +7,22 @@ import Helpers from "../lib/helpers";
 
 import { Route, Param, ParamType } from "../types";
 
-function mapInputs({ inputs, route, paramType, reFetch, parent }) {
+type RefetchFn = () => void;
+type MapInputProps = {
+  inputs: Param[];
+  route: Route;
+  paramType: ParamType;
+  reFetch: RefetchFn;
+  parent: null | string;
+};
+
+function mapInputs({
+  inputs,
+  route,
+  paramType,
+  reFetch,
+  parent,
+}: MapInputProps) {
   return map(inputs, (param: Param, idx: number) => {
     // Object datatype
     if (param.properties) {
@@ -49,10 +64,10 @@ export default function Params({
   paramType,
 }: {
   route: Route;
-  reFetch: () => void;
+  reFetch: RefetchFn;
   paramType: ParamType;
 }) {
-  let inputs = [];
+  let inputs: Param[] = [];
   if (paramType === ParamType.body) {
     inputs = route.body || [];
   } else if (paramType === ParamType.qsParams) {

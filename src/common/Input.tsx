@@ -1,7 +1,7 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect, SyntheticEvent } from "react";
 import { map, startCase } from "lodash-es";
 
-import Context from "../Context";
+import { useGlobalContext } from "../context/Context";
 import Label from "./Label";
 import Required from "./Required";
 import Select from "./Select";
@@ -23,7 +23,7 @@ export default function Input({
   paramType: ParamType;
   parent?: string;
 }) {
-  const { setParam, getParam } = useContext(Context);
+  const { setParam, getParam } = useGlobalContext();
 
   const label = param.label ? param.label : startCase(param.name);
 
@@ -47,7 +47,7 @@ export default function Input({
     inputDOM = (
       <Select
         onKeyDown={onKeyDown}
-        onChange={(e) => {
+        onChange={(e: React.FormEvent<HTMLSelectElement>) => {
           const index = e.currentTarget.selectedIndex;
           let value = e.currentTarget.value;
           try {
@@ -72,7 +72,9 @@ export default function Input({
     inputDOM = (
       <textarea
         className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-        onChange={(e) => onChange(e.currentTarget.value)}
+        onChange={(e: React.FormEvent<HTMLTextAreaElement>) =>
+          onChange(e.currentTarget.value)
+        }
         value={
           value
             ? typeof value === "object"
@@ -89,7 +91,9 @@ export default function Input({
         type={param.type || "text"}
         placeholder={value === null ? "(null)" : param.placeholder || label}
         onKeyDown={onKeyDown}
-        onChange={(e) => onChange(e.currentTarget.value)}
+        onChange={(e: React.FormEvent<HTMLInputElement>) =>
+          onChange(e.currentTarget.value)
+        }
         value={value ? value : ""}
       />
     );

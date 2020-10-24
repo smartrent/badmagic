@@ -1,3 +1,48 @@
+import {
+  OpenApiComponents,
+  OpenApiResponses,
+  OpenApiTag,
+  OpenApiPaths,
+  OpenApiInfo,
+  OpenApiSecurityRequirement,
+  OpenApiExternalDocs,
+  OpenApiServer,
+  OpenApiSchema,
+} from "openapi-v3";
+
+export type Workspace = {
+  id: string;
+  version?: string; // semver
+  routes: Route[];
+  name: string;
+  plugins: Plugin[];
+  config: {
+    baseUrl: string;
+  };
+
+  // OpenApi
+  components?: OpenApiComponents;
+  info?: OpenApiInfo;
+  servers?: OpenApiServer[];
+  openapi?: string;
+  paths?: OpenApiPaths;
+  tags?: OpenApiTag[];
+  security?: OpenApiSecurityRequirement[];
+  externalDocs?: OpenApiExternalDocs;
+};
+
+export type RouteConfig = {
+  [key: string]: {
+    urlParams: Param[];
+    qsParams: Param[];
+    body: Param[];
+    headers: GenericObject;
+    response: null | GenericObject;
+    error: null | any;
+    loading: boolean;
+  };
+};
+
 export interface GenericObject {
   [key: string]: any;
 }
@@ -24,6 +69,13 @@ export type Param = {
   json?: boolean; // value should be stringified, deprecated -- use `properties`
   properties?: Param[]; // if working with json, pass in array of properties
   description?: string;
+
+  // OpenAPI support
+  nullable?: boolean;
+  format?: OpenApiSchema["format"]; // OpenAPI format /* https://swagger.io/docs/specification/data-models/data-types/#string */
+  minLength?: number;
+  maxLength?: number;
+  pattern?: string;
 };
 
 export enum Method {
@@ -36,16 +88,20 @@ export enum Method {
 
 export type Route = {
   name: string; // must be unique
+  description?: string;
+  summary?: string;
   path: string;
   body?: Param[];
   qsParams?: Param[];
   method?: Method;
   plugins?: Plugin[];
   documentation?: string;
-  sticky?: boolean;
-  description?: string;
+  example?: GenericObject; // e.g. {first_name: "John", last_name: "Doe", ...}
+  sticky?: boolean; // whether the route should stick to the top of the workspace or not
+
   responses?: OpenApiResponses; // OpenApi Responses
   tags?: string[];
+  deprecated?: boolean;
 };
 
 export enum Inject {
@@ -65,28 +121,15 @@ export type PluginProps = {
   reFetch: () => void;
 };
 
-export type Workspace = {
-  id: string;
-  version?: string; // semver
-  routes: Route[];
-  name: string;
-  plugins: Plugin[];
-  config: {
-    baseUrl: string;
-  };
-};
+export interface Icon {
+  size?: number;
+  color: string;
+}
 
-// @todo
-// {
-//   "200": {
-//     content: {
-//       "application/json": {
-//         schema: {
-//           $ref: string;
-//         };
-//       };
-//     };
-//     description: string;
-//   };
-// }
-export type OpenApiResponses = GenericObject;
+export type SetParamFn = (payload: {
+  route: Route;
+  param: Param;
+  value: any;
+  paramType: ParamType;
+  parent?: string;
+}) => void;

@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 
-import { Route, Param, Workspace, ParamType } from "./types";
-import Helpers from "./lib/helpers";
+import { Route, Param, Workspace, ParamType } from "../types";
+import Helpers from "../lib/helpers";
 
 const workspaces: Workspace[] = [];
 
-export default React.createContext({
+const Context = React.createContext({
   workspace: Helpers.getDefaultWorkspace(),
   workspaces,
   setWorkspaceName: (name: string) => {},
@@ -38,3 +38,6 @@ export default React.createContext({
   getWorkspaceSearchKeywords: () => "",
   setWorkspaceSearchKeywords: (keywords: string) => {},
 });
+
+export default Context;
+export const useGlobalContext = () => useContext(Context);

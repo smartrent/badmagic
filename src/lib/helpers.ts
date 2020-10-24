@@ -10,15 +10,23 @@ import {
   transform,
 } from "lodash-es";
 import { stringify } from "querystring";
+import React from "react";
 
 import Storage from "./storage";
 import OpenApi from "./openapi";
 
-import { Route, Workspace, ParamType } from "../types";
+import {
+  Route,
+  Workspace,
+  ParamType,
+  RouteConfig,
+  GenericObject,
+  SetParamFn,
+} from "../types";
 
 const Helpers = {
   downloadOpenApiJson: ({ workspace }: { workspace: Workspace }) => {
-    const openApiResult = OpenApi.downloadOpenApiJson({
+    const openApiResult = OpenApi.generate({
       workspace,
     });
 
@@ -37,7 +45,7 @@ const Helpers = {
     aLink.dispatchEvent(event);
   },
 
-  initializeRoute(routeConfig: any, route: Route) {
+  initializeRoute(routeConfig: RouteConfig, route: Route) {
     set(routeConfig, route.name, {
       urlParams: {},
       qsParams: {},
@@ -93,21 +101,21 @@ const Helpers = {
 
     const initialRouteConfig = transform(
       workspace.routes,
-      (memo, route) => {
+      (memo: GenericObject, route) => {
         memo[route.name] = {
           headers: {},
           urlParams: {},
           body: transform(
             route.body,
-            (memo, param) => {
-              memo[param.name] = param.defaultValue;
+            (bodyMemo: GenericObject, param) => {
+              bodyMemo[param.name] = param.defaultValue;
             },
             {}
           ),
           qsParams: transform(
             route.qsParams,
-            (memo, param) => {
-              memo[param.name] = param.defaultValue;
+            (qsMemo: GenericObject, param) => {
+              qsMemo[param.name] = param.defaultValue;
             },
             {}
           ),
@@ -134,10 +142,10 @@ const Helpers = {
     urlParams,
     qsParams,
   }: {
-    route: any;
+    route: Route;
     baseUrl: string;
-    urlParams: Object;
-    qsParams?: Object;
+    urlParams: GenericObject;
+    qsParams?: GenericObject;
   }) {
     const stringifiedQS =
       qsParams && !!Object.keys(qsParams).length
@@ -154,7 +162,7 @@ const Helpers = {
     );
   },
 
-  getUrlParamsFromPath(path: string) {
+  getUrlParamsFromPath(path: string): { label: string; name: string }[] {
     const splitPath = path.split("/");
 
     return compact(
@@ -180,11 +188,11 @@ const Helpers = {
     },
   },
 
-  resetRequest(route, setParamFunc) {
+  resetRequest(route: Route, setParamFn: SetParamFn) {
     const urlParams = Helpers.getUrlParamsFromPath(route.path);
     if (urlParams) {
       urlParams.forEach((param) => {
-        setParamFunc({
+        setParamFn({
           route,
           param,
           value: null,
@@ -194,12 +202,12 @@ const Helpers = {
     }
     if (route.body) {
       route.body.forEach((param) => {
-        setParamFunc({ route, param, value: null, paramType: ParamType.body });
+        setParamFn({ route, param, value: null, paramType: ParamType.body });
       });
     }
     if (route.qsParams) {
       route.qsParams.forEach((param) => {
-        setParamFunc({
+        setParamFn({
           route,
           param,
           value: null,
@@ -209,7 +217,7 @@ const Helpers = {
     }
   },
 
-  getStyles(darkMode: boolean, category: string) {
+  getStyles(darkMode: boolean, category: string): React.CSSProperties {
     switch (category) {
       case "themeContainer":
         return darkMode

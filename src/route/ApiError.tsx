@@ -3,13 +3,13 @@ import { get, isObject } from "lodash-es";
 import ReactJson from "react-json-view";
 
 import Headers from "./Headers";
-import Context from "../Context";
+import { useGlobalContext } from "../context/Context";
 
 import Helpers from "../lib/helpers";
 import { Route } from "../types";
 
 export default function ApiError({ route }: { route: Route }) {
-  const context = useContext(Context);
+  const context = useGlobalContext();
   const routeConfigVars = get(context.routeConfig, route.name, {
     error: {
       response: {

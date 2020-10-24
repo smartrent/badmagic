@@ -1,9 +1,9 @@
-import React, { useContext } from "react";
+import React from "react";
 
-import Context from "./Context";
+import { useGlobalContext } from "./context/Context";
 
-export default function Theme({ children }) {
-  const { darkMode } = useContext(Context);
+export default function Theme({ children }: { children?: React.ReactNode }) {
+  const { darkMode } = useGlobalContext();
 
   return (
     <div

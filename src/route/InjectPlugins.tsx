@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { map, filter } from "lodash-es";
 
 import { Route, Inject, Plugin } from "../types";
-import Context from "../Context";
+import { useGlobalContext } from "../context/Context";
 
 export default function InjectPlugins({
   inject,
@@ -23,7 +23,7 @@ export default function InjectPlugins({
   className?: string;
   style?: any;
 }) {
-  const context = useContext(Context);
+  const context = useGlobalContext();
   const filteredPlugins = filter(plugins, { inject });
 
   if (!(filteredPlugins && filteredPlugins.length)) {

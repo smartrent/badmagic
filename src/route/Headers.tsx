@@ -2,10 +2,10 @@ import React, { useState, useContext } from "react";
 import { map } from "lodash-es";
 
 import Label from "../common/Label";
-import Context from "../Context";
+import { useGlobalContext } from "../context/Context";
 
 export default function Headers({ headers }: { headers: any }) {
-  const { darkMode } = useContext(Context);
+  const { darkMode } = useGlobalContext();
   const [collapsed, setCollapsed] = useState(true);
   if (!headers) {
     return null;
