@@ -12,7 +12,7 @@ export default function Headers({ headers }: { headers: any }) {
   }
 
   return (
-    <div style={{ marginTop: "4px" }}>
+    <div className="mt-2">
       <div
         onClick={() => setCollapsed(!collapsed)}
         style={{ cursor: "pointer" }}
@@ -21,13 +21,13 @@ export default function Headers({ headers }: { headers: any }) {
       </div>
       {!collapsed && (
         <div
-          className={darkMode ? "text-gray-100" : "text-gray-800"}
+          className={`${
+            darkMode
+              ? "text-gray-100 border-gray-700"
+              : "text-gray-800 border-gray-300"
+          } rounded text-xs p-2 border`}
           style={{
-            padding: "8px",
-            border: "1px solid #eee",
-            fontSize: "10px",
             overflowX: "scroll",
-            maxWidth: "400px",
           }}
         >
           {map(headers, (value, name) => {

@@ -1,3 +1,7 @@
+export interface GenericObject {
+  [key: string]: any;
+}
+
 export type Option = {
   label?: string;
   value: any;

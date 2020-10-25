@@ -13,7 +13,7 @@ import { stringify } from "querystring";
 
 import Storage from "./storage";
 
-import { Route, Workspace, ParamType } from "../types";
+import { Route, Workspace, ParamType, GenericObject } from "../types";
 
 const Helpers = {
   initializeRoute(routeConfig: any, route: Route) {
@@ -115,8 +115,8 @@ const Helpers = {
   }: {
     route: any;
     baseUrl: string;
-    urlParams: Object;
-    qsParams?: Object;
+    urlParams: GenericObject;
+    qsParams?: GenericObject;
   }) {
     const stringifiedQS =
       qsParams && !!Object.keys(qsParams).length
@@ -209,7 +209,6 @@ const Helpers = {
             };
 
       case "routePanelHeader":
-      case "responseStatusCode":
         return darkMode
           ? { border: "1px solid rgb(56, 56, 56)" }
           : { border: "1px solid #eee" };
@@ -238,11 +237,14 @@ const Helpers = {
       active:
         "inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold",
       inactive:
-        "inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold",
+        "inline-block py-2 px-4 text-blue-600 hover:text-blue-800 font-semibold",
       disabled:
         "inline-block py-2 px-4 text-gray-400 font-semibold cursor-not-allowed",
     },
   },
+
+  reactJsonViewTheme: (darkMode: boolean) =>
+    darkMode ? "ocean" : "rjv-default",
 };
 
 export default Helpers;
