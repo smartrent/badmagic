@@ -1,6 +1,10 @@
 declare global {
   type FIXME_any = any;
 }
+  
+export interface GenericObject {
+  [key: string]: any;
+}
 
 export type Option = {
   label?: string;
