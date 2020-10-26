@@ -1,3 +1,7 @@
+declare global {
+  type FIXME_any = any;
+}
+  
 export interface GenericObject {
   [key: string]: any;
 }

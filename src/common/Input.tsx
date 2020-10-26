@@ -47,11 +47,11 @@ export default function Input({
     inputDOM = (
       <Select
         onKeyDown={onKeyDown}
-        onChange={(e) => {
+        onChange={(e: FIXME_any) => {
           const index = e.currentTarget.selectedIndex;
           let value = e.currentTarget.value;
           try {
-            value = param.options[index - 1].value;
+            value = typeof param.options !== "undefined" ? param.options[index - 1].value : null;
           } catch (err) {}
           onChange(value);
         }}
@@ -89,7 +89,7 @@ export default function Input({
         type={param.type || "text"}
         placeholder={value === null ? "(null)" : param.placeholder || label}
         onKeyDown={onKeyDown}
-        onChange={(e) => onChange(e.currentTarget.value)}
+        onChange={(e: FIXME_any) => onChange(e.currentTarget.value)}
         value={value ? value : ""}
       />
     );

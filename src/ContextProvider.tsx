@@ -12,7 +12,7 @@ export default function ContextProvider({
   children,
   workspaces,
 }: {
-  children: any;
+  children: React.ReactNode;
   workspaces: Workspace[];
 }) {
   const initialDarkMode = Storage.get({ key: "darkMode" });
@@ -28,7 +28,7 @@ export default function ContextProvider({
     Helpers.findRouteConfigByWorkspace(workspace)
   );
 
-  const setEnvVar = ({ key, value }) => {
+  const setEnvVar = ({ key, value }: {key: FIXME_any; value: FIXME_any}) => {
     if (!workspace) {
       return;
     }

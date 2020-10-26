@@ -10,7 +10,7 @@ export default React.createContext({
   workspaces,
   setWorkspaceName: (name: string) => {},
   environment: null,
-  darkMode: null,
+  darkMode: true,
   setDarkMode: (darkMode: boolean) => {},
   setEnvVar: (payload: { key: string; value: any }) => {},
   deleteEnvVar: (payload: { key: string }) => {},

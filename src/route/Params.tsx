@@ -7,7 +7,21 @@ import Helpers from "../lib/helpers";
 
 import { Route, Param, ParamType } from "../types";
 
-function mapInputs({ inputs, route, paramType, reFetch, parent }) {
+interface MapInputsOptions {
+  inputs: FIXME_any[];
+  route: Route;
+  paramType: ParamType;
+  reFetch: () => void;
+  parent: FIXME_any;
+}
+
+function mapInputs({
+  inputs,
+  route,
+  paramType,
+  reFetch,
+  parent,
+}: MapInputsOptions) {
   return map(inputs, (param: Param, idx: number) => {
     // Object datatype
     if (param.properties) {
@@ -52,7 +66,7 @@ export default function Params({
   reFetch: () => void;
   paramType: ParamType;
 }) {
-  let inputs = [];
+  let inputs: FIXME_any[] = [];
   if (paramType === ParamType.body) {
     inputs = route.body || [];
   } else if (paramType === ParamType.qsParams) {

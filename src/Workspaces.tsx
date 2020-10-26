@@ -40,7 +40,7 @@ export default function Workspaces() {
           <div>
             <Select
               value={workspace && workspace.name ? workspace.name : ""}
-              onChange={(e) => setWorkspaceName(e.currentTarget.value)}
+              onChange={(e: FIXME_any) => setWorkspaceName(e.currentTarget.value)}
             >
               <option value="">Select Workspace</option>
               {map(workspaces, (w: Workspace) => (
@@ -56,7 +56,7 @@ export default function Workspaces() {
                 type="text"
                 placeholder="Search Routes"
                 value={keywords}
-                onChange={(e) =>
+                onChange={(e: FIXME_any) =>
                   setWorkspaceSearchKeywords(e.currentTarget.value)
                 }
               />

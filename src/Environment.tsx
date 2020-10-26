@@ -2,7 +2,6 @@ import React, { useContext, useState } from "react";
 import { map } from "lodash-es";
 
 import Context from "./Context";
-import Helpers from "./lib/helpers";
 import Label from "./common/Label";
 import TextInput from "./common/TextInput";
 import Button from "./common/Button";
@@ -18,7 +17,7 @@ export default function Environment() {
   const [collapsed, setCollapsed] = useState(true);
   const [newVarName, setNewVarName] = useState("");
 
-  const checkIfSubmitted = (e) => {
+  const checkIfSubmitted = (e: FIXME_any) => {
     if (e && e.key === "Enter") {
       setEnvVar({ key: newVarName, value: "" });
       setNewVarName("");
@@ -82,7 +81,7 @@ export default function Environment() {
                   <TextInput
                     type="text"
                     value={value || ""}
-                    onChange={(e) =>
+                    onChange={(e: FIXME_any) =>
                       setEnvVar({ key, value: e.currentTarget.value })
                     }
                   />
@@ -113,8 +112,8 @@ export default function Environment() {
                 type="text"
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 value={newVarName}
-                onChange={(e) => setNewVarName(e.currentTarget.value)}
-                onKeyDown={(e) => checkIfSubmitted(e)}
+                onChange={(e: FIXME_any) => setNewVarName(e.currentTarget.value)}
+                onKeyDown={(e: FIXME_any) => checkIfSubmitted(e)}
                 placeholder="Specify env var name and press Enter to continue"
               />
             </div>
