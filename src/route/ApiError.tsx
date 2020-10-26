@@ -58,7 +58,7 @@ export default function ApiError({ route }: { route: Route }) {
           displayObjectSize={false}
           displayDataTypes={false}
           src={error.response.data}
-          theme={context.darkMode ? "bright" : "rjv-default"}
+          theme={Helpers.reactJsonViewTheme(context.darkMode)}
         />
       )}
 
