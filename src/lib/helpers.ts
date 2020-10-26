@@ -1,3 +1,4 @@
+import React from "react";
 import {
   get,
   set,
@@ -9,8 +10,7 @@ import {
   omitBy,
   transform,
 } from "lodash-es";
-import { stringify } from "querystring";
-import React from "react";
+import { ParsedUrlQueryInput, stringify } from "querystring";
 
 import Storage from "./storage";
 import OpenApi from "./openapi";
@@ -22,6 +22,7 @@ import {
   RouteConfig,
   GenericObject,
   SetParamFn,
+  Param,
 } from "../types";
 
 const Helpers = {
@@ -106,15 +107,15 @@ const Helpers = {
           headers: {},
           urlParams: {},
           body: transform(
-            route.body,
-            (bodyMemo: GenericObject, param) => {
+            route.body ? route.body : [],
+            (bodyMemo: GenericObject, param: Param) => {
               bodyMemo[param.name] = param.defaultValue;
             },
             {}
           ),
           qsParams: transform(
-            route.qsParams,
-            (qsMemo: GenericObject, param) => {
+            route.qsParams || [],
+            (qsMemo: GenericObject, param: Param) => {
               qsMemo[param.name] = param.defaultValue;
             },
             {}
@@ -149,7 +150,7 @@ const Helpers = {
   }) {
     const stringifiedQS =
       qsParams && !!Object.keys(qsParams).length
-        ? stringify(omitBy(qsParams, (p) => !p))
+        ? stringify(omitBy(qsParams, (p) => !p) as ParsedUrlQueryInput)
         : "";
 
     return reduce(
@@ -191,27 +192,35 @@ const Helpers = {
   resetRequest(route: Route, setParamFn: SetParamFn) {
     const urlParams = Helpers.getUrlParamsFromPath(route.path);
     if (urlParams) {
-      urlParams.forEach((param) => {
+      urlParams.forEach((param: Param) => {
         setParamFn({
           route,
           param,
           value: null,
           paramType: ParamType.urlParams,
+          parent: null,
         });
       });
     }
     if (route.body) {
-      route.body.forEach((param) => {
-        setParamFn({ route, param, value: null, paramType: ParamType.body });
+      route.body.forEach((param: Param) => {
+        setParamFn({
+          route,
+          param,
+          value: null,
+          paramType: ParamType.body,
+          parent: null,
+        });
       });
     }
     if (route.qsParams) {
-      route.qsParams.forEach((param) => {
+      route.qsParams.forEach((param: Param) => {
         setParamFn({
           route,
           param,
           value: null,
           paramType: ParamType.qsParams,
+          parent: null,
         });
       });
     }
@@ -238,7 +247,6 @@ const Helpers = {
             };
 
       case "routePanelHeader":
-      case "responseStatusCode":
         return darkMode
           ? { border: "1px solid rgb(56, 56, 56)" }
           : { border: "1px solid #eee" };
@@ -267,11 +275,14 @@ const Helpers = {
       active:
         "inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold",
       inactive:
-        "inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold",
+        "inline-block py-2 px-4 text-blue-600 hover:text-blue-800 font-semibold",
       disabled:
         "inline-block py-2 px-4 text-gray-400 font-semibold cursor-not-allowed",
     },
   },
+
+  reactJsonViewTheme: (darkMode: boolean) =>
+    darkMode ? "ocean" : "rjv-default",
 };
 
 export default Helpers;

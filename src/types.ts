@@ -43,6 +43,10 @@ export type RouteConfig = {
   };
 };
 
+declare global {
+  type FIXME_any = any;
+}
+
 export interface GenericObject {
   [key: string]: any;
 }
@@ -131,5 +135,5 @@ export type SetParamFn = (payload: {
   param: Param;
   value: any;
   paramType: ParamType;
-  parent?: string;
+  parent: null | string;
 }) => void;

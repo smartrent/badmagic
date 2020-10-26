@@ -34,19 +34,24 @@ export default function ApiResponse({ route }: { route: Route }) {
 
   const isJSON = response.data && isObject(response.data);
 
+  const hasResponseHeaders = !!Object.keys(response?.headers || {}).length;
+
   return (
     <div>
-      {response && response.status && (
+      {response?.status ? (
         <div
-          className="flex-shrink-0 inline-flex text-xs font-bold bg-transparent border rounded py-1 px-2 mb-2"
+          className={`flex-shrink-0 inline-flex text-xs font-bold border rounded py-1 px-2 mb-1 ${
+            darkMode
+              ? "bg-gray-800 border-gray-900"
+              : "bg-gray-200 border-gray-400"
+          }`}
           style={{
-            ...Helpers.getStyles(darkMode, "responseStatusCode"),
             color: responseColor,
           }}
         >
           {response.status}
         </div>
-      )}
+      ) : null}
 
       {response.data && isJSON && (
         <ReactJson
@@ -54,7 +59,7 @@ export default function ApiResponse({ route }: { route: Route }) {
           displayObjectSize={false}
           displayDataTypes={false}
           src={response.data}
-          theme={darkMode ? "bright" : "rjv-default"}
+          theme={Helpers.reactJsonViewTheme(darkMode)}
         />
       )}
 
@@ -68,7 +73,7 @@ export default function ApiResponse({ route }: { route: Route }) {
         </div>
       )}
 
-      <Headers headers={response.headers} />
+      {hasResponseHeaders ? <Headers headers={response.headers} /> : null}
     </div>
   );
 }

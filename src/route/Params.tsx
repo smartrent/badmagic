@@ -8,13 +8,13 @@ import Helpers from "../lib/helpers";
 import { Route, Param, ParamType } from "../types";
 
 type RefetchFn = () => void;
-type MapInputProps = {
+interface MapInputsOptions {
   inputs: Param[];
   route: Route;
   paramType: ParamType;
   reFetch: RefetchFn;
   parent: null | string;
-};
+}
 
 function mapInputs({
   inputs,
@@ -22,7 +22,7 @@ function mapInputs({
   paramType,
   reFetch,
   parent,
-}: MapInputProps) {
+}: MapInputsOptions) {
   return map(inputs, (param: Param, idx: number) => {
     // Object datatype
     if (param.properties) {

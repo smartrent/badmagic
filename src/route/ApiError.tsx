@@ -38,15 +38,19 @@ export default function ApiError({ route }: { route: Route }) {
 
   const isJSON = error.response.data && isObject(error.response.data);
 
+  const hasConfigHeaders = !!Object.keys(error?.config?.headers || {}).length;
+
   return (
     <div>
-      <div
-        style={{
-          color: responseColor,
-        }}
-      >
-        {error.response.status}
-      </div>
+      {error?.response?.status ? (
+        <div
+          style={{
+            color: responseColor,
+          }}
+        >
+          {error.response.status}
+        </div>
+      ) : null}
 
       {error.response.data && isJSON && (
         <ReactJson
@@ -54,7 +58,7 @@ export default function ApiError({ route }: { route: Route }) {
           displayObjectSize={false}
           displayDataTypes={false}
           src={error.response.data}
-          theme={context.darkMode ? "bright" : "rjv-default"}
+          theme={Helpers.reactJsonViewTheme(context.darkMode)}
         />
       )}
 
@@ -68,7 +72,7 @@ export default function ApiError({ route }: { route: Route }) {
         </div>
       )}
 
-      <Headers headers={error.config.headers} />
+      {hasConfigHeaders ? <Headers headers={error.config.headers} /> : null}
     </div>
   );
 }

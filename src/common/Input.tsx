@@ -21,7 +21,7 @@ export default function Input({
   route: Route;
   reFetch: () => void;
   paramType: ParamType;
-  parent?: string;
+  parent: null | string;
 }) {
   const { setParam, getParam } = useGlobalContext();
 
@@ -51,7 +51,10 @@ export default function Input({
           const index = e.currentTarget.selectedIndex;
           let value = e.currentTarget.value;
           try {
-            value = param.options[index - 1].value;
+            value =
+              typeof param.options !== "undefined"
+                ? param.options[index - 1].value
+                : null;
           } catch (err) {}
           onChange(value);
         }}
@@ -111,7 +114,13 @@ export default function Input({
             outline
             className="flex-shrink-0 ml-2"
             onClick={() =>
-              setParam({ route, param, value: undefined, paramType })
+              setParam({
+                route,
+                param,
+                value: undefined,
+                paramType,
+                parent: null,
+              })
             }
           >
             Clear
@@ -120,7 +129,9 @@ export default function Input({
           <Button
             outline
             className="flex-shrink-0 ml-2"
-            onClick={() => setParam({ route, param, value: null, paramType })}
+            onClick={() =>
+              setParam({ route, param, value: null, paramType, parent: null })
+            }
           >
             Null
           </Button>

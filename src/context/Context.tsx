@@ -10,7 +10,7 @@ const Context = React.createContext({
   workspaces,
   setWorkspaceName: (name: string) => {},
   environment: null,
-  darkMode: null,
+  darkMode: true,
   setDarkMode: (darkMode: boolean) => {},
   setEnvVar: (payload: { key: string; value: any }) => {},
   deleteEnvVar: (payload: { key: string }) => {},
@@ -19,14 +19,14 @@ const Context = React.createContext({
     route: Route;
     param: Param;
     paramType: ParamType;
-    parent?: string;
+    parent: null | string;
   }) => "",
   setParam: (payload: {
     route: Route;
     param: Param;
     value: any;
     paramType: ParamType;
-    parent?: string;
+    parent: null | string;
   }) => {},
   setHeader: (payload: { route: Route; key: string; value: string }) => {},
   setApiResponse: (payload: {

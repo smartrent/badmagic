@@ -22,7 +22,7 @@ export default function BodyPreview({ route }: BodyPreviewProps) {
   return (
     <div className="mb-4">
       <div
-        className="flex-shrink-0 inline-flex text-xs font-bold bg-transparent mb-2"
+        className="flex-shrink-0 inline-flex text-xs font-bold bg-transparent mb-1"
         style={{
           ...Helpers.getStyles(darkMode, "label"),
         }}
@@ -34,7 +34,7 @@ export default function BodyPreview({ route }: BodyPreviewProps) {
         displayObjectSize={false}
         displayDataTypes={false}
         src={{ ...body }}
-        theme={darkMode ? "bright" : "rjv-default"}
+        theme={Helpers.reactJsonViewTheme(darkMode)}
       />
     </div>
   );

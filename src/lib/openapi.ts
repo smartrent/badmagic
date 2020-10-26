@@ -46,11 +46,19 @@ function getParameterType({ type, options, json, properties }: Param) {
   return "string"; // default
 }
 
-function getObjectProperties(properties: Param[]): OpenApiSchema["properties"] {
+function getObjectProperties(
+  properties?: Param[]
+): OpenApiSchema["properties"] {
+  if (!properties?.length) {
+    return {};
+  }
+
   return reduce(
     properties,
     (memo: OpenApiSchema["properties"], property) => {
       const { name } = property;
+
+      // @ts-ignore - TODO
       memo[name] = deriveSchemaFromParam(property);
 
       return memo;
@@ -63,7 +71,7 @@ function getPayloadName(name: string) {
   return `${name.replace(/[^A-Za-z0-9]/g, "")}Payload`;
 }
 
-function getObjectRequiredProperties(params: Param[]): string[] {
+function getObjectRequiredProperties(params?: Param[]): string[] {
   if (!params?.length) {
     return [];
   }
@@ -81,7 +89,7 @@ function getObjectRequiredProperties(params: Param[]): string[] {
 // QS or Url Param
 function generateParameter(
   param: Param,
-  paramLocation?: OpenApiParameterIn
+  paramLocation: OpenApiParameterIn
 ): OpenApiParameter {
   const { name, required } = param;
 
@@ -100,14 +108,18 @@ function generateParameter(
 
 function generateParameters(
   params: undefined | Param[],
-  paramLocation?: OpenApiParameterIn
+  paramLocation: OpenApiParameterIn
 ): OpenApiParameter[] {
   return (params || []).map((param: Param) =>
     generateParameter(param, paramLocation)
   );
 }
 
-function methodContainsBody(method: Method) {
+function methodContainsBody(method?: Method) {
+  if (!method) {
+    return false;
+  }
+
   return [Method.POST, Method.PATCH, Method.PUT].includes(method);
 }
 
@@ -116,11 +128,12 @@ function deriveSchemaFromRoute(route: Route): OpenApiSchema {
 
   const title = getPayloadName(name);
 
-  let properties = {};
+  let properties: OpenApiSchema["properties"] = {};
   if (route.body) {
     properties = reduce(
       route.body,
       (memo: OpenApiSchema["properties"], bodyParam) => {
+        // @ts-ignore - TODO
         memo[bodyParam.name] = deriveSchemaFromParam(bodyParam);
         return memo;
       },

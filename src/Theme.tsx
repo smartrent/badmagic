@@ -2,7 +2,11 @@ import React from "react";
 
 import { useGlobalContext } from "./context/Context";
 
-export default function Theme({ children }: { children?: React.ReactNode }) {
+interface ThemeProps {
+  children: React.ReactNode;
+}
+
+export default function Theme({ children }: ThemeProps) {
   const { darkMode } = useGlobalContext();
 
   return (
