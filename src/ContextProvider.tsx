@@ -32,8 +32,12 @@ export default function ContextProvider({
     if (!workspace) {
       return;
     }
-    const newEnv = { ...environment };
-    newEnv[key] = value;
+
+    // We need to fetch synchronously from localStorage here otherwise
+    // due to the React render loop, calling `setEnvVar` twice in a row will
+    // cause it to not save the first set of data
+    const newEnvironment = Helpers.getEnvForWorkspace(workspace);
+    const newEnv = { ...(newEnvironment || {}), [key]: value };
 
     Storage.set({
       key: `${workspace.id}-env`,
