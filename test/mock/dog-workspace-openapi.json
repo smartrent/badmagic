@@ -1,0 +1,106 @@
+{
+  "components": {
+    "schemas": {
+      "AddNewBreedPayload": {
+        "description": "Create a new breed entry",
+        "example": { "name": "German Shepherd" },
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the dog breed",
+            "minLength": 3,
+            "maxLength": 100,
+            "nullable": false
+          },
+          "weight": {
+            "type": "integer",
+            "description": "Average number of pounds the breed weighs",
+            "minLength": 5,
+            "maxLength": 200,
+            "nullable": true
+          }
+        },
+        "required": ["name"],
+        "title": "AddNewBreedPayload"
+      }
+    }
+  },
+  "info": {
+    "title": "Dogs",
+    "description": "An OpenAPI workspace that's all about dogs!",
+    "version": "0.0.2"
+  },
+  "servers": [{ "url": "http://localhost:3333", "variables": {} }],
+  "openapi": "3.0.0",
+  "paths": {
+    "/breeds/list/all": {
+      "get": {
+        "callbacks": {},
+        "deprecated": false,
+        "description": "",
+        "operationId": "Search Breeds",
+        "parameters": [],
+        "summary": "Search Breeds",
+        "tags": [],
+        "responses": { "200": { "description": "successful operation" } }
+      }
+    },
+    "/breeds/{breed}/images": {
+      "get": {
+        "callbacks": {},
+        "deprecated": false,
+        "description": "",
+        "operationId": "View Random Breed Image",
+        "parameters": [
+          {
+            "name": "sort",
+            "description": "In which order should the images be returned",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["newest", "random"],
+              "description": "In which order should the images be returned"
+            },
+            "in": "query"
+          },
+          {
+            "name": "breed",
+            "description": "Breed",
+            "required": true,
+            "schema": { "type": "string", "description": "Breed" },
+            "in": "path"
+          }
+        ],
+        "summary": "View Random Breed Image",
+        "tags": [],
+        "responses": { "200": { "description": "successful operation" } }
+      }
+    },
+    "/breeds": {
+      "post": {
+        "callbacks": {},
+        "deprecated": false,
+        "description": "Create a new breed entry",
+        "operationId": "Add New Breed",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AddNewBreedPayload" }
+            }
+          },
+          "description": "Add New Breed payload",
+          "required": true
+        },
+        "summary": "Add New Breed",
+        "tags": ["dogs"],
+        "responses": { "200": { "description": "successful operation" } }
+      }
+    }
+  },
+  "tags": [
+    { "name": "dogs", "description": "API Endpoints to interact with dog data" }
+  ],
+  "security": [],
+  "externalDocs": { "url": "" }
+}

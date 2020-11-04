@@ -1,3 +1,4 @@
+import React from "react";
 import {
   get,
   set,
@@ -12,11 +13,40 @@ import {
 import { ParsedUrlQueryInput, stringify } from "querystring";
 
 import Storage from "./storage";
+import OpenApi from "./openapi";
 
-import { Route, Workspace, ParamType, GenericObject } from "../types";
+import {
+  Route,
+  Workspace,
+  ParamType,
+  RouteConfig,
+  GenericObject,
+  SetParamFn,
+  Param,
+} from "../types";
 
 const Helpers = {
-  initializeRoute(routeConfig: any, route: Route) {
+  downloadOpenApiJson: ({ workspace }: { workspace: Workspace }) => {
+    const openApiResult = OpenApi.generate({
+      workspace,
+    });
+
+    const openApiJson = JSON.stringify(openApiResult);
+
+    const type = "application/json";
+    const downloadReportUrl = window.URL.createObjectURL(
+      new Blob([openApiJson], { type })
+    );
+
+    const aLink = document.createElement("a");
+    aLink.download = `${workspace.name.toLowerCase()}-openapi.json`;
+    aLink.href = downloadReportUrl;
+
+    const event = new MouseEvent("click");
+    aLink.dispatchEvent(event);
+  },
+
+  initializeRoute(routeConfig: RouteConfig, route: Route) {
     set(routeConfig, route.name, {
       urlParams: {},
       qsParams: {},
@@ -72,21 +102,21 @@ const Helpers = {
 
     const initialRouteConfig = transform(
       workspace.routes,
-      (memo: FIXME_any, route) => {
+      (memo: GenericObject, route) => {
         memo[route.name] = {
           headers: {},
           urlParams: {},
           body: transform(
             route.body ? route.body : [],
-            (memo: FIXME_any, param: FIXME_any) => {
-              memo[param.name] = param.defaultValue;
+            (bodyMemo: GenericObject, param: Param) => {
+              bodyMemo[param.name] = param.defaultValue;
             },
             {}
           ),
           qsParams: transform(
-            route.qsParams ? route.qsParams : [],
-            (memo: FIXME_any, param: FIXME_any) => {
-              memo[param.name] = param.defaultValue;
+            route.qsParams || [],
+            (qsMemo: GenericObject, param: Param) => {
+              qsMemo[param.name] = param.defaultValue;
             },
             {}
           ),
@@ -113,7 +143,7 @@ const Helpers = {
     urlParams,
     qsParams,
   }: {
-    route: any;
+    route: Route;
     baseUrl: string;
     urlParams: GenericObject;
     qsParams?: GenericObject;
@@ -133,7 +163,7 @@ const Helpers = {
     );
   },
 
-  getUrlParamsFromPath(path: string) {
+  getUrlParamsFromPath(path: string): { label: string; name: string }[] {
     const splitPath = path.split("/");
 
     return compact(
@@ -159,36 +189,44 @@ const Helpers = {
     },
   },
 
-  resetRequest(route: FIXME_any, setParamFunc: FIXME_any) {
+  resetRequest(route: Route, setParamFn: SetParamFn) {
     const urlParams = Helpers.getUrlParamsFromPath(route.path);
     if (urlParams) {
-      urlParams.forEach((param) => {
-        setParamFunc({
+      urlParams.forEach((param: Param) => {
+        setParamFn({
           route,
           param,
           value: null,
           paramType: ParamType.urlParams,
+          parent: null,
         });
       });
     }
     if (route.body) {
-      route.body.forEach((param: FIXME_any) => {
-        setParamFunc({ route, param, value: null, paramType: ParamType.body });
+      route.body.forEach((param: Param) => {
+        setParamFn({
+          route,
+          param,
+          value: null,
+          paramType: ParamType.body,
+          parent: null,
+        });
       });
     }
     if (route.qsParams) {
-      route.qsParams.forEach((param: FIXME_any) => {
-        setParamFunc({
+      route.qsParams.forEach((param: Param) => {
+        setParamFn({
           route,
           param,
           value: null,
           paramType: ParamType.qsParams,
+          parent: null,
         });
       });
     }
   },
 
-  getStyles(darkMode: boolean, category: string) {
+  getStyles(darkMode: boolean, category: string): React.CSSProperties {
     switch (category) {
       case "themeContainer":
         return darkMode

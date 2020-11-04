@@ -1,13 +1,13 @@
-import React, { useContext } from "react";
+import React from "react";
 import { map, filter } from "lodash-es";
 
-import Context from "./Context";
+import { useGlobalContext } from "./context/Context";
 import Route from "./Route";
 
 import { Route as RouteProps } from "./types";
 
 export default function Workspace() {
-  const { workspace, getWorkspaceSearchKeywords } = useContext(Context);
+  const { workspace, getWorkspaceSearchKeywords } = useGlobalContext();
   if (!workspace) {
     return <div>Select a workspace to get started.</div>;
   }

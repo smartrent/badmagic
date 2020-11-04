@@ -3,10 +3,10 @@ import { get, set, unset, omit } from "lodash-es";
 
 import Context from "./Context";
 
-import Helpers from "./lib/helpers";
-import Storage from "./lib/storage";
+import Helpers from "../lib/helpers";
+import Storage from "../lib/storage";
 
-import { Workspace } from "./types";
+import { Workspace } from "../types";
 
 export default function ContextProvider({
   children,
@@ -28,7 +28,7 @@ export default function ContextProvider({
     Helpers.findRouteConfigByWorkspace(workspace)
   );
 
-  const setEnvVar = ({ key, value }: {key: FIXME_any; value: FIXME_any}) => {
+  const setEnvVar = ({ key, value }: { key: string; value: string }) => {
     if (!workspace) {
       return;
     }

@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 
-import Context from "../Context";
+import { useGlobalContext } from "../context/Context";
 
 import Helpers from "../lib/helpers";
 
@@ -16,7 +16,7 @@ type Props = {
 };
 
 export default ({ tabs, activeTab, setActiveTab }: Props) => {
-  const { darkMode } = useContext(Context);
+  const { darkMode } = useGlobalContext();
 
   const renderTabs = (
     tab: Tab,

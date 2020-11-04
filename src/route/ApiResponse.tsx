@@ -3,12 +3,12 @@ import { get, isObject } from "lodash-es";
 import ReactJson from "react-json-view";
 
 import Headers from "./Headers";
-import Context from "../Context";
+import { useGlobalContext } from "../context/Context";
 import Helpers from "../lib/helpers";
 import { Route } from "../types";
 
 export default function ApiResponse({ route }: { route: Route }) {
-  const { routeConfig, darkMode } = useContext(Context);
+  const { routeConfig, darkMode } = useGlobalContext();
   const routeConfigVars = get(routeConfig, route.name, {
     response: {
       status: 0,

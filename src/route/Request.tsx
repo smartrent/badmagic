@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import Params from "./Params";
 import InjectPlugins from "./InjectPlugins";
 import { Inject, ParamType, Plugin, Route } from "../types";
-import Context from "../Context";
+import { useGlobalContext } from "../context/Context";
 import Helpers from "../lib/helpers";
 import Button from "../common/Button";
 
@@ -18,7 +18,7 @@ export default function Request({
   loading: boolean;
   plugins?: Plugin[];
 }) {
-  const { setParam } = useContext(Context);
+  const { setParam } = useGlobalContext();
 
   return (
     <InjectPlugins

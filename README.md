@@ -349,7 +349,11 @@ Right before a production deploy, I was contemplating an easy to implement API i
 The below assumes you have `wml` installed:
 
 - `yarn` to get dependencies for `badmagic`
-- In one terminal window with `badmagic` in the CWD run `wml add . ../path/to/your/project/node_modules`
+- In one terminal window with `badmagic` in the CWD run `wml add . ../path/to/your/project/node_modules/badmagic`
 - Then in that same window run `wml start`
 - In a second terminal window with `badmagic` in the CWD run `yarn start`
 - Restart the frontend of your project. Now anytime you save a file in this project it will get applied to your other project that had `badmagic` installed
+
+## Resources
+
+[OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md)

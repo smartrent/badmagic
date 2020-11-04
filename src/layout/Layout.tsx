@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
 import { map } from "lodash-es";
 
-import Environment from "./Environment";
-import Context from "./Context";
-import { Workspace } from "./types";
-import TextInput from "./common/TextInput";
-import Select from "./common/Select";
+import Config from "./Config";
+import { useGlobalContext } from "../context/Context";
+import { Workspace } from "../types";
+import TextInput from "../common/TextInput";
+import Select from "../common/Select";
 
 export default function Workspaces() {
   const {
@@ -15,7 +15,7 @@ export default function Workspaces() {
     darkMode,
     getWorkspaceSearchKeywords,
     setWorkspaceSearchKeywords,
-  } = useContext(Context);
+  } = useGlobalContext();
 
   const keywords = getWorkspaceSearchKeywords();
 
@@ -40,7 +40,9 @@ export default function Workspaces() {
           <div>
             <Select
               value={workspace && workspace.name ? workspace.name : ""}
-              onChange={(e: FIXME_any) => setWorkspaceName(e.currentTarget.value)}
+              onChange={(e: React.FormEvent<HTMLSelectElement>) =>
+                setWorkspaceName(e.currentTarget.value)
+              }
             >
               <option value="">Select Workspace</option>
               {map(workspaces, (w: Workspace) => (
@@ -56,7 +58,7 @@ export default function Workspaces() {
                 type="text"
                 placeholder="Search Routes"
                 value={keywords}
-                onChange={(e: FIXME_any) =>
+                onChange={(e: React.FormEvent<HTMLInputElement>) =>
                   setWorkspaceSearchKeywords(e.currentTarget.value)
                 }
               />
@@ -64,7 +66,7 @@ export default function Workspaces() {
           )}
 
           <div className="flex items-center ml-2">
-            <Environment />
+            <Config />
           </div>
         </div>
       </div>

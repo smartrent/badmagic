@@ -1,9 +1,9 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { get, compact } from "lodash-es";
 import useAxios from "@smartrent/use-axios";
 import axios from "axios";
 
-import Context from "./Context";
+import { useGlobalContext } from "./context/Context";
 import Request from "./route/Request";
 import Response from "./route/Response";
 import Navigation from "./route/Navigation";
@@ -13,9 +13,12 @@ import Helpers from "./lib/helpers";
 import { Route } from "./types";
 
 export default function Route({ route }: { route: Route }) {
-  const { routeConfig, setApiResponse, workspace, darkMode } = useContext(
-    Context
-  );
+  const {
+    routeConfig,
+    setApiResponse,
+    workspace,
+    darkMode,
+  } = useGlobalContext();
   const [collapsed, setCollapsed] = useState(true);
   const [activeTab, setActiveTab] = useState("request");
 

@@ -1,7 +1,7 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect, SyntheticEvent } from "react";
 import { map, startCase } from "lodash-es";
 
-import Context from "../Context";
+import { useGlobalContext } from "../context/Context";
 import Label from "./Label";
 import Required from "./Required";
 import Select from "./Select";
@@ -21,9 +21,9 @@ export default function Input({
   route: Route;
   reFetch: () => void;
   paramType: ParamType;
-  parent?: string;
+  parent: null | string;
 }) {
-  const { setParam, getParam } = useContext(Context);
+  const { setParam, getParam } = useGlobalContext();
 
   const label = param.label ? param.label : startCase(param.name);
 
@@ -47,11 +47,14 @@ export default function Input({
     inputDOM = (
       <Select
         onKeyDown={onKeyDown}
-        onChange={(e: FIXME_any) => {
+        onChange={(e: React.FormEvent<HTMLSelectElement>) => {
           const index = e.currentTarget.selectedIndex;
           let value = e.currentTarget.value;
           try {
-            value = typeof param.options !== "undefined" ? param.options[index - 1].value : null;
+            value =
+              typeof param.options !== "undefined"
+                ? param.options[index - 1].value
+                : null;
           } catch (err) {}
           onChange(value);
         }}
@@ -72,7 +75,9 @@ export default function Input({
     inputDOM = (
       <textarea
         className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-        onChange={(e) => onChange(e.currentTarget.value)}
+        onChange={(e: React.FormEvent<HTMLTextAreaElement>) =>
+          onChange(e.currentTarget.value)
+        }
         value={
           value
             ? typeof value === "object"
@@ -89,7 +94,9 @@ export default function Input({
         type={param.type || "text"}
         placeholder={value === null ? "(null)" : param.placeholder || label}
         onKeyDown={onKeyDown}
-        onChange={(e: FIXME_any) => onChange(e.currentTarget.value)}
+        onChange={(e: React.FormEvent<HTMLInputElement>) =>
+          onChange(e.currentTarget.value)
+        }
         value={value ? value : ""}
       />
     );
@@ -107,7 +114,13 @@ export default function Input({
             outline
             className="flex-shrink-0 ml-2"
             onClick={() =>
-              setParam({ route, param, value: undefined, paramType })
+              setParam({
+                route,
+                param,
+                value: undefined,
+                paramType,
+                parent: null,
+              })
             }
           >
             Clear
@@ -116,7 +129,9 @@ export default function Input({
           <Button
             outline
             className="flex-shrink-0 ml-2"
-            onClick={() => setParam({ route, param, value: null, paramType })}
+            onClick={() =>
+              setParam({ route, param, value: null, paramType, parent: null })
+            }
           >
             Null
           </Button>

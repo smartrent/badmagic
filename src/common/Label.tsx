@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 
-import Context from "../Context";
+import { useGlobalContext } from "../context/Context";
 import Helpers from "../lib/helpers";
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
 };
 
 export default function Label({ children, onClick, style, size }: Props) {
-  const { darkMode } = useContext(Context);
+  const { darkMode } = useGlobalContext();
 
   return (
     <div
