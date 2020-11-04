@@ -8,10 +8,16 @@
 - Adds support for `Download OpenApi` json
   - If OpenApi specs are not passed in, OpenApi JSON is derived from the workspace information. Note: Badmagic cannot derive responses
 
+### Bugfixes
+
+- Fixes a bug where if `setEnvVar` was called twice in a row, the first set of changes would be lost
+- Fixes a bug where new routes were showing `0` in the response section
+
 ### Enhancements
 
 - Adds `Jest` for testability
 - Adds more Typescript strictness by reducing implicit anys
+- Misc UI cleanup
 
 ## v0.0.21
 
