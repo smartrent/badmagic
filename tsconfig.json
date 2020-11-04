@@ -7,7 +7,6 @@
     "target": "es6",
     "jsx": "react",
     "skipLibCheck": true,
-    "noImplicitAny": true,
     "allowSyntheticDefaultImports": true,
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
