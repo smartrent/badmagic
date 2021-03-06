@@ -119,7 +119,7 @@ export default function Input({
                 param,
                 value: undefined,
                 paramType,
-                parent: null,
+                parent,
               })
             }
           >
@@ -130,7 +130,7 @@ export default function Input({
             outline
             className="flex-shrink-0 ml-2"
             onClick={() =>
-              setParam({ route, param, value: null, paramType, parent: null })
+              setParam({ route, param, value: null, paramType, parent })
             }
           >
             Null
