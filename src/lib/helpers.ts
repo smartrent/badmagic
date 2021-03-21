@@ -86,6 +86,12 @@ const Helpers = {
     return workspace || Helpers.getDefaultWorkspace();
   },
 
+  setArrayCellValue(values: any[], cell: number, newValue: any): any[] {
+    let newValues = [...values];
+    newValues[cell] = newValue;
+    return newValues;
+  },
+
   findRouteConfigByWorkspace(workspace: Workspace) {
     if (!workspace) {
       return {};
@@ -190,40 +196,18 @@ const Helpers = {
   },
 
   resetRequest(route: Route, setParamFn: SetParamFn) {
-    const urlParams = Helpers.getUrlParamsFromPath(route.path);
-    if (urlParams) {
-      urlParams.forEach((param: Param) => {
-        setParamFn({
-          route,
-          param,
-          value: null,
-          paramType: ParamType.urlParams,
-          parent: null,
-        });
-      });
-    }
-    if (route.body) {
-      route.body.forEach((param: Param) => {
-        setParamFn({
-          route,
-          param,
-          value: null,
-          paramType: ParamType.body,
-          parent: null,
-        });
-      });
-    }
-    if (route.qsParams) {
-      route.qsParams.forEach((param: Param) => {
-        setParamFn({
-          route,
-          param,
-          value: null,
-          paramType: ParamType.qsParams,
-          parent: null,
-        });
-      });
-    }
+    setParamFn({
+      value: {},
+      pathToValue: `[${route.name}][${ParamType.urlParams}]`,
+    });
+    setParamFn({
+      value: {},
+      pathToValue: `[${route.name}][${ParamType.body}]`,
+    });
+    setParamFn({
+      value: {},
+      pathToValue: `[${route.name}][${ParamType.qsParams}]`,
+    });
   },
 
   getStyles(darkMode: boolean, category: string): React.CSSProperties {

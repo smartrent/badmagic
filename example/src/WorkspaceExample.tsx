@@ -1,10 +1,18 @@
-import { Method } from "badmagic";
+import React from "react";
+
+import {
+  ContextProvider,
+  Workspaces,
+  Workspace,
+  Theme,
+  Method,
+} from "badmagic";
 
 const BASE_URL = `http://localhost:3333`;
 
-export default {
+const dogWorkspace = {
   id: "dogs",
-  name: "Dogs", // deprecated in favor of `info.title`
+  name: "Dogs",
   info: {
     title: "Dogs",
     description: "An OpenAPI workspace that's all about dogs!",
@@ -107,6 +115,58 @@ export default {
           maxLength: 200,
           nullable: true,
         },
+        {
+          name: "colors",
+          array: true,
+          required: true,
+
+          placeholder: "Coat color",
+          description: "Color of the dog's coat",
+        },
+        {
+          name: "measurements",
+          properties: [
+            {
+              name: "body",
+              type: "number",
+            },
+            {
+              name: "legs",
+              type: "number",
+            },
+            {
+              name: "tail",
+              type: "number",
+            },
+          ],
+          description: "Average measurements",
+        },
+        {
+          name: "prominent_locations",
+          array: true,
+          properties: [
+            {
+              name: "country",
+              required: true,
+            },
+            {
+              name: "state_or_province",
+            },
+            {
+              name: "cities",
+              array: true,
+              properties: [
+                { name: "name" },
+                { name: "zip_codes", array: true },
+              ],
+            },
+            {
+              name: "restrictions",
+              properties: [{ name: "cash_only" }, { name: "warranty" }],
+            },
+          ],
+          description: "Prominent locations where the dog is bred",
+        },
       ],
       example: {
         name: "German Shepherd",
@@ -115,3 +175,16 @@ export default {
     },
   ],
 };
+
+export default function App() {
+  const dogs = dogWorkspace;
+
+  return (
+    <ContextProvider workspaces={[dogs]}>
+      <Theme>
+        <Workspaces />
+        <Workspace />
+      </Theme>
+    </ContextProvider>
+  );
+}

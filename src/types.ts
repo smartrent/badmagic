@@ -10,6 +10,10 @@ import {
   OpenApiSchema,
 } from "openapi-v3";
 
+export interface GenericObject {
+  [key: string]: any;
+}
+
 export type Workspace = {
   id: string;
   version?: string; // semver
@@ -47,10 +51,6 @@ declare global {
   type FIXME_any = any;
 }
 
-export interface GenericObject {
-  [key: string]: any;
-}
-
 export type Option = {
   label?: string;
   value: any;
@@ -70,7 +70,8 @@ export type Param = {
   placeholder?: string;
   options?: Option[];
   defaultValue?: string;
-  json?: boolean; // value should be stringified, deprecated -- use `properties`
+  array?: boolean;
+  json?: boolean; // value should be stringified, deprecated -- use `properties` for Objects and `array` for lists
   properties?: Param[]; // if working with json, pass in array of properties
   description?: string;
 
@@ -130,10 +131,11 @@ export interface Icon {
   color: string;
 }
 
-export type SetParamFn = (payload: {
-  route: Route;
-  param: Param;
+export interface SetParamPayload {
+  param?: Param;
   value: any;
-  paramType: ParamType;
-  parent: null | string;
-}) => void;
+  pathToValue: string;
+}
+export type SetParamFn = (payload: SetParamPayload) => void;
+
+export type Size = "xs" | "sm" | "lg" | "xl";

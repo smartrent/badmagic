@@ -1,49 +1,36 @@
-import React, { useEffect, SyntheticEvent } from "react";
-import { map, startCase } from "lodash-es";
+import React from "react";
+import { map } from "lodash-es";
 
-import { useGlobalContext } from "../context/Context";
-import Label from "./Label";
-import Required from "./Required";
 import Select from "./Select";
 import TextInput from "./TextInput";
-import Button from "./Button";
-
-import { Route, Param, ParamType } from "../types";
 
 export default function Input({
-  param,
-  reFetch,
-  route,
-  paramType,
-  parent,
+  label,
+  value,
+  options,
+  placeholder,
+  type,
+  required,
+  onChange,
+  onSubmit,
 }: {
-  param: Param;
-  route: Route;
-  reFetch: () => void;
-  paramType: ParamType;
-  parent: null | string;
+  label: string;
+  value: any;
+  options?: { value: any; label: string }[];
+  placeholder?: string;
+  type?: string;
+  required?: boolean;
+  onChange: (value: any) => void; // @todo confirm
+  onSubmit: () => void;
 }) {
-  const { setParam, getParam } = useGlobalContext();
-
-  const label = param.label ? param.label : startCase(param.name);
-
-  const value = getParam({ route, param, paramType, parent });
-
-  const onChange = (value: any) =>
-    setParam({ route, param, value, paramType, parent });
-
-  useEffect(() => {
-    setParam({ route, param, value, paramType, parent });
-  }, []);
-
   const onKeyDown = (e: any) => {
     if (e.key === "Enter") {
-      reFetch();
+      onSubmit();
     }
   };
   let inputDOM;
 
-  if (param.options && !!param.options.length) {
+  if (options && !!options.length) {
     inputDOM = (
       <Select
         onKeyDown={onKeyDown}
@@ -52,9 +39,7 @@ export default function Input({
           let value = e.currentTarget.value;
           try {
             value =
-              typeof param.options !== "undefined"
-                ? param.options[index - 1].value
-                : null;
+              typeof options !== "undefined" ? options[index - 1].value : null;
           } catch (err) {}
           onChange(value);
         }}
@@ -62,16 +47,16 @@ export default function Input({
         value={value !== undefined && value !== null ? value : ""}
       >
         <option value="">Select One</option>
-        {map(param.options, ({ label, value }) => {
+        {map(options, ({ label, value }) => {
           return (
             <option value={value} key={value}>
-              {label || startCase(value)}
+              {label}
             </option>
           );
         })}
       </Select>
     );
-  } else if (param.type === "textarea") {
+  } else if (type === "textarea") {
     inputDOM = (
       <textarea
         className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -90,9 +75,9 @@ export default function Input({
   } else {
     inputDOM = (
       <TextInput
-        required={param.required}
-        type={param.type || "text"}
-        placeholder={value === null ? "(null)" : param.placeholder || label}
+        required={required}
+        type={type || "text"}
+        placeholder={value === null ? "(null)" : placeholder || label}
         onKeyDown={onKeyDown}
         onChange={(e: React.FormEvent<HTMLInputElement>) =>
           onChange(e.currentTarget.value)
@@ -102,41 +87,5 @@ export default function Input({
     );
   }
 
-  return (
-    <div className="my-8">
-      <Label>
-        {label} {param.required && <Required />}
-      </Label>
-      <div className="flex">
-        {inputDOM}
-        {typeof value !== "undefined" ? (
-          <Button
-            outline
-            className="flex-shrink-0 ml-2"
-            onClick={() =>
-              setParam({
-                route,
-                param,
-                value: undefined,
-                paramType,
-                parent,
-              })
-            }
-          >
-            Clear
-          </Button>
-        ) : (
-          <Button
-            outline
-            className="flex-shrink-0 ml-2"
-            onClick={() =>
-              setParam({ route, param, value: null, paramType, parent })
-            }
-          >
-            Null
-          </Button>
-        )}
-      </div>
-    </div>
-  );
+  return inputDOM;
 }

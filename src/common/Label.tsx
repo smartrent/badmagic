@@ -1,23 +1,32 @@
-import React, { useContext } from "react";
+import React from "react";
 
 import { useGlobalContext } from "../context/Context";
 import Helpers from "../lib/helpers";
 
+import { Size, GenericObject } from "../types";
+
 type Props = {
-  children: any;
+  children: React.ReactNode;
   onClick?: () => void;
-  style?: Object;
-  size?: "xs" | "sm" | "lg" | "xl";
+  style?: GenericObject;
+  size?: Size;
+  marginBottom?: string;
 };
 
-export default function Label({ children, onClick, style, size }: Props) {
+export default function Label({
+  children,
+  onClick,
+  style,
+  size,
+  marginBottom,
+}: Props) {
   const { darkMode } = useGlobalContext();
 
   return (
     <div
       onClick={onClick}
-      className={`block uppercase tracking-wide text-gray-700 text-${size ||
-        "xs"} font-bold mb-1`}
+      className={`flex block uppercase tracking-wide text-gray-700 text-${size ||
+        "xs"} font-bold ${marginBottom ? marginBottom : "mb-1"}`}
       style={{ ...Helpers.getStyles(darkMode, "label"), ...(style || {}) }}
     >
       {children}
