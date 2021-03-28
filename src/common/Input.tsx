@@ -20,7 +20,7 @@ export default function Input({
   placeholder?: string;
   type?: string;
   required?: boolean;
-  onChange: (value: any) => void; // @todo confirm
+  onChange: (value: any) => void;
   onSubmit: () => void;
 }) {
   const onKeyDown = (e: any) => {

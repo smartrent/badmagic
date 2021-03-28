@@ -13,21 +13,21 @@ import { useGlobalContext } from "../context/Context";
 import { Route, Param, ParamType, Size } from "../types";
 
 type OnSubmitFn = () => void;
-interface RenderInputs {
+interface RenderInputsProps {
   pathToValue: string;
   inputs: Param[];
   onSubmit: OnSubmitFn;
   className: string;
 }
 
-interface RenderInputByDataType {
+interface RenderInputByDataTypeProps {
   pathToValue: string;
   onSubmit: OnSubmitFn;
   param: Param;
   onRemoveCell?: () => void;
 }
 
-interface RenderObject {
+interface RenderObjectProps {
   pathToValue: string;
   param: Param;
   onSubmit: OnSubmitFn;
@@ -35,20 +35,20 @@ interface RenderObject {
   onRemoveCell?: () => void;
 }
 
-interface RenderArrayOfInputs {
+interface RenderArrayOfInputsProps {
   pathToValue: string;
   param: Param;
   onSubmit: OnSubmitFn;
   label: string;
 }
 
-interface ApplyNullValueButton {
+interface ApplyNullValueButtonProps {
   value: any;
   pathToValue: string;
   onRemoveCell?: () => void;
 }
 
-interface ClearValueButton {
+interface ClearValueButtonProps {
   value: any;
   pathToValue: string;
   onRemoveCell?: () => void;
@@ -60,7 +60,7 @@ interface AddArrayCellProps {
   param: Param;
 }
 
-interface RemoveArrayCellButton {
+interface RemoveArrayCellButtonProps {
   onRemoveCell?: () => void;
   className?: string;
   label?: string;
@@ -93,7 +93,7 @@ function RemoveArrayCellButton({
   onRemoveCell,
   className,
   label,
-}: RemoveArrayCellButton) {
+}: RemoveArrayCellButtonProps) {
   if (!onRemoveCell) {
     return null;
   }
@@ -113,7 +113,7 @@ function RenderArrayOfInputs({
   pathToValue,
   param,
   label,
-}: RenderArrayOfInputs) {
+}: RenderArrayOfInputsProps) {
   const { setParam, getFromRouteConfig } = useGlobalContext();
   const values = getFromRouteConfig({ pathToValue });
 
@@ -141,7 +141,7 @@ function RenderArrayOfInputs({
         label={label}
         required={param.required}
         size="lg"
-        marginBottom="mb0"
+        marginBottomClass="mb-0"
       >
         <AddArrayCell param={param} values={values} pathToValue={pathToValue} />
       </InputLabelContainer>
@@ -173,7 +173,7 @@ function RenderObject({
   onSubmit,
   onRemoveCell,
   label,
-}: RenderObject) {
+}: RenderObjectProps) {
   const { setParam, getFromRouteConfig, darkMode } = useGlobalContext();
   const value = getFromRouteConfig({ pathToValue });
 
@@ -201,7 +201,7 @@ function RenderObject({
           label={label}
           required={param.required}
           size="lg"
-          marginBottom="mb-0"
+          marginBottomClass="mb-0"
         />
       ) : null}
       <div
@@ -248,7 +248,7 @@ function ClearValueButton({
   value,
   pathToValue,
   onRemoveCell,
-}: ClearValueButton) {
+}: ClearValueButtonProps) {
   const { setParam } = useGlobalContext();
 
   // If the value is not null, don't show a button to clear the value
@@ -284,7 +284,7 @@ function ApplyNullValueButton({
   value,
   pathToValue,
   onRemoveCell,
-}: ApplyNullValueButton) {
+}: ApplyNullValueButtonProps) {
   const { setParam } = useGlobalContext();
 
   // If the value is already null or undefined, don't show a button to make the value null
@@ -319,17 +319,17 @@ function InputLabelContainer({
   children,
   required,
   size,
-  marginBottom,
+  marginBottomClass,
 }: {
   label: string;
   children?: React.ReactNode;
   required?: boolean;
   size: Size;
-  marginBottom?: string;
+  marginBottomClass?: string;
 }) {
   return (
     <div className="flex items-center">
-      <Label size={size || "lg"} marginBottom={marginBottom}>
+      <Label size={size || "lg"} marginBottomClass={marginBottomClass}>
         {label} {required && <Required />}
       </Label>
       {children}
@@ -342,7 +342,7 @@ function RenderInputByDataType({
   pathToValue,
   param,
   onRemoveCell,
-}: RenderInputByDataType) {
+}: RenderInputByDataTypeProps) {
   const { setParam, getFromRouteConfig } = useGlobalContext();
   const label = param.label || startCase(param.name);
 
@@ -376,7 +376,7 @@ function RenderInputByDataType({
           label={label}
           required={param.required}
           size="lg"
-          marginBottom="mb-0"
+          marginBottomClass="mb-0"
         ></InputLabelContainer>
       ) : null}
       <InputContainer>
@@ -416,7 +416,7 @@ function RenderInputs({
   onSubmit,
   pathToValue,
   className,
-}: RenderInputs) {
+}: RenderInputsProps) {
   return (
     <>
       {map(inputs, (param: Param, idx: number) => {

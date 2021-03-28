@@ -3,14 +3,14 @@ import React from "react";
 import { useGlobalContext } from "../context/Context";
 import Helpers from "../lib/helpers";
 
-import { Size, GenericObject } from "../types";
+import { Size } from "../types";
 
 type Props = {
   children: React.ReactNode;
   onClick?: () => void;
-  style?: GenericObject;
+  style?: React.CSSProperties;
   size?: Size;
-  marginBottom?: string;
+  marginBottomClass?: string;
 };
 
 export default function Label({
@@ -18,7 +18,7 @@ export default function Label({
   onClick,
   style,
   size,
-  marginBottom,
+  marginBottomClass,
 }: Props) {
   const { darkMode } = useGlobalContext();
 
@@ -26,7 +26,7 @@ export default function Label({
     <div
       onClick={onClick}
       className={`flex block uppercase tracking-wide text-gray-700 text-${size ||
-        "xs"} font-bold ${marginBottom ? marginBottom : "mb-1"}`}
+        "xs"} font-bold ${marginBottomClass ? marginBottomClass : "mb-1"}`}
       style={{ ...Helpers.getStyles(darkMode, "label"), ...(style || {}) }}
     >
       {children}
