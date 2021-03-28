@@ -47,10 +47,6 @@ export type RouteConfig = {
   };
 };
 
-declare global {
-  type FIXME_any = any;
-}
-
 export type Option = {
   label?: string;
   value: any;

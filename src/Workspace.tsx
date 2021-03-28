@@ -30,7 +30,7 @@ export default function Workspace() {
 
   return (
     <div className="p-4 mt-12">
-      {map(filteredRoutes, (r: FIXME_any, idx) => {
+      {map(filteredRoutes, (r: RouteProps, idx) => {
         return (
           <Route key={`${r.method || "GET"}-${r.path}-${idx}`} route={r} />
         );
