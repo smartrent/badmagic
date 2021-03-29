@@ -7,10 +7,9 @@ import {
   compact,
   map,
   startCase,
-  omitBy,
   transform,
 } from "lodash-es";
-import { ParsedUrlQueryInput, stringify } from "querystring";
+import { stringify } from "querystring";
 
 import Storage from "./storage";
 import OpenApi from "./openapi";
@@ -155,9 +154,7 @@ const Helpers = {
     qsParams?: GenericObject;
   }) {
     const stringifiedQS =
-      qsParams && !!Object.keys(qsParams).length
-        ? stringify(omitBy(qsParams, (p) => !p) as ParsedUrlQueryInput)
-        : "";
+      qsParams && !!Object.keys(qsParams).length ? stringify(qsParams) : "";
 
     return reduce(
       Helpers.getUrlParamsFromPath(route.path),
