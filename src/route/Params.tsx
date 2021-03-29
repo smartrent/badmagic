@@ -222,7 +222,7 @@ function RenderObject({
             inputs={param.properties}
             onSubmit={onSubmit}
             pathToValue={pathToValue}
-            className="mb-3"
+            className="mb-4"
           />
         </div>
       </div>
@@ -479,7 +479,7 @@ export default function Params({
         inputs={inputs}
         onSubmit={reFetch}
         pathToValue={pathToValue}
-        className="mb-3"
+        className="mb-4"
       />
     </div>
   );

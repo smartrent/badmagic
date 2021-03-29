@@ -65,7 +65,7 @@ export type Param = {
   type?: string;
   placeholder?: string;
   options?: Option[];
-  defaultValue?: string;
+  defaultValue?: any;
   array?: boolean;
   json?: boolean; // value should be stringified, deprecated -- use `properties` for Objects and `array` for lists
   properties?: Param[]; // if working with json, pass in array of properties
