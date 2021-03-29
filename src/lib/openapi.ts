@@ -1,4 +1,4 @@
-import { groupBy, reduce, compact, map } from "lodash-es";
+import { groupBy, reduce, compact, map, omit } from "lodash-es";
 
 import { GenericObject, Route, Workspace, Param, Method } from "../types";
 
@@ -15,7 +15,7 @@ import {
 
 import Helpers from "./helpers";
 
-function getParameterType({ type, options, json, properties }: Param) {
+function getParameterType({ type, options, json, properties, array }: Param) {
   if (options?.length) {
     const firstOptionValue = options[0]?.value;
 
@@ -27,20 +27,19 @@ function getParameterType({ type, options, json, properties }: Param) {
       case "boolean":
         return "boolean";
     }
-  } else if (!type || ["date", "text"].includes(type)) {
-    return "string";
   } else if (type === "number") {
     return "integer"; // @todo need to differentiate between integer + float
-  } else if (json === true && !properties?.length) {
-    // @todo explanation for this logic
+  } else if ((json && !properties?.length) || array) {
     // note: `json` is deprecated, however we don't yet have a tool for `array` input
     return "array";
   } else if (json === true || !!properties?.length) {
     // note: `json` is deprecated, just use `properties`
     return "object";
+  } else if (!type || ["date", "text"].includes(type)) {
+    return "string";
   }
 
-  // We need to add support for these
+  // We need to add support for these or, potentially, an invalid type was specified
   console.log(`Unknown type when determining OpenAPI type: ${type}`);
 
   return "string"; // default
@@ -155,13 +154,21 @@ function deriveSchemaFromParam(param: Param): OpenApiSchema {
     type: getParameterType(param),
   };
 
-  if (schema.type === "object" || param.properties?.length) {
+  if (schema.type === "object") {
     schema.properties = getObjectProperties(param.properties);
-    schema.required = getObjectRequiredProperties(param.properties);
+    const requiredProperties = getObjectRequiredProperties(param.properties);
+
+    if (requiredProperties?.length) {
+      schema.required = requiredProperties;
+    }
   }
 
   if (param?.options?.length) {
     schema.enum = map(param?.options, "value");
+  }
+
+  if (param?.array) {
+    schema.items = deriveSchemaFromParam(omit(param, "array"));
   }
 
   if (param?.description) {

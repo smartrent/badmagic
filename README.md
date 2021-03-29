@@ -354,6 +354,11 @@ The below assumes you have `wml` installed:
 - In a second terminal window with `badmagic` in the CWD run `yarn start`
 - Restart the frontend of your project. Now anytime you save a file in this project it will get applied to your other project that had `badmagic` installed
 
+Running the `example` in your browser:
+
+- In one terminal window run in the `badmagic` root folder, run `yarn` then `yarn link` then `yarn start`
+- In another terminal window in the `example` folder, run `yarn`, then `yarn link badmagic` then `yarn start`
+
 ## Resources
 
 [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md)

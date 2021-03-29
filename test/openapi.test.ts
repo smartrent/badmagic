@@ -1,6 +1,6 @@
 import OpenApi from "../src/lib/openapi";
 
-import dogWorkspace from "../example/src/lib/dog-workspace";
+import { dogWorkspace } from "../example/src/dog-workspace";
 import expectedOpenApiJson from "./mock/dog-workspace-openapi.json";
 
 describe("OpenAPI", () => {

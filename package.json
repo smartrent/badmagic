@@ -39,6 +39,7 @@
     "prettier": "^1.18.2",
     "querystring": "^0.2.0",
     "react": "^17.0.1",
+    "react-dom": "^17.0.1",
     "rimraf": "^3.0.0",
     "ts-jest": "^26.4.2",
     "typescript": "^3.6.3"

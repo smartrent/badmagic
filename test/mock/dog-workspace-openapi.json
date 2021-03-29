@@ -18,9 +18,59 @@
             "minLength": 5,
             "maxLength": 200,
             "nullable": true
+          },
+          "colors": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Color of the dog's coat"
+            },
+            "description": "Color of the dog's coat"
+          },
+          "measurements": {
+            "type": "object",
+            "properties": {
+              "body": { "type": "integer" },
+              "legs": { "type": "integer" },
+              "tail": { "type": "integer" }
+            },
+            "description": "Average measurements"
+          },
+          "prominent_locations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "country": { "type": "string" },
+                "state_or_province": { "type": "string" },
+                "cities": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": { "type": "string" },
+                      "zip_codes": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                      }
+                    }
+                  }
+                },
+                "restrictions": {
+                  "type": "object",
+                  "properties": {
+                    "cash_only": { "type": "string" },
+                    "warranty": { "type": "string" }
+                  }
+                }
+              },
+              "required": ["country"],
+              "description": "Prominent locations where the dog is bred"
+            },
+            "description": "Prominent locations where the dog is bred"
           }
         },
-        "required": ["name"],
+        "required": ["name", "colors"],
         "title": "AddNewBreedPayload"
       }
     }

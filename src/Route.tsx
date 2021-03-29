@@ -10,7 +10,7 @@ import Navigation from "./route/Navigation";
 import Docs from "./route/Documentation";
 
 import Helpers from "./lib/helpers";
-import { Route } from "./types";
+import { Route, RouteConfig } from "./types";
 
 export default function Route({ route }: { route: Route }) {
   const {
@@ -22,26 +22,30 @@ export default function Route({ route }: { route: Route }) {
   const [collapsed, setCollapsed] = useState(true);
   const [activeTab, setActiveTab] = useState("request");
 
-  const routeConfigVars = get(routeConfig, route.name, {
-    headers: {},
-    urlParams: {},
-    body: {},
-  });
+  // Initialize route config for this route if necessary
+  // @ts-ignore
+  const routeConfigVars: undefined | RouteConfig = routeConfig[route.name];
+  useEffect(() => {
+    if (!routeConfigVars) {
+      Helpers.initializeRoute({ ...routeConfig }, route);
+    }
+  }, [routeConfigVars]);
+
   const method = route.method ? route.method.toLowerCase() : "get";
   const { response, loading, error, reFetch } = useAxios({
     axios: axios.create({
       baseURL: workspace.config.baseUrl,
-      headers: routeConfigVars.headers,
+      headers: routeConfigVars?.headers || {},
     }),
     method: route.method || "GET",
     url: Helpers.buildUrl({
       route,
-      urlParams: routeConfigVars.urlParams,
+      urlParams: routeConfigVars?.urlParams || {},
       baseUrl: workspace.config.baseUrl,
-      qsParams: routeConfigVars.qsParams,
+      qsParams: routeConfigVars?.qsParams || {},
     }),
     options: {
-      data: route.body ? routeConfigVars.body : null,
+      data: route.body ? routeConfigVars?.body : null,
     },
   });
 
@@ -50,6 +54,11 @@ export default function Route({ route }: { route: Route }) {
       setApiResponse({ route, response, loading, error });
     }
   }, [response, loading, error, route]);
+
+  // Initialize the routeConfigVars before continuing
+  if (!routeConfigVars) {
+    return null;
+  }
 
   if (!route) {
     return null;
