@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.0.23
+
+### Features
+
+- Adds array support for a Param by specifying `{array: true}` in the options
+
+### Bugfixes
+
+- `defaultValue` is now of type `any` from type `string`
+- Allow falsy values in query string (values are omitted if they are undefined)
+
+## Enhancements
+
+- Upgrades `axios` to `0.21.1` to patch a security vulnerability
+
 ## v0.0.22
 
 ### Features
