@@ -16,7 +16,7 @@ export default function Input({
 }: {
   label: string;
   value: any;
-  options?: { value: any; label: string }[];
+  options?: { value: any; label?: string }[];
   placeholder?: string;
   type?: string;
   required?: boolean;
@@ -50,7 +50,7 @@ export default function Input({
         {map(options, ({ label, value }) => {
           return (
             <option value={value} key={value}>
-              {label}
+              {label || value}
             </option>
           );
         })}
