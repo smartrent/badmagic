@@ -383,6 +383,7 @@ function RenderInputByDataType({
         <Input
           value={value}
           label={label}
+          options={param.options}
           type={param.type}
           placeholder={param.placeholder}
           required={param.required}

@@ -147,7 +147,10 @@ export const dogWorkspace = {
               array: true,
               properties: [
                 { name: "name" },
-                { name: "zip_codes", array: true },
+                {
+                  name: "zip_codes",
+                  array: true,
+                },
               ],
             },
             {

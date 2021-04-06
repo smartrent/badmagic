@@ -45,8 +45,8 @@ const Helpers = {
     aLink.dispatchEvent(event);
   },
 
-  initializeRoute(routeConfig: RouteConfig, route: Route) {
-    set(routeConfig, route.name, {
+  initializeRoute(routeConfig: RouteConfig, route: Route): RouteConfig {
+    return set(routeConfig, route.name, {
       urlParams: {},
       qsParams: {},
       body: {},

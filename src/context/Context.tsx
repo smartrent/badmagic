@@ -4,7 +4,13 @@ import { get, set, unset, omit } from "lodash-es";
 import Helpers from "../lib/helpers";
 import Storage from "../lib/storage";
 
-import { Route, Param, Workspace, SetParamPayload } from "../types";
+import {
+  Route,
+  Param,
+  Workspace,
+  SetParamPayload,
+  RouteConfig,
+} from "../types";
 
 const workspaces: Workspace[] = [];
 
@@ -18,6 +24,7 @@ export const Context = React.createContext({
   setEnvVar: (payload: { key: string; value: any }) => {},
   deleteEnvVar: (payload: { key: string }) => {},
   routeConfig: {},
+  setRouteConfig: (routeConfig: RouteConfig) => {},
   getFromRouteConfig: (filters: { param?: Param; pathToValue: string }) => "",
   setParam: (payload: SetParamPayload) => {},
   setHeader: (payload: { route: Route; key: string; value: string }) => {},
@@ -124,16 +131,21 @@ export function ContextProvider({
           setEnvironment(newEnv);
         },
 
+        // A route must be initialized in routeConfig for it to show up in list of callable routes in the UI
+        // because routeConfig stores body params, qs params, and url params as well as headers, responses, etc.
         routeConfig,
+
+        // This is used to initialize a route's config (see above) for a workspace in local storage
+        setRouteConfig,
 
         setHeader: ({ route, key, value }) => {
           if (!workspace) {
             return;
           }
 
-          const newRouteConfig = { ...routeConfig };
+          let newRouteConfig = { ...routeConfig };
           if (!newRouteConfig[route.name]) {
-            Helpers.initializeRoute(newRouteConfig, route);
+            newRouteConfig = Helpers.initializeRoute(newRouteConfig, route);
           }
 
           newRouteConfig[route.name].headers[key] = value;
@@ -150,9 +162,9 @@ export function ContextProvider({
             return;
           }
 
-          const newRouteConfig = { ...routeConfig };
+          let newRouteConfig = { ...routeConfig };
           if (!newRouteConfig[route.name]) {
-            Helpers.initializeRoute(newRouteConfig, route);
+            newRouteConfig = Helpers.initializeRoute(newRouteConfig, route);
           }
 
           newRouteConfig[route.name].loading = loading;

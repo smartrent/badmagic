@@ -15,6 +15,7 @@ import { Route, RouteConfig } from "./types";
 export default function Route({ route }: { route: Route }) {
   const {
     routeConfig,
+    setRouteConfig,
     setApiResponse,
     workspace,
     darkMode,
@@ -27,7 +28,8 @@ export default function Route({ route }: { route: Route }) {
   const routeConfigVars: undefined | RouteConfig = routeConfig[route.name];
   useEffect(() => {
     if (!routeConfigVars) {
-      Helpers.initializeRoute({ ...routeConfig }, route);
+      const newRouteConfig = Helpers.initializeRoute({ ...routeConfig }, route);
+      setRouteConfig(newRouteConfig);
     }
   }, [routeConfigVars]);
 
@@ -55,7 +57,7 @@ export default function Route({ route }: { route: Route }) {
     }
   }, [response, loading, error, route]);
 
-  // Initialize the routeConfigVars before continuing
+  // The system must initialize the routeConfigVars before continuing
   if (!routeConfigVars) {
     return null;
   }

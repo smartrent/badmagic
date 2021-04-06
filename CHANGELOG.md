@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.0.24
+
+### Bugfixes
+
+- New routes weren't showing up if local storage wasn't cleared for that workspace
+- Select dropdowns were inadvertently changed to text inputs
+
 ## v0.0.23
 
 ### Features
