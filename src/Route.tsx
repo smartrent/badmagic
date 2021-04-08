@@ -146,12 +146,7 @@ export default function Route({ route }: { route: Route }) {
 
         {isDeprecated && 
         <div
-        className={`flex flex-shrink-0 items-center justify-center text-xs text-gray-700 font-semibold p-1 mr-2 border rounded ${
-          darkMode ? "border-gray-700" : "border-gray-300"
-        }`}
-        style={{
-          backgroundColor: "red",
-        }}
+        className={`flex flex-shrink-0 items-center justify-center text-xs text-white font-semibold p-1 mr-2 bg-red-700 rounded`}
       >
         DEPRECATED
       </div>
