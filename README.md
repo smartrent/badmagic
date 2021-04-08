@@ -339,8 +339,8 @@ const superheroes = {
 ```
 
 ## Route Deprecation
-- Each route can specify its deprecation status by adding a `deprecation` key to the object.
-- `deprecation` accepts a boolean and will by default is set to `false`
+- Each route can specify its deprecation status by adding a `deprecated` key to the object.
+- `deprecated` accepts a boolean and will by default is set to `false`
 
 Usage:
 
