@@ -338,6 +338,26 @@ const superheroes = {
 };
 ```
 
+## Route Deprecation
+- Each route can specify its deprecation status by adding a `deprecated` key to the object.
+- `deprecated` accepts a boolean and will by default is set to `false`
+
+Usage:
+
+```javascript
+const superheroes = {
+  id: "superheroes",
+  name: "Superheroes",
+  routes: [
+    {
+      name: "Fetch Superhero",
+      path: "/v1/superheroes/:superhero_id",
+      deprecated: true
+    },
+  ],
+};
+```
+
 ## Questions
 
 > Why did you name this `badmagic`?

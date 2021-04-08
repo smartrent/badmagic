@@ -166,5 +166,16 @@ export const dogWorkspace = {
       },
       tags: ["dogs"],
     },
+
+    {
+      name: "Breeds (old)",
+      path: "/breeds/list/all",
+      responses: {
+        "200": {
+          description: "successful operation",
+        },
+      },
+      deprecated: true
+    },
   ],
 };
