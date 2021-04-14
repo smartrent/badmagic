@@ -60,6 +60,28 @@ export default function ApiResponse({ route }: { route: Route }) {
           displayDataTypes={false}
           src={response.data}
           theme={Helpers.reactJsonViewTheme(darkMode)}
+          shouldCollapse={({ type, src, namespace, name }) => {
+            // collapse anything more than 3 levels deep
+            if (namespace.length > 3) {
+              return true;
+            }
+
+            // collapse all but the first 5 elements of arrays
+            if (Number(name) > 4) {
+              return true;
+            }
+
+            // collapse arrays with more than 50 elements
+            if (type === "array" && Array.isArray(src) && src.length > 50) {
+              return true;
+            }
+
+            if (type === "object" && Object.keys(src).length > 50) {
+              return true;
+            }
+
+            return false;
+          }}
         />
       )}
 
