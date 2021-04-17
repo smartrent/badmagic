@@ -60,6 +60,8 @@
     "arrowParens": "always"
   },
   "dependencies": {
+    "@material-ui/core": "4.11.3",
+    "@material-ui/icons": "4.11.2",
     "react-json-view": "^1.19.1",
     "react-markdown": "^4.2.2",
     "svgs": "^4.1.1"
