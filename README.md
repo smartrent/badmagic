@@ -382,3 +382,9 @@ Running the `example` in your browser:
 ## Resources
 
 [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md)
+
+## Semantic Release
+
+Versioning of this repository can be controlled via commit messages using [semantic-release] (https://github.com/semantic-release/semantic-release)
+
+Refer to the [commit structure guide] (https://github.com/semantic-release/semantic-release) for help on how to version the repository
