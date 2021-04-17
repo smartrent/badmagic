@@ -358,6 +358,33 @@ const superheroes = {
 };
 ```
 
+## Input Field Tooltip
+- Each input type can have a tooltip hover to describe what the input field is expecting if the name is ambiguous.
+- `tooltip` accepts a boolean and will also need the `description` attribute to pull the text from
+
+Usage:
+
+```javascript
+const superheroes = {
+  id: "superheroes",
+  name: "Superheroes",
+  routes: [
+    {
+        name: "Update Superhero",
+        path: "/v1/superheroes/:superhero_id",
+        method: Method.PATCH,
+        body: [
+          { 
+            name: "first_name",
+            required: true,
+            tooltip: true,
+            description: "The first name of the hero you want to update to"
+          },
+      },
+  ],
+};
+```
+
 ## Questions
 
 > Why did you name this `badmagic`?
