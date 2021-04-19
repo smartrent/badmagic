@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.25
+
+- If `deprecated: true` is specified for a route, it will show a deprecated tag in the UI for that route
+- Autocollapse portions of large json response to improve rendering performance
+
 ## v0.0.24
 
 ### Bugfixes
