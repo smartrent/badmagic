@@ -162,8 +162,7 @@ export const dogWorkspace = {
         },
         {
           name: "info",
-          description: "Here is some info about this field",
-          tooltip: true
+          description: "Here is some info about this field"
         },
       ],
       example: {

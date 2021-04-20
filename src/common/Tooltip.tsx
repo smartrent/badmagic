@@ -2,10 +2,9 @@ import React, { useContext } from "react";
 import HelpIcon from "@material-ui/icons/Help";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
-import { Param } from "../types";
 
 export default function BadmagicTooltip({param}: any) {
-  if (!param.tooltip || !param.description) {
+  if (!param.description) {
     return null;
   }
 

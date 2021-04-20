@@ -70,7 +70,6 @@ export type Param = {
   json?: boolean; // value should be stringified, deprecated -- use `properties` for Objects and `array` for lists
   properties?: Param[]; // if working with json, pass in array of properties
   description?: string;
-  tooltip?: boolean;
 
   // OpenAPI support
   nullable?: boolean;

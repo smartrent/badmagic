@@ -360,7 +360,7 @@ const superheroes = {
 
 ## Input Field Tooltip
 - Each input type can have a tooltip hover to describe what the input field is expecting if the name is ambiguous.
-- `tooltip` accepts a boolean and will also need the `description` attribute to pull the text from
+- The existence of a `description` attribute will generate the on-hover icon and it will pull the text from the `description` as well
 
 Usage:
 
@@ -377,7 +377,6 @@ const superheroes = {
           { 
             name: "first_name",
             required: true,
-            tooltip: true,
             description: "The first name of the hero you want to update to"
           },
       },
