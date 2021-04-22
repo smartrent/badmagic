@@ -56,9 +56,18 @@ export function ContextProvider({
   const [environment, setEnvironment] = useState(
     Helpers.getEnvForWorkspace(workspace)
   );
-  const [routeConfig, setRouteConfig] = useState(
+  const [routeConfig, setRouteConfigInState] = useState(
     Helpers.findRouteConfigByWorkspace(workspace)
   );
+
+  const setRouteConfig = (newRouteConfig: RouteConfig) => {
+    Storage.set({
+      key: `${workspace.id}-route-config`,
+      value: newRouteConfig,
+    });
+
+    setRouteConfigInState(newRouteConfig);
+  };
 
   const setEnvVar = ({ key, value }: { key: string; value: string }) => {
     if (!workspace) {
@@ -149,10 +158,6 @@ export function ContextProvider({
           }
 
           newRouteConfig[route.name].headers[key] = value;
-          Storage.set({
-            key: `${workspace.id}-route-config`,
-            value: newRouteConfig,
-          });
 
           setRouteConfig(newRouteConfig);
         },
@@ -194,11 +199,6 @@ export function ContextProvider({
           } else {
             set(newRouteConfig, pathToValue, newValue);
           }
-
-          Storage.set({
-            key: `${workspace.id}-route-config`,
-            value: newRouteConfig,
-          });
 
           setRouteConfig(newRouteConfig);
         },
