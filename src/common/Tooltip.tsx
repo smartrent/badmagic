@@ -40,7 +40,7 @@ export default function BadmagicTooltip({param}: any) {
           </div>
     }
     >
-        <HelpIcon color={"rgb(66, 153, 225"} />
+        <HelpIcon color="rgb(66, 153, 225" />
     </Tooltip>
   );
 }

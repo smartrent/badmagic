@@ -85,7 +85,7 @@ export default function Route({ route }: { route: Route }) {
       : null,
   ]);
 
-  const isDeprecated = route.deprecated || false
+  const isDeprecated = route.deprecated || false;
 
   const renderBody = (activeTab: string) => {
     let content;
@@ -144,13 +144,13 @@ export default function Route({ route }: { route: Route }) {
           {method.toUpperCase()}
         </div>
 
-        {isDeprecated && 
-        <div
-        className={`flex flex-shrink-0 items-center justify-center text-xs text-white font-semibold p-1 mr-2 bg-red-700 rounded`}
-      >
-        DEPRECATED
-      </div>
-        }
+        {isDeprecated && (
+          <div
+            className={`flex flex-shrink-0 items-center justify-center text-xs text-white font-semibold p-1 mr-2 bg-red-700 rounded`}
+          >
+            DEPRECATED
+          </div>
+        )}
 
         <div
           className={`flex flex-grow-2 mr-auto ${
