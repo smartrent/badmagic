@@ -40,7 +40,9 @@ export default function BadmagicTooltip({param}: any) {
           </div>
     }
     >
+      <div style={{marginLeft: 10}}>
         <HelpIcon color="rgb(66, 153, 225" />
+      </div>
     </Tooltip>
   );
 }
