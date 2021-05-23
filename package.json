@@ -60,6 +60,7 @@
     "arrowParens": "always"
   },
   "dependencies": {
+    "rc-tooltip": "^5.1.0",
     "react-json-view": "^1.19.1",
     "react-markdown": "^4.2.2",
     "svgs": "^4.1.1"

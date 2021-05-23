@@ -11,6 +11,7 @@ import Helpers from "../lib/helpers";
 import { useGlobalContext } from "../context/Context";
 
 import { Route, Param, ParamType, Size } from "../types";
+import BadmagicTooltip from "../common/Tooltip";
 
 type OnSubmitFn = () => void;
 interface RenderInputsProps {
@@ -144,6 +145,7 @@ function RenderArrayOfInputs({
         marginBottomClass="mb-0"
       >
         <AddArrayCell param={param} values={values} pathToValue={pathToValue} />
+        <BadmagicTooltip param={param}/>
       </InputLabelContainer>
 
       {values.map((value: any, valueIdx: number) => {
@@ -202,7 +204,9 @@ function RenderObject({
           required={param.required}
           size="lg"
           marginBottomClass="mb-0"
-        />
+        >
+        <BadmagicTooltip param={param}/>
+        </InputLabelContainer>
       ) : null}
       <div
         className={`border border-dotted rounded-sm ${
@@ -369,6 +373,7 @@ function RenderInputByDataType({
   }
 
   const value = getFromRouteConfig({ pathToValue });
+
   return (
     <InputContainer className="flex-col">
       {!onRemoveCell ? (
@@ -377,7 +382,7 @@ function RenderInputByDataType({
           required={param.required}
           size="lg"
           marginBottomClass="mb-0"
-        ></InputLabelContainer>
+        ><BadmagicTooltip param={param}/></InputLabelContainer>
       ) : null}
       <InputContainer>
         <Input

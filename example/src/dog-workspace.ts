@@ -160,6 +160,10 @@ export const dogWorkspace = {
           ],
           description: "Prominent locations where the dog is bred",
         },
+        {
+          name: "info",
+          description: "Here is some info about this field"
+        },
       ],
       example: {
         name: "German Shepherd",
