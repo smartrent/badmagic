@@ -10,6 +10,7 @@ import {
   Workspace,
   SetParamPayload,
   RouteConfig,
+  RouteConfigVars,
 } from "../types";
 
 const workspaces: Workspace[] = [];
@@ -23,9 +24,10 @@ export const Context = React.createContext({
   setDarkMode: (darkMode: boolean) => {},
   setEnvVar: (payload: { key: string; value: any }) => {},
   deleteEnvVar: (payload: { key: string }) => {},
-  routeConfig: {},
+  routeConfig: {} as RouteConfig,
   setRouteConfig: (routeConfig: RouteConfig) => {},
   getFromRouteConfig: (filters: { param?: Param; pathToValue: string }) => "",
+  setRouteConfigVars: (routeConfigVars: RouteConfigVars, route: Route) => {},
   setParam: (payload: SetParamPayload) => {},
   setHeader: (payload: { route: Route; key: string; value: string }) => {},
   setApiResponse: (payload: {
@@ -174,8 +176,20 @@ export function ContextProvider({
           setRouteConfig(newRouteConfig);
         },
 
+        // Uses Lodash's `get` to fetch deeply nested values from RouteConfig
         getFromRouteConfig: ({ param, pathToValue }) => {
           return get(routeConfig, pathToValue);
+        },
+
+        // Overwrites all Route Config variables for a route then saves to local storage
+        setRouteConfigVars: (
+          routeConfigVars: RouteConfigVars,
+          route: Route
+        ) => {
+          return setRouteConfig({
+            ...routeConfig,
+            [route.name]: routeConfigVars,
+          });
         },
 
         setParam: ({ param, value, pathToValue }: SetParamPayload) => {

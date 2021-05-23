@@ -4,110 +4,27 @@ import { map, startCase } from "lodash-es";
 import Input from "../common/Input";
 import Label from "../common/Label";
 import Required from "../common/Required";
-import Button from "../common/Button";
+import { ClearValueButton } from "../common/ClearValueButton";
+import { ApplyNullValueButton } from "../common/ApplyNullValueButton";
+import { AddArrayCell } from "../common/AddArrayCell";
+import { RemoveArrayCellButton } from "../common/RemoveArrayCellButton";
 
 import Helpers from "../lib/helpers";
 
 import { useGlobalContext } from "../context/Context";
 
-import { Route, Param, ParamType, Size } from "../types";
-import BadmagicTooltip from "../common/Tooltip";
-
-type OnSubmitFn = () => void;
-interface RenderInputsProps {
-  pathToValue: string;
-  inputs: Param[];
-  onSubmit: OnSubmitFn;
-  className: string;
-}
-
-interface RenderInputByDataTypeProps {
-  pathToValue: string;
-  onSubmit: OnSubmitFn;
-  param: Param;
-  onRemoveCell?: () => void;
-}
-
-interface RenderObjectProps {
-  pathToValue: string;
-  param: Param;
-  onSubmit: OnSubmitFn;
-  label?: string;
-  onRemoveCell?: () => void;
-}
-
-interface RenderArrayOfInputsProps {
-  pathToValue: string;
-  param: Param;
-  onSubmit: OnSubmitFn;
-  label: string;
-}
-
-interface ApplyNullValueButtonProps {
-  value: any;
-  pathToValue: string;
-  onRemoveCell?: () => void;
-}
-
-interface ClearValueButtonProps {
-  value: any;
-  pathToValue: string;
-  onRemoveCell?: () => void;
-}
-
-interface AddArrayCellProps {
-  values: any[];
-  pathToValue: string;
-  param: Param;
-}
-
-interface RemoveArrayCellButtonProps {
-  onRemoveCell?: () => void;
-  className?: string;
-  label?: string;
-}
-
-function AddArrayCell({ param, values, pathToValue }: AddArrayCellProps) {
-  const { setParam } = useGlobalContext();
-
-  if (!param.array) {
-    return null;
-  }
-
-  return (
-    <button
-      className="bg-blue-500 hover:bg-blue-700 text-white text-xs rounded-full ml-1 h-5 w-5 items-center justify-center flex self-center flex-shrink-0"
-      onClick={() => {
-        setParam({
-          param,
-          value: [...values, undefined],
-          pathToValue,
-        });
-      }}
-    >
-      +
-    </button>
-  );
-}
-
-function RemoveArrayCellButton({
-  onRemoveCell,
-  className,
-  label,
-}: RemoveArrayCellButtonProps) {
-  if (!onRemoveCell) {
-    return null;
-  }
-  return (
-    <Button
-      outline
-      className={`flex-initial flex-grow-0 ${className ? className : ""}`}
-      onClick={onRemoveCell}
-    >
-      {label || "-"}
-    </Button>
-  );
-}
+import {
+  Route,
+  Param,
+  ParamType,
+  Size,
+  OnSubmitFn,
+  RenderInputsProps,
+  RenderInputByDataTypeProps,
+  RenderObjectProps,
+  RenderArrayOfInputsProps,
+} from "../types";
+import Tooltip from "../common/Tooltip";
 
 function RenderArrayOfInputs({
   onSubmit,
@@ -145,7 +62,7 @@ function RenderArrayOfInputs({
         marginBottomClass="mb-0"
       >
         <AddArrayCell param={param} values={values} pathToValue={pathToValue} />
-        <BadmagicTooltip param={param}/>
+        <Tooltip description={param.description} />
       </InputLabelContainer>
 
       {values.map((value: any, valueIdx: number) => {
@@ -205,7 +122,7 @@ function RenderObject({
           size="lg"
           marginBottomClass="mb-0"
         >
-        <BadmagicTooltip param={param}/>
+          <Tooltip description={param.description} />
         </InputLabelContainer>
       ) : null}
       <div
@@ -248,76 +165,6 @@ function InputContainer({
   );
 }
 
-function ClearValueButton({
-  value,
-  pathToValue,
-  onRemoveCell,
-}: ClearValueButtonProps) {
-  const { setParam } = useGlobalContext();
-
-  // If the value is not null, don't show a button to clear the value
-  // Clear should show up after the value is null
-  if (value !== null) {
-    return null;
-  }
-
-  // We don't render the Clear button here because setting the value to undefined removes the array cell
-  // from the UI, but the cell index is still present in the array and will still be submitted upon API Request.
-  // Instead the user can choose to remove the cell or not, but not clear it
-  if (onRemoveCell) {
-    return null;
-  }
-
-  return (
-    <Button
-      outline
-      className="flex-shrink-0 ml-1"
-      onClick={() =>
-        setParam({
-          value: undefined,
-          pathToValue,
-        })
-      }
-    >
-      Clear
-    </Button>
-  );
-}
-
-function ApplyNullValueButton({
-  value,
-  pathToValue,
-  onRemoveCell,
-}: ApplyNullValueButtonProps) {
-  const { setParam } = useGlobalContext();
-
-  // If the value is already null or undefined, don't show a button to make the value null
-  if (value === null || value === undefined) {
-    return null;
-  }
-
-  // We can remove this guard if we want to support null values in arrays
-  // but I found that this made the UI very busy
-  if (onRemoveCell) {
-    return null;
-  }
-
-  return (
-    <Button
-      outline
-      className="flex-shrink-0 ml-1"
-      onClick={() =>
-        setParam({
-          value: null,
-          pathToValue,
-        })
-      }
-    >
-      Null
-    </Button>
-  );
-}
-
 function InputLabelContainer({
   label,
   children,
@@ -347,7 +194,7 @@ function RenderInputByDataType({
   param,
   onRemoveCell,
 }: RenderInputByDataTypeProps) {
-  const { setParam, getFromRouteConfig } = useGlobalContext();
+  const { setParam, getFromRouteConfig, routeConfig } = useGlobalContext();
   const label = param.label || startCase(param.name);
 
   // Dev Note: Arrays of arrays are not supported
@@ -382,7 +229,9 @@ function RenderInputByDataType({
           required={param.required}
           size="lg"
           marginBottomClass="mb-0"
-        ><BadmagicTooltip param={param}/></InputLabelContainer>
+        >
+          <Tooltip description={param.description} />
+        </InputLabelContainer>
       ) : null}
       <InputContainer>
         <Input
@@ -404,13 +253,19 @@ function RenderInputByDataType({
         <ClearValueButton
           onRemoveCell={onRemoveCell}
           pathToValue={pathToValue}
-          value={value}
+          hidden={
+            param.required
+              ? true
+              : value !== null || (!!value && param.nullable === false)
+          }
         />
-        <ApplyNullValueButton
-          onRemoveCell={onRemoveCell}
-          pathToValue={pathToValue}
-          value={value}
-        />
+        {param.nullable !== false ? (
+          <ApplyNullValueButton
+            onRemoveCell={onRemoveCell}
+            pathToValue={pathToValue}
+            value={value}
+          />
+        ) : null}
         <RemoveArrayCellButton onRemoveCell={onRemoveCell} className="ml-1" />
       </InputContainer>
     </InputContainer>
@@ -441,7 +296,6 @@ function RenderInputs({
   );
 }
 
-// @todo (future) reFetch needs middleware support
 export default function Params({
   route,
   reFetch,

@@ -8,11 +8,14 @@ type SetPayload = {
 };
 
 export default {
-  get({ key }: GetPayload) {
+  get({ key }: GetPayload): any {
     try {
       const item = localStorage.getItem(key);
 
-      // @ts-ignore
+      if (item === null) {
+        return null;
+      }
+
       return JSON.parse(item);
     } catch (err) {
       console.error("Unable to parse JSON from localStorage", err);
@@ -20,7 +23,7 @@ export default {
     }
   },
 
-  set({ key, value }: SetPayload) {
+  set({ key, value }: SetPayload): void {
     try {
       localStorage.setItem(key, JSON.stringify(value));
     } catch (err) {

@@ -17,7 +17,7 @@ export default function InjectPlugins({
   inject?: Inject;
   route: Route;
   reFetch: () => void;
-  children: any;
+  children: React.ReactNode;
   loading: boolean;
   plugins: Plugin[];
   className?: string;

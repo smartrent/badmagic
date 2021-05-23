@@ -1,11 +1,22 @@
-import React, { useContext } from "react";
+import React from "react";
+
+import { useGlobalContext } from "../context/Context";
+
+import Helpers from "../lib/helpers";
 
 import Params from "./Params";
 import InjectPlugins from "./InjectPlugins";
-import { Inject, ParamType, Plugin, Route } from "../types";
-import { useGlobalContext } from "../context/Context";
-import Helpers from "../lib/helpers";
 import Button from "../common/Button";
+import Error from "../common/Error";
+
+import {
+  RouteConfigVars,
+  Inject,
+  ParamType,
+  Plugin,
+  Route,
+  OnSubmitFn,
+} from "../types";
 
 export default function Request({
   route,
@@ -14,11 +25,13 @@ export default function Request({
   plugins,
 }: {
   route: Route;
-  reFetch: () => void;
+  reFetch: OnSubmitFn;
   loading: boolean;
   plugins?: Plugin[];
 }) {
-  const { setParam } = useGlobalContext();
+  const { setParam, routeConfig } = useGlobalContext();
+  const routeConfigVars: undefined | RouteConfigVars = routeConfig[route.name];
+  const validationErrors = routeConfigVars?.validationErrors;
 
   return (
     <InjectPlugins
@@ -32,11 +45,15 @@ export default function Request({
       <Params paramType={ParamType.urlParams} reFetch={reFetch} route={route} />
       <Params paramType={ParamType.body} reFetch={reFetch} route={route} />
       <Params paramType={ParamType.qsParams} reFetch={reFetch} route={route} />
-      <Button
-        outline
-        className="flex-shrink-0"
-        onClick={() => Helpers.resetRequest(route, setParam)}
-      >
+      {!!validationErrors?.length ? (
+        <div className="my-2">
+          {(validationErrors || []).map((validationError, idx) => (
+            <Error key={idx}>{validationError}</Error>
+          ))}
+        </div>
+      ) : null}
+
+      <Button outline onClick={() => Helpers.resetRequest(route, setParam)}>
         Reset
       </Button>
       <Button className="ml-2" disabled={loading} onClick={reFetch}>
