@@ -1,40 +1,50 @@
-import React from "react";
-import { map, filter } from "lodash-es";
+import React, { useEffect, useMemo } from "react";
 
 import { useGlobalContext } from "./context/Context";
 import Route from "./Route";
+import Helpers from "./lib/helpers";
 
 import { Route as RouteProps } from "./types";
 
 export default function Workspace() {
-  const { workspace, getWorkspaceSearchKeywords } = useGlobalContext();
+  const {
+    workspace,
+    getWorkspaceSearchKeywords,
+    routeConfig,
+    setRouteConfig,
+  } = useGlobalContext();
   if (!workspace) {
     return <div>Select a workspace to get started.</div>;
   }
 
   const allRoutes = workspace && workspace.routes ? workspace.routes : [];
-  const filteredRoutes = filter(
-    allRoutes,
-    ({ name, path, sticky }: RouteProps) => {
-      const keywords: string = getWorkspaceSearchKeywords();
-      if (!keywords) {
-        return true;
-      }
-      return (
-        name.toLowerCase().includes(keywords.toLowerCase()) ||
-        path.toLowerCase().includes(keywords.toLowerCase()) ||
-        sticky
-      );
-    }
-  );
+
+  // Initializes new routes at startup
+  useEffect(() => {
+    let newRouteConfig = { ...routeConfig };
+    allRoutes.forEach((route) => {
+      newRouteConfig = Helpers.initializeRoute(newRouteConfig, route);
+    });
+    setRouteConfig(newRouteConfig);
+  }, [allRoutes]);
+
+  const keywords: string = getWorkspaceSearchKeywords();
+  const filteredRoutes = useMemo(() => {
+    return keywords
+      ? allRoutes.filter(
+          ({ name, path, sticky }: RouteProps) =>
+            name.toLowerCase().includes(keywords.toLowerCase()) ||
+            path.toLowerCase().includes(keywords.toLowerCase()) ||
+            sticky
+        )
+      : allRoutes;
+  }, [allRoutes, keywords]);
 
   return (
     <div className="p-4 mt-12">
-      {map(filteredRoutes, (r: RouteProps, idx) => {
-        return (
-          <Route key={`${r.method || "GET"}-${r.path}-${idx}`} route={r} />
-        );
-      })}
+      {filteredRoutes.map((r: RouteProps, idx) => (
+        <Route key={`${r.method || "GET"}-${r.path}-${idx}`} route={r} />
+      ))}
     </div>
   );
 }

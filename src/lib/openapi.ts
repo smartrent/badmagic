@@ -1,6 +1,6 @@
 import { groupBy, reduce, compact, map, omit } from "lodash-es";
 
-import { GenericObject, Route, Workspace, Param, Method } from "../types";
+import { Route, Workspace, Param, Method } from "../types";
 
 import {
   OpenApiParameterIn,
@@ -253,7 +253,7 @@ function deriveOpenApiPaths({
 
   return reduce(
     groupedRoutes,
-    (memo: GenericObject, routes: Route[], path: string) => {
+    (memo: Record<string, any>, routes: Route[], path: string) => {
       const openApiPath = convertPathToOpenApiFormat(path);
 
       if (!memo[openApiPath]) {

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { get, compact } from "lodash-es";
 import useAxios from "@smartrent/use-axios";
 import axios from "axios";
+import * as yup from "yup";
 
 import { useGlobalContext } from "./context/Context";
 import Request from "./route/Request";
@@ -10,28 +11,22 @@ import Navigation from "./route/Navigation";
 import Docs from "./route/Documentation";
 
 import Helpers from "./lib/helpers";
-import { Route, RouteConfig } from "./types";
+import { Route, RouteConfigVars } from "./types";
 
 export default function Route({ route }: { route: Route }) {
   const {
     routeConfig,
-    setRouteConfig,
+    setRouteConfigVars,
     setApiResponse,
     workspace,
     darkMode,
   } = useGlobalContext();
   const [collapsed, setCollapsed] = useState(true);
   const [activeTab, setActiveTab] = useState("request");
+  const routeConfigVars: RouteConfigVars = routeConfig[route.name];
 
-  // Initialize route config for this route if necessary
-  // @ts-ignore
-  const routeConfigVars: undefined | RouteConfig = routeConfig[route.name];
-  useEffect(() => {
-    if (!routeConfigVars) {
-      const newRouteConfig = Helpers.initializeRoute({ ...routeConfig }, route);
-      setRouteConfig(newRouteConfig);
-    }
-  }, [routeConfigVars]);
+  const userSpecifiedUrlParams: Record<string, any> =
+    routeConfigVars?.urlParams || {};
 
   const method = route.method ? route.method.toLowerCase() : "get";
   const { response, loading, error, reFetch } = useAxios({
@@ -42,7 +37,7 @@ export default function Route({ route }: { route: Route }) {
     method: route.method || "GET",
     url: Helpers.buildUrl({
       route,
-      urlParams: routeConfigVars?.urlParams || {},
+      urlParams: userSpecifiedUrlParams,
       baseUrl: workspace.config.baseUrl,
       qsParams: routeConfigVars?.qsParams || {},
     }),
@@ -51,20 +46,52 @@ export default function Route({ route }: { route: Route }) {
     },
   });
 
+  // Before submitting a network request, validate that the request is valid
+  // Note: Currently only supports URL Param validation
+  const reFetchWithValidation = useCallback(() => {
+    if (!routeConfigVars) {
+      return reFetch();
+    }
+    // @todo: Use Yup to validate all nested, required fields, currently this only supports urlParams
+    const requiredUrlParams = Helpers.getUrlParamsFromPath(route.path).reduce(
+      (accumulator, { name }) => {
+        accumulator[name] = yup
+          .string()
+          .required()
+          .min(1);
+
+        return accumulator;
+      },
+      {} as Record<string, any>
+    );
+
+    const yupSchema = yup.object({
+      urlParams: yup.object().shape(requiredUrlParams),
+    });
+    try {
+      yupSchema.validateSync(routeConfigVars);
+      setRouteConfigVars({ ...routeConfigVars, validationErrors: [] }, route);
+      return reFetch();
+    } catch (err) {
+      // Yup returns errors like `urlParams.someField is required`, so we trim off the prefix
+      setRouteConfigVars(
+        {
+          ...routeConfigVars,
+          validationErrors: err.errors.map((message: string) =>
+            message.slice(message.indexOf(".") + 1)
+          ),
+        },
+        route
+      );
+    }
+    return {};
+  }, [routeConfigVars, userSpecifiedUrlParams]);
+
   useEffect(() => {
     if (response || error || loading) {
       setApiResponse({ route, response, loading, error });
     }
   }, [response, loading, error, route]);
-
-  // The system must initialize the routeConfigVars before continuing
-  if (!routeConfigVars) {
-    return null;
-  }
-
-  if (!route) {
-    return null;
-  }
 
   // Route plugins completely override workspace plugins
   // If Route plugins are not specified, this will default to workspace plugins
@@ -87,8 +114,14 @@ export default function Route({ route }: { route: Route }) {
 
   const isDeprecated = route.deprecated || false;
 
-  const renderBody = (activeTab: string) => {
+  // Renders the Request/Response tab or the Documentation tab
+  const routeActiveTabDOM = useMemo(() => {
     let content;
+
+    // Route is collapsed, don't render any content
+    if (collapsed) {
+      return null;
+    }
 
     switch (activeTab) {
       case "request":
@@ -97,13 +130,13 @@ export default function Route({ route }: { route: Route }) {
             <Request
               route={route}
               loading={loading}
-              reFetch={reFetch}
+              reFetch={reFetchWithValidation}
               plugins={plugins}
             />
             <Response
               route={route}
               loading={loading}
-              reFetch={reFetch}
+              reFetch={reFetchWithValidation}
               plugins={plugins}
             />
           </>
@@ -119,7 +152,16 @@ export default function Route({ route }: { route: Route }) {
     }
 
     return content;
-  };
+  }, [activeTab, collapsed, loading]);
+
+  // The system must initialize the routeConfigVars before continuing
+  if (!routeConfigVars) {
+    return null;
+  }
+
+  if (!route) {
+    return null;
+  }
 
   return (
     <div
@@ -188,9 +230,7 @@ export default function Route({ route }: { route: Route }) {
           />
         </div>
       )}
-      <div className={collapsed ? "none" : "flex p-2"}>
-        {!collapsed && renderBody(activeTab)}
-      </div>
+      <div className={collapsed ? "none" : "flex p-2"}>{routeActiveTabDOM}</div>
     </div>
   );
 }

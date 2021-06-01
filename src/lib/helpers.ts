@@ -19,10 +19,23 @@ import {
   Workspace,
   ParamType,
   RouteConfig,
-  GenericObject,
+  RouteConfigVars,
   SetParamFn,
   Param,
 } from "../types";
+
+function defaultRouteConfigVars(): RouteConfigVars {
+  return {
+    urlParams: {},
+    qsParams: {},
+    body: {},
+    headers: {},
+    response: null,
+    error: null,
+    loading: false,
+    validationErrors: [],
+  };
+}
 
 const Helpers = {
   downloadOpenApiJson: ({ workspace }: { workspace: Workspace }) => {
@@ -45,16 +58,15 @@ const Helpers = {
     aLink.dispatchEvent(event);
   },
 
+  defaultRouteConfigVars,
+
+  // Sets a default set of Route Config Variables for a Route
   initializeRoute(routeConfig: RouteConfig, route: Route): RouteConfig {
-    return set(routeConfig, route.name, {
-      urlParams: {},
-      qsParams: {},
-      body: {},
-      headers: {},
-      response: null,
-      error: null,
-      loading: false,
-    });
+    // Already initialized
+    if (routeConfig[route.name]) {
+      return routeConfig;
+    }
+    return set(routeConfig, route.name, defaultRouteConfigVars());
   },
 
   getEnvForWorkspace(workspace: Workspace) {
@@ -77,7 +89,7 @@ const Helpers = {
     };
   },
 
-  findWorkspaceByName(workspaces: Workspace[], name: string): Workspace {
+  findWorkspaceByName(workspaces: Workspace[], name: null | string): Workspace {
     let workspace;
     if (name) {
       workspace = find(workspaces, { name });
@@ -91,7 +103,7 @@ const Helpers = {
     return newValues;
   },
 
-  findRouteConfigByWorkspace(workspace: Workspace) {
+  findRouteConfigByWorkspace(workspace: Workspace): Record<string, any> {
     if (!workspace) {
       return {};
     }
@@ -107,20 +119,20 @@ const Helpers = {
 
     const initialRouteConfig = transform(
       workspace.routes,
-      (memo: GenericObject, route) => {
+      (memo: Record<string, any>, route) => {
         memo[route.name] = {
           headers: {},
           urlParams: {},
           body: transform(
             route.body ? route.body : [],
-            (bodyMemo: GenericObject, param: Param) => {
+            (bodyMemo: Record<string, any>, param: Param) => {
               bodyMemo[param.name] = param.defaultValue;
             },
             {}
           ),
           qsParams: transform(
             route.qsParams || [],
-            (qsMemo: GenericObject, param: Param) => {
+            (qsMemo: Record<string, any>, param: Param) => {
               qsMemo[param.name] = param.defaultValue;
             },
             {}
@@ -150,8 +162,8 @@ const Helpers = {
   }: {
     route: Route;
     baseUrl: string;
-    urlParams: GenericObject;
-    qsParams?: GenericObject;
+    urlParams: Record<string, any>;
+    qsParams?: Record<string, any>;
   }) {
     const stringifiedQS =
       qsParams && !!Object.keys(qsParams).length ? stringify(qsParams) : "";
@@ -166,7 +178,9 @@ const Helpers = {
     );
   },
 
-  getUrlParamsFromPath(path: string): { label: string; name: string }[] {
+  getUrlParamsFromPath(
+    path: string
+  ): { label: string; name: string; required: true; nullable: false }[] {
     const splitPath = path.split("/");
 
     return compact(
@@ -175,7 +189,12 @@ const Helpers = {
           return null;
         }
         const name = part.slice(1);
-        return { label: startCase(name), name };
+        return {
+          label: startCase(name),
+          name,
+          required: true,
+          nullable: false,
+        };
       })
     );
   },
@@ -192,7 +211,7 @@ const Helpers = {
     },
   },
 
-  resetRequest(route: Route, setParamFn: SetParamFn) {
+  resetRequest(route: Route, setParamFn: SetParamFn): void {
     setParamFn({
       value: {},
       pathToValue: `[${route.name}][${ParamType.urlParams}]`,

@@ -1,6 +1,27 @@
 # Changelog
 
+## v0.0.26
+
+### Features
+
+- If a `Param` has a `description`, it will render an info question mark to help provide more information to the end-user.
+- A previous version added support for `nullable: true` for the OpenAPI spec when downloading JSON. Now the badmagic UI respects that and won't show the `Null` button if a field can't be nullable
+- Before a network request is submitted by the end user, badmagic now validates that the `URL Params` all have values using `Yup`. If they don't the request fails with validation errors. Note: We are planning on adding support for validating `body` params in the future but for now, even though they can be marked as required and the red asterisk shows up, badmagic will allow the network request to continue.
+
+### Bugfixes
+
+- URL Params are always required but a previous iteration caused URL Params to lose the red asterisk indicating it was required. This has been added back.
+- New routes weren't showing up if local storage wasn't cleared for that workspace (presumed fixed in 0.0.24 but there were instances where this was still occurring). Workspace initialization (including all of a workspace's routes) has been moved to Workspace.tsx from Route.tsx. The problem was that we were writing to localstorage asynchronously so sometimes routes that were being initialized were clobbering other routes that has been just saved to local storage, causing them not to render. This also should improve performance because Route.tsx should generally have less re-renders.
+
+### Enhancements
+
+- Improved Typescript specifications in many areas
+- Misc. cleanup on components to break them apart more
+- Uses `useMemo` and `useCallback` in a few areas to improve performance
+
 ## v0.0.25
+
+### Features
 
 - If `deprecated: true` is specified for a route, it will show a deprecated tag in the UI for that route
 - Autocollapse portions of large json response to improve rendering performance

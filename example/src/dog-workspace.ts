@@ -162,7 +162,7 @@ export const dogWorkspace = {
         },
         {
           name: "info",
-          description: "Here is some info about this field"
+          description: "Here is some info about this field",
         },
       ],
       example: {
@@ -179,7 +179,7 @@ export const dogWorkspace = {
           description: "successful operation",
         },
       },
-      deprecated: true
+      deprecated: true,
     },
   ],
 };

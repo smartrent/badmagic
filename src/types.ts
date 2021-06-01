@@ -1,3 +1,5 @@
+import { AxiosResponse } from "axios";
+
 import {
   OpenApiComponents,
   OpenApiResponses,
@@ -9,10 +11,6 @@ import {
   OpenApiServer,
   OpenApiSchema,
 } from "openapi-v3";
-
-export interface GenericObject {
-  [key: string]: any;
-}
 
 export type Workspace = {
   id: string;
@@ -35,16 +33,37 @@ export type Workspace = {
   externalDocs?: OpenApiExternalDocs;
 };
 
-export type RouteConfig = {
-  [key: string]: {
-    urlParams: Param[];
-    qsParams: Param[];
-    body: Param[];
-    headers: GenericObject;
-    response: null | GenericObject;
-    error: null | any;
-    loading: boolean;
-  };
+// Route Config is a set of initialized Route Variables for a workspace. (See below)
+export type RouteConfig = Record<string, RouteConfigVars>;
+
+// Variables for a route saved to React state and local storage
+export type RouteConfigVars = {
+  urlParams: Record<string, Param>;
+  qsParams: Record<string, Param>;
+  body: Record<string, Param>;
+  headers: Record<string, any>;
+  response: null | AxiosResponse;
+  error: null | any;
+  loading: boolean;
+  validationErrors: string[]; // yup validation errors
+};
+
+export type Route = {
+  name: string; // must be unique
+  description?: string;
+  summary?: string;
+  path: string;
+  body?: Param[];
+  qsParams?: Param[];
+  method?: Method;
+  plugins?: Plugin[];
+  documentation?: string;
+  example?: Record<string, any>; // e.g. {first_name: "John", last_name: "Doe", ...}
+  sticky?: boolean; // whether the route should stick to the top of the workspace or not
+
+  responses?: OpenApiResponses; // OpenApi Responses
+  tags?: string[];
+  deprecated?: boolean;
 };
 
 export type Option = {
@@ -87,24 +106,6 @@ export enum Method {
   DELETE = "DELETE",
 }
 
-export type Route = {
-  name: string; // must be unique
-  description?: string;
-  summary?: string;
-  path: string;
-  body?: Param[];
-  qsParams?: Param[];
-  method?: Method;
-  plugins?: Plugin[];
-  documentation?: string;
-  example?: GenericObject; // e.g. {first_name: "John", last_name: "Doe", ...}
-  sticky?: boolean; // whether the route should stick to the top of the workspace or not
-
-  responses?: OpenApiResponses; // OpenApi Responses
-  tags?: string[];
-  deprecated?: boolean;
-};
-
 export enum Inject {
   asRequest = "asRequest",
   asResponse = "asResponse",
@@ -112,7 +113,13 @@ export enum Inject {
 
 export type Plugin = {
   inject: Inject;
-  Component: any;
+  Component: React.FC<{
+    plugin: Plugin;
+    context: Record<string, any>;
+    route: Route;
+    reFetch: OnSubmitFn;
+    loading: boolean;
+  }>;
 };
 
 export type PluginProps = {
@@ -135,3 +142,57 @@ export interface SetParamPayload {
 export type SetParamFn = (payload: SetParamPayload) => void;
 
 export type Size = "xs" | "sm" | "lg" | "xl";
+
+export type OnSubmitFn = () => void;
+export interface RenderInputsProps {
+  pathToValue: string;
+  inputs: Param[];
+  onSubmit: OnSubmitFn;
+  className: string;
+}
+
+export interface RenderInputByDataTypeProps {
+  pathToValue: string;
+  onSubmit: OnSubmitFn;
+  param: Param;
+  onRemoveCell?: () => void;
+}
+
+export interface RenderObjectProps {
+  pathToValue: string;
+  param: Param;
+  onSubmit: OnSubmitFn;
+  label?: string;
+  onRemoveCell?: () => void;
+}
+
+export interface RenderArrayOfInputsProps {
+  pathToValue: string;
+  param: Param;
+  onSubmit: OnSubmitFn;
+  label: string;
+}
+
+export interface ApplyNullValueButtonProps {
+  value: any;
+  pathToValue: string;
+  onRemoveCell?: () => void;
+}
+
+export interface ClearValueButtonProps {
+  pathToValue: string;
+  onRemoveCell?: () => void;
+  hidden: boolean;
+}
+
+export interface AddArrayCellProps {
+  values: any[];
+  pathToValue: string;
+  param: Param;
+}
+
+export interface RemoveArrayCellButtonProps {
+  onRemoveCell?: () => void;
+  className?: string;
+  label?: string;
+}
