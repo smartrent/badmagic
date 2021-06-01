@@ -111,22 +111,17 @@ export enum Inject {
   asResponse = "asResponse",
 }
 
-export type Plugin = {
-  inject: Inject;
-  Component: React.FC<{
-    plugin: Plugin;
-    context: Record<string, any>;
-    route: Route;
-    reFetch: OnSubmitFn;
-    loading: boolean;
-  }>;
-};
-
 export type PluginProps = {
   route: Route;
-  context: any;
+  plugin: Plugin;
+  context: Record<string, any>;
   loading: boolean;
-  reFetch: () => void;
+  reFetch: OnSubmitFn;
+};
+
+export type Plugin = {
+  inject: Inject;
+  Component: React.ComponentType<PluginProps>;
 };
 
 export interface Icon {

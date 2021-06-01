@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { map, filter } from "lodash-es";
 
-import { Route, Inject, Plugin } from "../types";
+import { Route, Inject, Plugin, OnSubmitFn } from "../types";
 import { useGlobalContext } from "../context/Context";
 
 export default function InjectPlugins({
@@ -16,7 +16,7 @@ export default function InjectPlugins({
 }: {
   inject?: Inject;
   route: Route;
-  reFetch: () => void;
+  reFetch: OnSubmitFn;
   children: React.ReactNode;
   loading: boolean;
   plugins: Plugin[];

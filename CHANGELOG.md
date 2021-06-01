@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.0.27
+
+### Bugfixes
+
+- Cleanup TypeScript definitions when the plugin system is being used so TS errors aren't thrown
+
 ## v0.0.26
 
 ### Features

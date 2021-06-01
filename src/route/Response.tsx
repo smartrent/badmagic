@@ -3,7 +3,7 @@ import React from "react";
 import ApiError from "./ApiError";
 import ApiResponse from "./ApiResponse";
 import InjectPlugins from "./InjectPlugins";
-import { Route, Inject, Plugin } from "../types";
+import { Route, Inject, Plugin, OnSubmitFn } from "../types";
 import BodyPreview from "./BodyPreview";
 
 export default function Response({
@@ -13,7 +13,7 @@ export default function Response({
   plugins,
 }: {
   route: Route;
-  reFetch: () => {};
+  reFetch: OnSubmitFn;
   loading: boolean;
   plugins?: Plugin[];
 }) {
