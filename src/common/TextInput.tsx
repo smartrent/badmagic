@@ -1,6 +1,9 @@
 import React from "react";
 
-const Input = ({ className, ...rest }: any) => {
+const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({
+  className,
+  ...rest
+}) => {
   return (
     <input
       className={

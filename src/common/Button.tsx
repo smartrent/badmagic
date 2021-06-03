@@ -1,6 +1,11 @@
 import React from "react";
 
-const Button = ({ className, outline, ...rest }: any) => {
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  outline?: boolean;
+}
+
+const Button: React.FC<ButtonProps> = ({ className, outline, ...rest }) => {
   return (
     <button
       className={
