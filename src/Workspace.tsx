@@ -21,11 +21,13 @@ export default function Workspace() {
 
   // Initializes new routes at startup
   useEffect(() => {
-    let newRouteConfig = { ...routeConfig };
-    allRoutes.forEach((route) => {
-      newRouteConfig = Helpers.initializeRoute(newRouteConfig, route);
-    });
-    setRouteConfig(newRouteConfig);
+    if (allRoutes?.length) {
+      let newRouteConfig = { ...routeConfig };
+      allRoutes.forEach((route) => {
+        newRouteConfig = Helpers.initializeRoute(newRouteConfig, route);
+      });
+      setRouteConfig(newRouteConfig);
+    }
   }, [allRoutes]);
 
   const keywords: string = getWorkspaceSearchKeywords();
