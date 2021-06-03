@@ -7,7 +7,7 @@ import { Size } from "../types";
 
 type Props = {
   children: React.ReactNode;
-  onClick?: () => void;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
   style?: React.CSSProperties;
   size?: Size;
   marginBottomClass?: string;

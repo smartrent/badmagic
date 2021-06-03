@@ -12,7 +12,7 @@ export default function EnvironmentVariables() {
   const { environment, setEnvVar, deleteEnvVar, darkMode } = useGlobalContext();
 
   const [newVarName, setNewVarName] = useState("");
-  const checkIfSubmitted = (e: KeyboardEvent) => {
+  const checkIfSubmitted = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e && e.key === "Enter") {
       setEnvVar({ key: newVarName, value: "" });
       setNewVarName("");
@@ -61,10 +61,8 @@ export default function EnvironmentVariables() {
           type="text"
           className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
           value={newVarName}
-          onChange={(e: React.FormEvent<HTMLInputElement>) =>
-            setNewVarName(e.currentTarget.value)
-          }
-          onKeyDown={(e: KeyboardEvent) => checkIfSubmitted(e)}
+          onChange={(e) => setNewVarName(e.currentTarget.value)}
+          onKeyDown={checkIfSubmitted}
           placeholder="Specify env name and press Enter to continue"
         />
       </div>

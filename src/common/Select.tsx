@@ -1,6 +1,9 @@
 import React from "react";
 
-const Select = ({ className, ...rest }: any) => {
+const Select: React.FC<React.SelectHTMLAttributes<HTMLSelectElement>> = ({
+  className,
+  ...rest
+}) => {
   return (
     <div className="relative w-full">
       <select
