@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.0.28
+
+### Bugfixes
+
+- Ensure Workspace selected before initializing routes in local storage. Fixes bug where application would freeze if no workspace selected
+
+### Enhancements
+
+- Improved TS definitions
+
 ## v0.0.27
 
 ### Bugfixes
