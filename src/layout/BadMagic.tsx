@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
 import { flatMap, get } from "lodash-es";
 
 import Config from "./Config";
@@ -6,6 +6,7 @@ import { useGlobalContext } from "../context/Context";
 import TextInput from "../common/TextInput";
 import Route from "../Route";
 import Helpers from "../lib/helpers";
+import Storage from "../lib/storage";
 
 import { Route as RouteType, Workspace } from "../types";
 
@@ -16,9 +17,27 @@ export function BadMagic({ workspaces }: { workspaces: Workspace[] }) {
   const { darkMode } = useGlobalContext();
   const [keywords, setKeywords] = useState("");
   const [activeRouteName, setActiveRouteName] = useState("");
-  const [activeWorkspaceNames, setActiveWorkspaceNames] = useState<string[]>(
-    workspaceNames // @todo pull from local storage
+  const [activeWorkspaceNames, setActiveWorkspaceNamesInState] = useState<
+    string[]
+  >([]);
+
+  // Saves activeWorkspaces to local storage so on page refresh the user doesn't need to re-filter
+  const setActiveWorkspaceNames = useCallback(
+    (workspaceNames: string[]) => {
+      setActiveWorkspaceNamesInState(workspaceNames);
+      Storage.set({ key: "activeWorkspaces", value: workspaceNames });
+    },
+    [setActiveWorkspaceNamesInState]
   );
+
+  // On page load, fetch active workspaces stored in local storage and filter down to those
+  useEffect(() => {
+    const activeWorkspacesFromLocalStorage = Storage.get({
+      key: "activeWorkspaces",
+    });
+
+    setActiveWorkspaceNames(activeWorkspacesFromLocalStorage || workspaceNames);
+  }, []);
 
   const allRoutes = useMemo(() => {
     return flatMap(workspaces, ({ routes, config, name }) => {
@@ -88,7 +107,7 @@ export function BadMagic({ workspaces }: { workspaces: Workspace[] }) {
         }`}
       >
         <div className="text-sm col-span-3 p-2">
-          <div className="mb-2 mr-2">
+          <div className="mt-1 mb-2 mr-2">
             <TextInput
               type="text"
               placeholder="Search Routes"
@@ -110,7 +129,7 @@ export function BadMagic({ workspaces }: { workspaces: Workspace[] }) {
                 >
                   <div className="flex">
                     <div
-                      className={`w-16 flex flex-shrink items-center justify-center text-gray-700 font-semibold mr-1 p-0 border rounded ${
+                      className={`text-xs w-12 flex flex-shrink items-center justify-center text-gray-700 font-semibold mr-1 p-0 border rounded ${
                         darkMode ? "border-gray-700" : "border-gray-300"
                       }`}
                       style={{
@@ -130,7 +149,7 @@ export function BadMagic({ workspaces }: { workspaces: Workspace[] }) {
             ))}
           </div>
         </div>
-        <div className="col-span-9 p-2">
+        <div className="col-span-9 p-4">
           {activeRoute ? (
             <Route route={activeRoute} baseUrl={activeRoute?.baseUrl} />
           ) : null}

@@ -111,123 +111,134 @@ export default function Route({
   return (
     <div
       style={route.sticky ? { borderRight: "1px solid rgb(251, 189, 28)" } : {}}
-      className={`border rounded overflow-x-hidden ${
-        darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-300"
-      }`}
     >
       <div
-        className="flex justify-start items-center overflow-hidden p-2"
-        style={{ cursor: "pointer" }}
+        className={`text-xl ${darkMode ? "text-gray-100" : "text-gray-800"}`}
       >
-        <div
-          className={`w-16 flex flex-shrink-0 items-center justify-center text-xs text-gray-700 font-semibold p-1 mr-2 border rounded ${
-            darkMode ? "border-gray-700" : "border-gray-300"
-          }`}
-          style={{
-            backgroundColor: get(Helpers.colors.routes, method),
-          }}
-        >
-          {method.toUpperCase()}
-        </div>
-
-        {route?.deprecated && (
+        Try Request
+      </div>
+      <div
+        className={`overflow-hidden p-2 border rounded overflow-x-hidden mb-4 ${
+          darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-300"
+        }`}
+      >
+        <div className="flex justify-start items-center mb-4">
           <div
-            className={`flex flex-shrink-0 items-center justify-center text-xs text-white font-semibold p-1 mr-2 bg-red-700 rounded`}
+            className={`w-16 flex flex-shrink-0 items-center justify-center text-xs text-gray-700 font-semibold p-1 mr-2 border rounded ${
+              darkMode ? "border-gray-700" : "border-gray-300"
+            }`}
+            style={{
+              backgroundColor: get(Helpers.colors.routes, method),
+            }}
           >
-            DEPRECATED
+            {method.toUpperCase()}
           </div>
-        )}
 
-        <div
-          className={`flex flex-grow-2 mr-auto ${
-            darkMode ? "text-gray-100" : "text-gray-800"
-          }`}
-        >
-          {Helpers.buildUrl({
-            route,
-            urlParams,
-            baseUrl: "",
-            qsParams,
-          })}
-        </div>
-        <div
-          className={`flex text-right ml-2 mr-1 items-center ${
-            darkMode ? "text-gray-100" : "text-gray-800"
-          }`}
-        >
-          {route.name}
-        </div>
-      </div>
-      <div className="flex p-2 mb-2">
-        <>
-          <InjectPlugins
-            style={{ flex: 1, marginRight: "1rem" }}
-            inject={Inject.asRequest}
-            route={route}
-            reFetch={reFetchWithValidation}
-            loading={loading}
-            plugins={plugins || []}
-          >
-            <Params
-              paramType={ParamType.urlParams}
-              reFetch={reFetchWithValidation}
-              route={route}
-              values={urlParams}
-              setValues={setUrlParams}
-            />
-            <Params
-              paramType={ParamType.body}
-              reFetch={reFetchWithValidation}
-              route={route}
-              values={body}
-              setValues={setBody}
-            />
-            <Params
-              paramType={ParamType.qsParams}
-              reFetch={reFetchWithValidation}
-              route={route}
-              values={qsParams}
-              setValues={setQsParams}
-            />
-            {!!validationErrors?.length ? (
-              <div className="my-2">
-                {(validationErrors || []).map((validationError, idx) => (
-                  <Error key={idx}>{validationError}</Error>
-                ))}
-              </div>
-            ) : null}
-
-            <Button outline onClick={resetAllParams}>
-              Reset
-            </Button>
-            <Button
-              className="ml-2"
-              disabled={loading}
-              onClick={reFetchWithValidation}
+          {route?.deprecated && (
+            <div
+              className={`flex flex-shrink-0 items-center justify-center text-xs text-white font-semibold p-1 mr-2 bg-red-700 rounded`}
             >
-              {loading ? "Loading..." : "Try"}
-            </Button>
-          </InjectPlugins>
-          <InjectPlugins
-            style={{ flex: 3, overflow: "hidden" }}
-            inject={Inject.asResponse}
-            route={route}
-            reFetch={reFetchWithValidation}
-            loading={loading}
-            plugins={plugins || []}
+              DEPRECATED
+            </div>
+          )}
+
+          <div
+            className={`flex flex-grow-2 mr-auto ${
+              darkMode ? "text-gray-100" : "text-gray-800"
+            }`}
           >
-            <BodyPreview body={body} />
-            <ApiResponse response={response} />
-            <ApiError error={error as AxiosError} />
-          </InjectPlugins>
-        </>
-      </div>
-      <div>
-        <div
-          className={`text-xl ${darkMode ? "text-gray-100" : "text-gray-800"}`}
-        >
-          Documentation
+            {Helpers.buildUrl({
+              route,
+              urlParams,
+              baseUrl: "",
+              qsParams,
+            })}
+          </div>
+          <div
+            className={`flex text-right ml-2 mr-1 items-center ${
+              darkMode ? "text-gray-100" : "text-gray-800"
+            }`}
+          >
+            {route.name}
+          </div>
         </div>
+
+        <div className="flex p-2 mb-2">
+          <>
+            <InjectPlugins
+              style={{ flex: 1, marginRight: "1rem" }}
+              inject={Inject.asRequest}
+              route={route}
+              reFetch={reFetchWithValidation}
+              loading={loading}
+              plugins={plugins || []}
+            >
+              <Params
+                paramType={ParamType.urlParams}
+                reFetch={reFetchWithValidation}
+                route={route}
+                values={urlParams}
+                setValues={setUrlParams}
+              />
+              <Params
+                paramType={ParamType.body}
+                reFetch={reFetchWithValidation}
+                route={route}
+                values={body}
+                setValues={setBody}
+              />
+              <Params
+                paramType={ParamType.qsParams}
+                reFetch={reFetchWithValidation}
+                route={route}
+                values={qsParams}
+                setValues={setQsParams}
+              />
+              {!!validationErrors?.length ? (
+                <div className="my-2">
+                  {(validationErrors || []).map((validationError, idx) => (
+                    <Error key={idx}>{validationError}</Error>
+                  ))}
+                </div>
+              ) : null}
+
+              <Button outline onClick={resetAllParams}>
+                Reset
+              </Button>
+              <Button
+                className="ml-2"
+                disabled={loading}
+                onClick={reFetchWithValidation}
+              >
+                {loading ? "Loading..." : "Try"}
+              </Button>
+            </InjectPlugins>
+            <InjectPlugins
+              style={{ flex: 3, overflow: "hidden" }}
+              inject={Inject.asResponse}
+              route={route}
+              reFetch={reFetchWithValidation}
+              loading={loading}
+              plugins={plugins || []}
+            >
+              <BodyPreview body={body} />
+              <ApiResponse response={response} />
+              <ApiError error={error as AxiosError} />
+            </InjectPlugins>
+          </>
+        </div>
+      </div>
+
+      <div
+        className={`text-xl ${darkMode ? "text-gray-100" : "text-gray-800"}`}
+      >
+        Documentation
+      </div>
+      <div
+        className={`px-4 border rounded overflow-x-hidden ${
+          darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-300"
+        }`}
+      >
         <Docs documentation={route.documentation} darkMode={darkMode} />
       </div>
     </div>
