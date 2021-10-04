@@ -29,8 +29,6 @@ export default function Route({
   workspacePlugins?: any[];
 }) {
   const { darkMode } = useGlobalContext();
-  const [collapsed, setCollapsed] = useState(true);
-  const [activeTab, setActiveTab] = useState("request");
   const [validationErrors, setValidationErrors] = useState([]);
   const [urlParams, setUrlParams] = useState({});
   const [qsParams, setQsParams] = useState({});
@@ -110,122 +108,15 @@ export default function Route({
   const plugins =
     route.plugins && route.plugins.length ? route.plugins : workspacePlugins;
 
-  // Tabs for the navigation component for each route
-  const tabs = compact([
-    {
-      key: "request",
-      label: "Try Request",
-    },
-    route.documentation
-      ? {
-          key: "docs",
-          label: "Documentation",
-        }
-      : null,
-  ]);
-
-  // Renders the Request/Response tab or the Documentation tab
-  const routeActiveTabDOM = useMemo(() => {
-    let content;
-
-    // Route is collapsed, don't render any content
-    if (collapsed) {
-      return null;
-    }
-
-    switch (activeTab) {
-      case "request":
-        content = (
-          <>
-            <InjectPlugins
-              style={{ flex: 1, marginRight: "1rem" }}
-              inject={Inject.asRequest}
-              route={route}
-              reFetch={reFetchWithValidation}
-              loading={loading}
-              plugins={plugins || []}
-            >
-              <Params
-                paramType={ParamType.urlParams}
-                reFetch={reFetchWithValidation}
-                route={route}
-                values={urlParams}
-                setValues={setUrlParams}
-              />
-              <Params
-                paramType={ParamType.body}
-                reFetch={reFetchWithValidation}
-                route={route}
-                values={body}
-                setValues={setBody}
-              />
-              <Params
-                paramType={ParamType.qsParams}
-                reFetch={reFetchWithValidation}
-                route={route}
-                values={qsParams}
-                setValues={setQsParams}
-              />
-              {!!validationErrors?.length ? (
-                <div className="my-2">
-                  {(validationErrors || []).map((validationError, idx) => (
-                    <Error key={idx}>{validationError}</Error>
-                  ))}
-                </div>
-              ) : null}
-
-              <Button outline onClick={resetAllParams}>
-                Reset
-              </Button>
-              <Button
-                className="ml-2"
-                disabled={loading}
-                onClick={reFetchWithValidation}
-              >
-                {loading ? "Loading..." : "Try"}
-              </Button>
-            </InjectPlugins>
-            <InjectPlugins
-              style={{ flex: 3, overflow: "hidden" }}
-              inject={Inject.asResponse}
-              route={route}
-              reFetch={reFetchWithValidation}
-              loading={loading}
-              plugins={plugins || []}
-            >
-              <BodyPreview body={body} />
-              <ApiResponse response={response} />
-              <ApiError error={error as AxiosError} />
-            </InjectPlugins>
-          </>
-        );
-        break;
-      case "docs":
-        content = (
-          <Docs documentation={route.documentation} darkMode={darkMode} />
-        );
-        break;
-      default:
-        content = <p className="italic p-2">Something went wrong...</p>;
-    }
-
-    return content;
-  }, [activeTab, collapsed, loading]);
-
-  if (!route) {
-    return null;
-  }
-
   return (
     <div
       style={route.sticky ? { borderRight: "1px solid rgb(251, 189, 28)" } : {}}
-      className={`border rounded overflow-x-hidden my-2 ${
+      className={`border rounded overflow-x-hidden ${
         darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-300"
       }`}
     >
       <div
         className="flex justify-start items-center overflow-hidden p-2"
-        onClick={() => setCollapsed(!collapsed)}
         style={{ cursor: "pointer" }}
       >
         <div
@@ -265,25 +156,80 @@ export default function Route({
           }`}
         >
           {route.name}
-          {route.sticky ? (
-            <span className="text-xs ml-1" title="Sticky">
-              ⭐
-            </span>
-          ) : (
-            ""
-          )}
         </div>
       </div>
-      {!collapsed && tabs && tabs.length > 1 && (
-        <div className={collapsed ? "none" : "w-full p-2"}>
-          <Navigation
-            tabs={tabs}
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-          />
+      <div className="flex p-2 mb-2">
+        <>
+          <InjectPlugins
+            style={{ flex: 1, marginRight: "1rem" }}
+            inject={Inject.asRequest}
+            route={route}
+            reFetch={reFetchWithValidation}
+            loading={loading}
+            plugins={plugins || []}
+          >
+            <Params
+              paramType={ParamType.urlParams}
+              reFetch={reFetchWithValidation}
+              route={route}
+              values={urlParams}
+              setValues={setUrlParams}
+            />
+            <Params
+              paramType={ParamType.body}
+              reFetch={reFetchWithValidation}
+              route={route}
+              values={body}
+              setValues={setBody}
+            />
+            <Params
+              paramType={ParamType.qsParams}
+              reFetch={reFetchWithValidation}
+              route={route}
+              values={qsParams}
+              setValues={setQsParams}
+            />
+            {!!validationErrors?.length ? (
+              <div className="my-2">
+                {(validationErrors || []).map((validationError, idx) => (
+                  <Error key={idx}>{validationError}</Error>
+                ))}
+              </div>
+            ) : null}
+
+            <Button outline onClick={resetAllParams}>
+              Reset
+            </Button>
+            <Button
+              className="ml-2"
+              disabled={loading}
+              onClick={reFetchWithValidation}
+            >
+              {loading ? "Loading..." : "Try"}
+            </Button>
+          </InjectPlugins>
+          <InjectPlugins
+            style={{ flex: 3, overflow: "hidden" }}
+            inject={Inject.asResponse}
+            route={route}
+            reFetch={reFetchWithValidation}
+            loading={loading}
+            plugins={plugins || []}
+          >
+            <BodyPreview body={body} />
+            <ApiResponse response={response} />
+            <ApiError error={error as AxiosError} />
+          </InjectPlugins>
+        </>
+      </div>
+      <div>
+        <div
+          className={`text-xl ${darkMode ? "text-gray-100" : "text-gray-800"}`}
+        >
+          Documentation
         </div>
-      )}
-      <div className={collapsed ? "none" : "flex p-2"}>{routeActiveTabDOM}</div>
+        <Docs documentation={route.documentation} darkMode={darkMode} />
+      </div>
     </div>
   );
 }

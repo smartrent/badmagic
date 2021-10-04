@@ -41,11 +41,11 @@ export default function Config({
       </button>
       {!collapsed && (
         <div
-          className={
+          className={`absolute flex flex-col border p-2 z-10 rounded ${
             darkMode
-              ? "absolute flex flex-col bg-gray-900 border border-gray-700 rounded p-2 z-10"
-              : "absolute flex flex-col bg-white border border-gray-300 rounded p-2 z-10"
-          }
+              ? "bg-gray-900 border-gray-700"
+              : "bg-white border-gray-300"
+          }`}
           style={{ top: "0.25rem", right: "0.25rem" }}
         >
           <div className="flex self-end">
