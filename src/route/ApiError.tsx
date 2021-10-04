@@ -1,38 +1,23 @@
-import React, { useContext } from "react";
-import { get, isObject } from "lodash-es";
+import React from "react";
+import { isObject } from "lodash-es";
 import ReactJson from "react-json-view";
+import { AxiosError } from "axios";
 
 import Headers from "./Headers";
 import { useGlobalContext } from "../context/Context";
 
 import Helpers from "../lib/helpers";
-import { Route } from "../types";
 
-export default function ApiError({ route }: { route: Route }) {
-  const context = useGlobalContext();
-  const routeConfigVars = get(context.routeConfig, route.name, {
-    error: {
-      response: {
-        status: 0,
-        data: "",
-      },
-      config: {
-        method: "GET",
-        url: "",
-        headers: {},
-      },
-    },
-  });
-
-  const { error } = routeConfigVars;
-  if (!(error && error.response)) {
+export default function ApiError({ error }: { error: null | AxiosError }) {
+  const { darkMode } = useGlobalContext();
+  if (!error?.response) {
     return null;
   }
 
   let responseColor;
-  if (error.response.status >= 200 && error.response.status < 300) {
+  if (error?.response?.status >= 200 && error?.response?.status < 300) {
     responseColor = Helpers.colors.green;
-  } else if (error.response.status >= 400) {
+  } else if (error?.response?.status >= 400) {
     responseColor = Helpers.colors.red;
   }
 
@@ -58,14 +43,14 @@ export default function ApiError({ route }: { route: Route }) {
           displayObjectSize={false}
           displayDataTypes={false}
           src={error.response.data}
-          theme={Helpers.reactJsonViewTheme(context.darkMode)}
+          theme={Helpers.reactJsonViewTheme(darkMode)}
         />
       )}
 
       {error.response.data && !isJSON && (
         <div
           className={`border border-gray-400 p-2 ${
-            context.darkMode ? "text-white" : ""
+            darkMode ? "text-white" : ""
           }`}
         >
           {error.response.data}

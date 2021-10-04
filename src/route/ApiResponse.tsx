@@ -1,26 +1,19 @@
-import React, { useContext } from "react";
-import { get, isObject } from "lodash-es";
+import React from "react";
+import { isObject } from "lodash-es";
 import ReactJson from "react-json-view";
+import { AxiosResponse } from "axios";
 
 import Headers from "./Headers";
 import { useGlobalContext } from "../context/Context";
 import Helpers from "../lib/helpers";
-import { Route } from "../types";
 
-export default function ApiResponse({ route }: { route: Route }) {
-  const { routeConfig, darkMode } = useGlobalContext();
-  const routeConfigVars = get(routeConfig, route.name, {
-    response: {
-      status: 0,
-      data: "",
-      config: {
-        url: "",
-      },
-      headers: {},
-    },
-  });
+export default function ApiResponse({
+  response,
+}: {
+  response: null | AxiosResponse;
+}) {
+  const { darkMode } = useGlobalContext();
 
-  const { response } = routeConfigVars;
   if (!response) {
     return null;
   }

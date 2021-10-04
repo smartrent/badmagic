@@ -1,41 +1,10 @@
 import React from "react";
-import {
-  get,
-  set,
-  reduce,
-  find,
-  compact,
-  map,
-  startCase,
-  transform,
-} from "lodash-es";
+import { get, set, reduce, compact, map, startCase } from "lodash-es";
 import { stringify } from "querystring";
 
-import Storage from "./storage";
 import OpenApi from "./openapi";
 
-import {
-  Route,
-  Workspace,
-  ParamType,
-  RouteConfig,
-  RouteConfigVars,
-  SetParamFn,
-  Param,
-} from "../types";
-
-function defaultRouteConfigVars(): RouteConfigVars {
-  return {
-    urlParams: {},
-    qsParams: {},
-    body: {},
-    headers: {},
-    response: null,
-    error: null,
-    loading: false,
-    validationErrors: [],
-  };
-}
+import { Route, Workspace, ParamType, SetParamFn } from "../types";
 
 const Helpers = {
   downloadOpenApiJson: ({ workspace }: { workspace: Workspace }) => {
@@ -58,25 +27,6 @@ const Helpers = {
     aLink.dispatchEvent(event);
   },
 
-  defaultRouteConfigVars,
-
-  // Sets a default set of Route Config Variables for a Route
-  initializeRoute(routeConfig: RouteConfig, route: Route): RouteConfig {
-    // Already initialized
-    if (routeConfig[route.name]) {
-      return routeConfig;
-    }
-    return set(routeConfig, route.name, defaultRouteConfigVars());
-  },
-
-  getEnvForWorkspace(workspace: Workspace) {
-    if (!(workspace && workspace.id)) {
-      return null;
-    }
-    // Default environment with any changes specified by end-user
-    return Storage.get({ key: `${workspace.id}-env` });
-  },
-
   getDefaultWorkspace(): Workspace {
     return {
       id: "",
@@ -89,69 +39,10 @@ const Helpers = {
     };
   },
 
-  findWorkspaceByName(workspaces: Workspace[], name: null | string): Workspace {
-    let workspace;
-    if (name) {
-      workspace = find(workspaces, { name });
-    }
-    return workspace || Helpers.getDefaultWorkspace();
-  },
-
   setArrayCellValue(values: any[], cell: number, newValue: any): any[] {
     let newValues = [...values];
     newValues[cell] = newValue;
     return newValues;
-  },
-
-  findRouteConfigByWorkspace(workspace: Workspace): Record<string, any> {
-    if (!workspace) {
-      return {};
-    }
-    const routeConfig = Storage.get({
-      key: `${workspace.id}-route-config`,
-    });
-
-    if (routeConfig) {
-      return routeConfig;
-    }
-
-    // stub out routeConfig
-
-    const initialRouteConfig = transform(
-      workspace.routes,
-      (memo: Record<string, any>, route) => {
-        memo[route.name] = {
-          headers: {},
-          urlParams: {},
-          body: transform(
-            route.body ? route.body : [],
-            (bodyMemo: Record<string, any>, param: Param) => {
-              bodyMemo[param.name] = param.defaultValue;
-            },
-            {}
-          ),
-          qsParams: transform(
-            route.qsParams || [],
-            (qsMemo: Record<string, any>, param: Param) => {
-              qsMemo[param.name] = param.defaultValue;
-            },
-            {}
-          ),
-          error: {},
-          response: {},
-          loading: false,
-        };
-        return memo;
-      },
-      {}
-    );
-
-    Storage.set({
-      key: `${workspace.id}-route-config`,
-      value: initialRouteConfig,
-    });
-
-    return initialRouteConfig;
   },
 
   buildUrl({

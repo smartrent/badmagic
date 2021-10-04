@@ -2,56 +2,69 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { get, compact } from "lodash-es";
 import useAxios from "@smartrent/use-axios";
 import axios from "axios";
+import { AxiosError } from "axios";
 import * as yup from "yup";
 
 import { useGlobalContext } from "./context/Context";
-import Request from "./route/Request";
-import Response from "./route/Response";
+import Params from "./route/Params";
+import BodyPreview from "./route/BodyPreview";
+import ApiError from "./route/ApiError";
+import ApiResponse from "./route/ApiResponse";
+import Error from "./common/Error";
+import Button from "./common/Button";
+import InjectPlugins from "./route/InjectPlugins";
 import Navigation from "./route/Navigation";
 import Docs from "./route/Documentation";
 
 import Helpers from "./lib/helpers";
-import { Route, RouteConfigVars } from "./types";
+import { Route, Inject, ParamType } from "./types";
 
-export default function Route({ route }: { route: Route }) {
-  const {
-    routeConfig,
-    setRouteConfigVars,
-    setApiResponse,
-    workspace,
-    darkMode,
-  } = useGlobalContext();
+export default function Route({
+  route,
+  baseUrl,
+  workspacePlugins,
+}: {
+  route: Route;
+  baseUrl: string;
+  workspacePlugins?: any[];
+}) {
+  const { darkMode } = useGlobalContext();
   const [collapsed, setCollapsed] = useState(true);
   const [activeTab, setActiveTab] = useState("request");
-  const routeConfigVars: RouteConfigVars = routeConfig[route.name];
-
-  const userSpecifiedUrlParams: Record<string, any> =
-    routeConfigVars?.urlParams || {};
+  const [validationErrors, setValidationErrors] = useState([]);
+  const [urlParams, setUrlParams] = useState({});
+  const [qsParams, setQsParams] = useState({});
+  const [body, setBody] = useState({});
+  const [headers, setHeaders] = useState({});
 
   const method = route.method ? route.method.toLowerCase() : "get";
   const { response, loading, error, reFetch } = useAxios({
     axios: axios.create({
-      baseURL: workspace.config.baseUrl,
-      headers: routeConfigVars?.headers || {},
+      baseURL: baseUrl,
+      headers: headers || {},
     }),
     method: route.method || "GET",
     url: Helpers.buildUrl({
       route,
-      urlParams: userSpecifiedUrlParams,
-      baseUrl: workspace.config.baseUrl,
-      qsParams: routeConfigVars?.qsParams || {},
+      urlParams,
+      baseUrl,
+      qsParams: qsParams || {},
     }),
     options: {
-      data: route.body ? routeConfigVars?.body : null,
+      data: route.body ? body : null,
     },
   });
+
+  // When a Reset button is clicked, it resets all Params
+  const resetAllParams = useCallback(() => {
+    setQsParams({});
+    setBody({});
+    setUrlParams({});
+  }, [setUrlParams, setBody, setUrlParams]);
 
   // Before submitting a network request, validate that the request is valid
   // Note: Currently only supports URL Param validation
   const reFetchWithValidation = useCallback(() => {
-    if (!routeConfigVars) {
-      return reFetch();
-    }
     // @todo: Use Yup to validate all nested, required fields, currently this only supports urlParams
     const requiredUrlParams = Helpers.getUrlParamsFromPath(route.path).reduce(
       (accumulator, { name }) => {
@@ -65,38 +78,37 @@ export default function Route({ route }: { route: Route }) {
       {} as Record<string, any>
     );
 
-    const yupSchema = yup.object({
-      urlParams: yup.object().shape(requiredUrlParams),
-    });
+    const yupUrlParamSchema = yup.object().shape(requiredUrlParams);
     try {
-      yupSchema.validateSync(routeConfigVars);
-      setRouteConfigVars({ ...routeConfigVars, validationErrors: [] }, route);
+      yupUrlParamSchema.validateSync(urlParams);
       return reFetch();
     } catch (err) {
       // Yup returns errors like `urlParams.someField is required`, so we trim off the prefix
-      setRouteConfigVars(
-        {
-          ...routeConfigVars,
-          validationErrors: err.errors.map((message: string) =>
+
+      // @ts-ignore
+      if (err?.errors?.length) {
+        setValidationErrors(
+          // @ts-ignore
+          err?.errors?.map((message: string) =>
             message.slice(message.indexOf(".") + 1)
-          ),
-        },
-        route
-      );
+          )
+        );
+      }
     }
     return {};
-  }, [routeConfigVars, userSpecifiedUrlParams]);
+  }, [urlParams, route]);
 
-  useEffect(() => {
-    if (response || error || loading) {
-      setApiResponse({ route, response, loading, error });
-    }
-  }, [response, loading, error, route]);
+  // @todo store API response in local storage in a responses tab that is re-playable
+  // useEffect(() => {
+  //   if (response || error || loading) {
+  //     console.log(response, error, loading);
+  //   }
+  // }, [response, loading, error, route]);
 
   // Route plugins completely override workspace plugins
   // If Route plugins are not specified, this will default to workspace plugins
   const plugins =
-    route.plugins && route.plugins.length ? route.plugins : workspace.plugins;
+    route.plugins && route.plugins.length ? route.plugins : workspacePlugins;
 
   // Tabs for the navigation component for each route
   const tabs = compact([
@@ -112,8 +124,6 @@ export default function Route({ route }: { route: Route }) {
       : null,
   ]);
 
-  const isDeprecated = route.deprecated || false;
-
   // Renders the Request/Response tab or the Documentation tab
   const routeActiveTabDOM = useMemo(() => {
     let content;
@@ -127,18 +137,66 @@ export default function Route({ route }: { route: Route }) {
       case "request":
         content = (
           <>
-            <Request
+            <InjectPlugins
+              style={{ flex: 1, marginRight: "1rem" }}
+              inject={Inject.asRequest}
               route={route}
-              loading={loading}
               reFetch={reFetchWithValidation}
-              plugins={plugins}
-            />
-            <Response
+              loading={loading}
+              plugins={plugins || []}
+            >
+              <Params
+                paramType={ParamType.urlParams}
+                reFetch={reFetchWithValidation}
+                route={route}
+                values={urlParams}
+                setValues={setUrlParams}
+              />
+              <Params
+                paramType={ParamType.body}
+                reFetch={reFetchWithValidation}
+                route={route}
+                values={body}
+                setValues={setBody}
+              />
+              <Params
+                paramType={ParamType.qsParams}
+                reFetch={reFetchWithValidation}
+                route={route}
+                values={qsParams}
+                setValues={setQsParams}
+              />
+              {!!validationErrors?.length ? (
+                <div className="my-2">
+                  {(validationErrors || []).map((validationError, idx) => (
+                    <Error key={idx}>{validationError}</Error>
+                  ))}
+                </div>
+              ) : null}
+
+              <Button outline onClick={resetAllParams}>
+                Reset
+              </Button>
+              <Button
+                className="ml-2"
+                disabled={loading}
+                onClick={reFetchWithValidation}
+              >
+                {loading ? "Loading..." : "Try"}
+              </Button>
+            </InjectPlugins>
+            <InjectPlugins
+              style={{ flex: 3, overflow: "hidden" }}
+              inject={Inject.asResponse}
               route={route}
-              loading={loading}
               reFetch={reFetchWithValidation}
-              plugins={plugins}
-            />
+              loading={loading}
+              plugins={plugins || []}
+            >
+              <BodyPreview body={body} />
+              <ApiResponse response={response} />
+              <ApiError error={error as AxiosError} />
+            </InjectPlugins>
           </>
         );
         break;
@@ -153,11 +211,6 @@ export default function Route({ route }: { route: Route }) {
 
     return content;
   }, [activeTab, collapsed, loading]);
-
-  // The system must initialize the routeConfigVars before continuing
-  if (!routeConfigVars) {
-    return null;
-  }
 
   if (!route) {
     return null;
@@ -186,7 +239,7 @@ export default function Route({ route }: { route: Route }) {
           {method.toUpperCase()}
         </div>
 
-        {isDeprecated && (
+        {route?.deprecated && (
           <div
             className={`flex flex-shrink-0 items-center justify-center text-xs text-white font-semibold p-1 mr-2 bg-red-700 rounded`}
           >
@@ -201,9 +254,9 @@ export default function Route({ route }: { route: Route }) {
         >
           {Helpers.buildUrl({
             route,
-            urlParams: routeConfigVars.urlParams,
+            urlParams,
             baseUrl: "",
-            qsParams: routeConfigVars.qsParams,
+            qsParams,
           })}
         </div>
         <div

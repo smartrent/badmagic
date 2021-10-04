@@ -1,5 +1,3 @@
-import { AxiosResponse } from "axios";
-
 import {
   OpenApiComponents,
   OpenApiResponses,
@@ -31,21 +29,6 @@ export type Workspace = {
   tags?: OpenApiTag[];
   security?: OpenApiSecurityRequirement[];
   externalDocs?: OpenApiExternalDocs;
-};
-
-// Route Config is a set of initialized Route Variables for a workspace. (See below)
-export type RouteConfig = Record<string, RouteConfigVars>;
-
-// Variables for a route saved to React state and local storage
-export type RouteConfigVars = {
-  urlParams: Record<string, Param>;
-  qsParams: Record<string, Param>;
-  body: Record<string, Param>;
-  headers: Record<string, any>;
-  response: null | AxiosResponse;
-  error: null | any;
-  loading: boolean;
-  validationErrors: string[]; // yup validation errors
 };
 
 export type Route = {
@@ -144,6 +127,8 @@ export interface RenderInputsProps {
   inputs: Param[];
   onSubmit: OnSubmitFn;
   className: string;
+  values: Record<string, any>;
+  setValues: (values: any) => void;
 }
 
 export interface RenderInputByDataTypeProps {
@@ -151,6 +136,8 @@ export interface RenderInputByDataTypeProps {
   onSubmit: OnSubmitFn;
   param: Param;
   onRemoveCell?: () => void;
+  values: Record<string, any>;
+  setValues: (values: any) => void;
 }
 
 export interface RenderObjectProps {
@@ -159,6 +146,8 @@ export interface RenderObjectProps {
   onSubmit: OnSubmitFn;
   label?: string;
   onRemoveCell?: () => void;
+  values: Record<string, any>;
+  setValues: (values: any) => void;
 }
 
 export interface RenderArrayOfInputsProps {
@@ -166,6 +155,8 @@ export interface RenderArrayOfInputsProps {
   param: Param;
   onSubmit: OnSubmitFn;
   label: string;
+  values: Record<string, any>;
+  setValues: (values: any) => void;
 }
 
 export interface ApplyNullValueButtonProps {

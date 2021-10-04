@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { map } from "lodash-es";
 
 import { useGlobalContext } from "../context/Context";
@@ -9,7 +9,15 @@ import TextInput from "../common/TextInput";
 import Minus from "../common/icons/Minus";
 
 export default function EnvironmentVariables() {
-  const { environment, setEnvVar, deleteEnvVar, darkMode } = useGlobalContext();
+  const { darkMode } = useGlobalContext();
+
+  const envVars: { key: string; value: string }[] = [];
+
+  const setEnvVar = useCallback(
+    ({ key, value }: { key: string; value: string }) => {},
+    []
+  );
+  const deleteEnvVar = useCallback(({ key }: { key: string }) => {}, []);
 
   const [newVarName, setNewVarName] = useState("");
   const checkIfSubmitted = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -28,7 +36,7 @@ export default function EnvironmentVariables() {
       >
         Environment Variables
       </div>
-      {map(environment, (value: string, key: string) => {
+      {envVars.map(({ key, value }) => {
         return (
           <div key={key} className="flex items-end mb-2">
             <div className="mr-2">
@@ -55,7 +63,7 @@ export default function EnvironmentVariables() {
         );
       })}
 
-      <Label>New Env Var</Label>
+      <Label>New Env Vars</Label>
       <div className="flex">
         <TextInput
           type="text"

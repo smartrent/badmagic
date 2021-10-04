@@ -1,19 +1,16 @@
-import React, { useContext } from "react";
-import { get, isEmpty } from "lodash-es";
+import React from "react";
+import { isEmpty } from "lodash-es";
 import ReactJson from "react-json-view";
 
 import { useGlobalContext } from "../context/Context";
 import Helpers from "../lib/helpers";
-import { Route } from "../types";
 
 interface BodyPreviewProps {
-  route: Route;
+  body: Record<string, any>;
 }
 
-export default function BodyPreview({ route }: BodyPreviewProps) {
-  const { routeConfig, darkMode } = useGlobalContext();
-
-  const { body } = get(routeConfig, route.name, { body: {} });
+export default function BodyPreview({ body }: BodyPreviewProps) {
+  const { darkMode } = useGlobalContext();
 
   if (isEmpty(body)) {
     return null;

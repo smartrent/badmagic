@@ -23,9 +23,10 @@ export default {
     }
   },
 
-  set({ key, value }: SetPayload): void {
+  set({ key, value }: SetPayload): any {
     try {
       localStorage.setItem(key, JSON.stringify(value));
+      return value;
     } catch (err) {
       console.error("Unable to stringify JSON for localStorage", err);
     }

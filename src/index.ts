@@ -1,14 +1,9 @@
 export { Context, ContextProvider, useGlobalContext } from "./context/Context";
 export { default as Route } from "./Route";
-export { default as Request } from "./route/Request";
-export { default as Response } from "./route/Response";
 export { default as Params } from "./route/Params";
 
-// dev note: don't change export name to `Layout` from `Workspaces` until ready for breaking changes
-export { default as Workspaces } from "./layout/Layout";
+export { BadMagic } from "./layout/BadMagic";
 
-export { default as Workspace } from "./Workspace";
-export { default as Theme } from "./Theme";
 export { default as BodyPreview } from "./route/BodyPreview";
 export { default as ApiResponse } from "./route/ApiResponse";
 export { default as ApiError } from "./route/ApiError";
