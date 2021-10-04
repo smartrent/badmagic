@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { findIndex } from "lodash-es";
 
 import { useGlobalContext } from "../context/Context";
 import Helpers from "../lib/helpers";
@@ -12,11 +13,26 @@ import DarkMode from "../common/icons/DarkMode";
 import Download from "../common/icons/Download";
 import Close from "../common/icons/Close";
 
-export default function Config() {
-  const { setDarkMode, darkMode, workspace } = useGlobalContext();
+import { Route } from "../types";
+
+export default function Config({
+  routes,
+  workspaceNames,
+  activeWorkspaceNames, // workspace names
+  setActiveWorkspaceNames,
+}: {
+  routes: Route[];
+  workspaceNames: string[];
+  activeWorkspaceNames: string[];
+  setActiveWorkspaceNames: (workspaces: string[]) => void;
+}) {
+  const { setDarkMode, darkMode } = useGlobalContext();
   const [collapsed, setCollapsed] = useState(true);
 
   const iconColor = darkMode ? "#eee" : "#333";
+
+  // @todo downloadJson
+  // @todo checkboxes for active workspaces
 
   return (
     <>
@@ -53,10 +69,62 @@ export default function Config() {
               <div>Dark Mode</div>
             </Button>
           </div>
+          <div
+            className={`mt-3 pt-3 border-t ${
+              darkMode ? "text-gray-400" : "text-gray-800"
+            }`}
+          >
+            <div className="text-md mb-2">Active Workspaces</div>
+            {workspaceNames.map((workspaceName) => {
+              return (
+                <div key={workspaceName}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={
+                        !!activeWorkspaceNames.find(
+                          (name) => name === workspaceName
+                        )
+                      }
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setActiveWorkspaceNames([
+                            ...activeWorkspaceNames,
+                            workspaceName,
+                          ]);
+                        } else {
+                          const newActiveWorkspaceNames = [
+                            ...activeWorkspaceNames,
+                          ];
+                          const valueIdx = findIndex(
+                            activeWorkspaceNames,
+                            (name) => name === workspaceName
+                          );
+                          newActiveWorkspaceNames.splice(valueIdx, 1);
+                          setActiveWorkspaceNames(newActiveWorkspaceNames);
+                        }
+                      }}
+                    />{" "}
+                    {workspaceName}
+                  </label>
+                </div>
+              );
+            })}
+          </div>
           <div className="flex mt-3 pt-3 border-t">
             <Button
               className="w-full flex justify-center items-center"
-              onClick={() => Helpers.downloadOpenApiJson({ workspace })}
+              onClick={() =>
+                Helpers.downloadOpenApiJson({
+                  workspace: {
+                    routes,
+                    id: "",
+                    name: "",
+                    config: { baseUrl: "" },
+                    plugins: [],
+                  },
+                })
+              }
             >
               <div className="mr-1">
                 <Download size={16} color="#eee" />

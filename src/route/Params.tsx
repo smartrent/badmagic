@@ -63,6 +63,8 @@ function RenderArrayOfInputs({
         <AddArrayCell
           param={param}
           values={arrayOfValues}
+          setValues={setValues}
+          arrayOfValues={arrayOfValues}
           pathToValue={pathToValue}
         />
         <Tooltip description={param.description} />
@@ -267,12 +269,16 @@ function RenderInputByDataType({
               ? true
               : value !== null || (!!value && param.nullable === false)
           }
+          values={values}
+          setValues={setValues}
         />
         {param.nullable !== false ? (
           <ApplyNullValueButton
             onRemoveCell={onRemoveCell}
             pathToValue={pathToValue}
             value={value}
+            values={values}
+            setValues={setValues}
           />
         ) : null}
         <RemoveArrayCellButton onRemoveCell={onRemoveCell} className="ml-1" />

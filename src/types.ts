@@ -163,18 +163,24 @@ export interface ApplyNullValueButtonProps {
   value: any;
   pathToValue: string;
   onRemoveCell?: () => void;
+  values: Record<string, any>;
+  setValues: (values: any) => void;
 }
 
 export interface ClearValueButtonProps {
   pathToValue: string;
   onRemoveCell?: () => void;
   hidden: boolean;
+  setValues: (values: any) => void;
+  values: Record<string, any>;
 }
 
 export interface AddArrayCellProps {
-  values: any[];
+  values: Record<string, any>[];
   pathToValue: string;
   param: Param;
+  arrayOfValues: any[];
+  setValues: (values: any) => void;
 }
 
 export interface RemoveArrayCellButtonProps {

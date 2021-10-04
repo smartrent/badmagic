@@ -9,34 +9,49 @@ import Route from "../Route";
 import { Route as RouteType, Workspace } from "../types";
 
 export function BadMagic({ workspaces }: { workspaces: Workspace[] }) {
+  const workspaceNames = useMemo(() => workspaces.map(({ name }) => name), [
+    workspaces,
+  ]);
   const { darkMode } = useGlobalContext();
   const [keywords, setKeywords] = useState("");
+  const [activeWorkspaceNames, setActiveWorkspaceNames] = useState<string[]>(
+    workspaceNames // @todo pull from local storage
+  );
 
   const allRoutes = useMemo(() => {
-    return flatMap(workspaces, ({ routes, config }) => {
+    return flatMap(workspaces, ({ routes, config, name }) => {
       return routes.map((route) => {
-        return { ...route, baseUrl: config?.baseUrl || window.location.origin };
+        return {
+          ...route,
+          baseUrl: config?.baseUrl || window.location.origin,
+          workspaceName: name,
+        };
       });
     });
   }, [workspaces]);
+
+  // @todo maybe debounce here for performance
   const filteredRoutes = useMemo(() => {
-    return keywords
-      ? allRoutes.filter(
-          ({ name, path, sticky }: RouteType) =>
-            name.toLowerCase().includes(keywords.toLowerCase()) ||
-            path.toLowerCase().includes(keywords.toLowerCase()) ||
-            sticky
-        )
-      : allRoutes;
-  }, [allRoutes, keywords]);
+    return allRoutes.filter(
+      ({
+        name,
+        path,
+        sticky,
+        workspaceName,
+      }: RouteType & { workspaceName: string }) =>
+        (!keywords ||
+          name.toLowerCase().includes(keywords.toLowerCase()) ||
+          path.toLowerCase().includes(keywords.toLowerCase()) ||
+          sticky) &&
+        activeWorkspaceNames.includes(workspaceName)
+    );
+  }, [allRoutes, keywords, activeWorkspaceNames]);
 
   return (
     <>
       <div
-        className={`w-full flex justify-between p-2 ${
-          darkMode
-            ? "bg-gray-900 w-full border-b border-gray-700 fixed top-0 right-0 left-0 z-10"
-            : "bg-white w-full border-b border-gray-300 fixed top-0 right-0 left-0 z-10"
+        className={`w-full flex justify-between p-2 w-full border-b fixed top-0 right-0 left-0 z-10 ${
+          darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-300"
         }`}
       >
         <div className="flex items-center">
@@ -58,7 +73,12 @@ export function BadMagic({ workspaces }: { workspaces: Workspace[] }) {
           />
           {/* @todo here remove select dropdown. Under config, show workspaces that are selectable */}
           <div className="flex items-center ml-2">
-            <Config />
+            <Config
+              routes={filteredRoutes}
+              workspaceNames={workspaceNames}
+              activeWorkspaceNames={activeWorkspaceNames}
+              setActiveWorkspaceNames={setActiveWorkspaceNames}
+            />
           </div>
         </div>
       </div>
