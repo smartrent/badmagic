@@ -8,9 +8,11 @@ import Route from "../Route";
 import Helpers from "../lib/helpers";
 import Storage from "../lib/storage";
 
+import { Clock } from "../common/icons/Clock";
+
 import { Route as RouteType, Workspace } from "../types";
 
-export function BadMagic({ workspaces }: { workspaces: Workspace[] }) {
+export function Layout({ workspaces }: { workspaces: Workspace[] }) {
   const workspaceNames = useMemo(() => workspaces.map(({ name }) => name), [
     workspaces,
   ]);
@@ -74,6 +76,14 @@ export function BadMagic({ workspaces }: { workspaces: Workspace[] }) {
       : null;
   }, [activeRouteName, filteredRoutes]);
 
+  const iconColor = useMemo(() => (darkMode ? "#eee" : "#333"), [darkMode]);
+
+  const setKeywordsCallback = useCallback(
+    (e: React.FormEvent<HTMLInputElement>) =>
+      setKeywords(e.currentTarget.value),
+    [setKeywords]
+  );
+
   return (
     <>
       <div
@@ -89,8 +99,11 @@ export function BadMagic({ workspaces }: { workspaces: Workspace[] }) {
             🔮
           </a>
         </div>
+
         <div className="flex items-center">
-          {/* @todo here remove select dropdown. Under config, show workspaces that are selectable */}
+          <div className="flex items-center cursor-pointer">
+            <Clock color={iconColor} size={24} />
+          </div>
           <div className="flex items-center ml-2">
             <Config
               routes={filteredRoutes}
@@ -112,46 +125,45 @@ export function BadMagic({ workspaces }: { workspaces: Workspace[] }) {
               type="text"
               placeholder="Search Routes"
               value={keywords}
-              onChange={(e: React.FormEvent<HTMLInputElement>) =>
-                setKeywords(e.currentTarget.value)
-              }
+              onChange={setKeywordsCallback}
             />
           </div>
           <div className="overflow-scroll" style={{ height: "95vh" }}>
+            {/* @todo move to separate component */}
             {filteredRoutes.map((r: RouteType & { baseUrl: string }, idx) => (
               <div
                 key={`${r.method || "GET"}-${r.path}-${idx}`}
-                className="flex mb-2"
+                className={`mb-2 cursor-pointer ${
+                  darkMode ? "text-gray-400" : "text-gray-800"
+                }`}
                 onClick={() => setActiveRouteName(r.name)}
               >
-                <div
-                  className={`${darkMode ? "text-gray-400" : "text-gray-800"}`}
-                >
-                  <div className="flex">
-                    <div
-                      className={`text-xs w-12 flex flex-shrink items-center justify-center text-gray-700 font-semibold mr-1 p-0 border rounded ${
-                        darkMode ? "border-gray-700" : "border-gray-300"
-                      }`}
-                      style={{
-                        backgroundColor: get(
-                          Helpers.colors.routes,
-                          r.method ? r.method.toLowerCase() : "get"
-                        ),
-                      }}
-                    >
-                      {(r.method || "GET").toUpperCase()}
-                    </div>
-                    <div className="font-bold">{r.name}</div>
+                <div className="flex">
+                  <div
+                    className={`text-xs w-12 flex flex-shrink items-center justify-center text-gray-700 font-semibold mr-1 p-0 border rounded ${
+                      darkMode ? "border-gray-700" : "border-gray-300"
+                    }`}
+                    style={{
+                      backgroundColor: get(
+                        Helpers.colors.routes,
+                        r.method ? r.method.toLowerCase() : "get"
+                      ),
+                    }}
+                  >
+                    {(r.method || "GET").toUpperCase()}
                   </div>
-                  <div className="italic">{r.path}</div>
+                  <div className="font-bold">{r.name}</div>
                 </div>
+                <div className="italic">{r.path}</div>
               </div>
             ))}
           </div>
         </div>
         <div className="col-span-9 p-4">
           {activeRoute ? (
-            <Route route={activeRoute} baseUrl={activeRoute?.baseUrl} />
+            <>
+              <Route route={activeRoute} baseUrl={activeRoute?.baseUrl} />
+            </>
           ) : null}
         </div>
       </div>

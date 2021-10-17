@@ -9,15 +9,9 @@ import TextInput from "../common/TextInput";
 import Minus from "../common/icons/Minus";
 
 export default function EnvironmentVariables() {
-  const { darkMode } = useGlobalContext();
+  const { darkMode, setEnvVar, deleteEnvVar } = useGlobalContext();
 
   const envVars: { key: string; value: string }[] = [];
-
-  const setEnvVar = useCallback(
-    ({ key, value }: { key: string; value: string }) => {},
-    []
-  );
-  const deleteEnvVar = useCallback(({ key }: { key: string }) => {}, []);
 
   const [newVarName, setNewVarName] = useState("");
   const checkIfSubmitted = (e: React.KeyboardEvent<HTMLInputElement>) => {

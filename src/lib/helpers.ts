@@ -27,18 +27,6 @@ const Helpers = {
     aLink.dispatchEvent(event);
   },
 
-  getDefaultWorkspace(): Workspace {
-    return {
-      id: "",
-      routes: [],
-      name: "",
-      plugins: [],
-      config: {
-        baseUrl: "",
-      },
-    };
-  },
-
   setArrayCellValue(values: any[], cell: number, newValue: any): any[] {
     let newValues = [...values];
     newValues[cell] = newValue;

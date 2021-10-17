@@ -109,9 +109,7 @@ export default function Route({
     route.plugins && route.plugins.length ? route.plugins : workspacePlugins;
 
   return (
-    <div
-      style={route.sticky ? { borderRight: "1px solid rgb(251, 189, 28)" } : {}}
-    >
+    <div>
       <div
         className={`text-xl ${darkMode ? "text-gray-100" : "text-gray-800"}`}
       >

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import HelpIcon from "../common/icons/Help";
 import Tooltip from "rc-tooltip";
 
-import { Param } from "../types";
 import { useGlobalContext } from "../context/Context";
 
 export default function BadmagicTooltip({

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { findIndex } from "lodash-es";
 
 import { useGlobalContext } from "../context/Context";
@@ -32,11 +32,23 @@ export default function Config({
   const iconColor = darkMode ? "#eee" : "#333";
 
   // @todo downloadJson
-  // @todo checkboxes for active workspaces
+
+  const toggleCollapsed = useCallback(() => setCollapsed(!collapsed), [
+    collapsed,
+  ]);
+
+  const toggleDarkMode = useCallback(() => setDarkMode(!darkMode), [
+    darkMode,
+    setDarkMode,
+  ]);
+
+  const textColor = useMemo(() => {
+    return darkMode ? "text-gray-400" : "text-gray-800";
+  }, [darkMode]);
 
   return (
     <>
-      <button onClick={() => setCollapsed(!collapsed)}>
+      <button onClick={toggleCollapsed}>
         <Cog size={24} color={iconColor} />
       </button>
       {!collapsed && (
@@ -49,31 +61,23 @@ export default function Config({
           style={{ top: "0.25rem", right: "0.25rem" }}
         >
           <div className="flex self-end">
-            <button
-              className="text-gray-700 mt-1"
-              onClick={() => setCollapsed(!collapsed)}
-            >
+            <button className="text-gray-700 mt-1" onClick={toggleCollapsed}>
               <Close size={14} color={iconColor} />
             </button>
           </div>
           <EnvironmentVariables />
           <div className="flex mt-3 pt-3 border-t">
-            <Button
-              className="w-full flex justify-center items-center"
-              onClick={() => setDarkMode(!darkMode)}
-              outline
+            <button
+              className={`w-full flex justify-center items-center ${textColor}`}
+              onClick={toggleDarkMode}
             >
               <div className="mr-1">
                 <DarkMode size={16} color={iconColor} />
               </div>
               <div>Dark Mode</div>
-            </Button>
+            </button>
           </div>
-          <div
-            className={`mt-3 pt-3 border-t ${
-              darkMode ? "text-gray-400" : "text-gray-800"
-            }`}
-          >
+          <div className={`mt-3 pt-3 border-t ${textColor}`}>
             <div className="text-md mb-2">Active Workspaces</div>
             {workspaceNames.map((workspaceName) => {
               return (

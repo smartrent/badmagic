@@ -2,7 +2,7 @@ export { Context, ContextProvider, useGlobalContext } from "./context/Context";
 export { default as Route } from "./Route";
 export { default as Params } from "./route/Params";
 
-export { BadMagic } from "./layout/BadMagic";
+export { BadMagic } from "./BadMagic";
 
 export { default as BodyPreview } from "./route/BodyPreview";
 export { default as ApiResponse } from "./route/ApiResponse";

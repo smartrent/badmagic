@@ -31,4 +31,12 @@ export default {
       console.error("Unable to stringify JSON for localStorage", err);
     }
   },
+
+  delete({ key }: GetPayload): void {
+    try {
+      localStorage.removeItem(key);
+    } catch (err) {
+      console.error("Unable to stringify JSON for localStorage", err);
+    }
+  },
 };
