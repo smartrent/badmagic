@@ -3,33 +3,31 @@ import React, { useContext, useState, useCallback } from "react";
 import storage from "../lib/storage";
 
 export const Context = React.createContext({
-  darkMode: storage.get({ key: "darkMode" }),
+  darkMode: storage.get("darkMode"),
   setDarkMode: (darkMode: boolean) => {},
-  setEnvVar: ({ key, value }: { key: string; value: any }) => {},
-  deleteEnvVar: ({ key }: { key: string }) => {},
+  setEnvVar: (key: string, value: any) => storage.set(key, value),
+  deleteEnvVar: (key: string) => storage.delete(key),
+  getEnvVar: (key: string) => storage.get(key),
 });
 
 export const useGlobalContext = () => useContext(Context);
 
 export function ContextProvider({ children }: { children: React.ReactNode }) {
-  const [darkMode, setDarkModeState] = useState(
-    storage.get({ key: "darkMode" })
-  );
+  const getEnvVar = useCallback((key: string) => storage.get(key), []);
 
-  const setEnvVar = useCallback(
-    ({ key, value }: { key: string; value: any }) => {
-      return storage.set({ key, value });
-    },
-    []
-  );
+  const [darkMode, setDarkModeState] = useState(getEnvVar("darkMode"));
 
-  const deleteEnvVar = useCallback(({ key }: { key: string }) => {
-    return storage.delete({ key });
+  const setEnvVar = useCallback((key: string, value: any) => {
+    return storage.set(key, value);
+  }, []);
+
+  const deleteEnvVar = useCallback((key: string) => {
+    return storage.delete(key);
   }, []);
 
   const setDarkMode = useCallback(
     (darkMode: boolean) => {
-      setEnvVar({ key: "darkMode", value: darkMode });
+      setEnvVar("darkMode", darkMode);
       setDarkModeState(darkMode);
     },
     [darkMode, setDarkModeState]
@@ -39,11 +37,9 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
     <Context.Provider
       value={{
         darkMode,
-        setDarkMode: (darkMode: boolean) => {
-          setEnvVar({ key: "darkMode", value: darkMode });
-          setDarkModeState(darkMode);
-        },
+        setDarkMode,
         setEnvVar,
+        getEnvVar,
         deleteEnvVar,
       }}
     >

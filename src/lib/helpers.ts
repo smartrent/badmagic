@@ -6,6 +6,28 @@ import OpenApi from "./openapi";
 
 import { Route, Workspace, ParamType, SetParamFn } from "../types";
 
+function buildPath({
+  route,
+  urlParams,
+  qsParams,
+}: {
+  route: Route;
+  urlParams: Record<string, any>;
+  qsParams?: Record<string, any>;
+}) {
+  const stringifiedQS =
+    qsParams && !!Object.keys(qsParams).length ? stringify(qsParams) : "";
+
+  return reduce(
+    Helpers.getUrlParamsFromPath(route.path),
+    (memo, urlParam) => {
+      const value = get(urlParams || {}, urlParam.name);
+      return memo.replace(`:${urlParam.name}`, value || `:${urlParam.name}`);
+    },
+    `${route.path}${stringifiedQS ? `?${stringifiedQS}` : ""}`
+  );
+}
+
 const Helpers = {
   downloadOpenApiJson: ({ workspace }: { workspace: Workspace }) => {
     const openApiResult = OpenApi.generate({
@@ -35,27 +57,17 @@ const Helpers = {
 
   buildUrl({
     route,
-    baseUrl,
     urlParams,
     qsParams,
   }: {
     route: Route;
-    baseUrl: string;
     urlParams: Record<string, any>;
     qsParams?: Record<string, any>;
   }) {
-    const stringifiedQS =
-      qsParams && !!Object.keys(qsParams).length ? stringify(qsParams) : "";
-
-    return reduce(
-      Helpers.getUrlParamsFromPath(route.path),
-      (memo, urlParam) => {
-        const value = get(urlParams || {}, urlParam.name);
-        return memo.replace(`:${urlParam.name}`, value || `:${urlParam.name}`);
-      },
-      `${baseUrl}${route.path}${stringifiedQS ? `?${stringifiedQS}` : ""}`
-    );
+    return `${route.baseUrl}${buildPath({ route, urlParams, qsParams })}`;
   },
+
+  buildPath,
 
   getUrlParamsFromPath(
     path: string

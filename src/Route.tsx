@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { get, compact } from "lodash-es";
+import { get } from "lodash-es";
 import useAxios from "@smartrent/use-axios";
 import axios from "axios";
 import { AxiosError } from "axios";
@@ -12,46 +12,56 @@ import ApiError from "./route/ApiError";
 import ApiResponse from "./route/ApiResponse";
 import Error from "./common/Error";
 import Button from "./common/Button";
-import InjectPlugins from "./route/InjectPlugins";
-import Navigation from "./route/Navigation";
 import Docs from "./route/Documentation";
 
 import Helpers from "./lib/helpers";
-import { Route, Inject, ParamType } from "./types";
+import { Route, ParamType, Workspace, Method } from "./types";
 
 export default function Route({
   route,
-  baseUrl,
-  workspacePlugins,
+  workspace,
 }: {
   route: Route;
-  baseUrl: string;
-  workspacePlugins?: any[];
+  workspace: Workspace;
 }) {
   const { darkMode } = useGlobalContext();
   const [validationErrors, setValidationErrors] = useState([]);
   const [urlParams, setUrlParams] = useState({});
   const [qsParams, setQsParams] = useState({});
   const [body, setBody] = useState({});
-  const [headers, setHeaders] = useState({});
 
-  const method = route.method ? route.method.toLowerCase() : "get";
-  const { response, loading, error, reFetch } = useAxios({
-    axios: axios.create({
-      baseURL: baseUrl,
-      headers: headers || {},
-    }),
-    method: route.method || "GET",
-    url: Helpers.buildUrl({
+  const method: Method = useMemo(() => {
+    return route.method ? route.method : Method.GET;
+  }, [route]);
+
+  const url = useMemo(() => {
+    return Helpers.buildUrl({
       route,
       urlParams,
-      baseUrl,
       qsParams: qsParams || {},
-    }),
-    options: {
-      data: route.body ? body : null,
-    },
-  });
+    });
+  }, [route, urlParams, qsParams]);
+
+  const { response, loading, error, reFetch } = workspace.useAxiosMiddleware
+    ? workspace.useAxiosMiddleware({
+        method,
+        urlParams,
+        qsParams,
+        body,
+        url,
+        route,
+      })
+    : useAxios({
+        axios: axios.create({
+          baseURL: route?.baseUrl,
+          headers: {}, // by default no headers are set. If you need to pass headers, use `useAxiosMiddleware`
+        }),
+        method,
+        url,
+        options: {
+          data: route.body ? body : null,
+        },
+      });
 
   // When a Reset button is clicked, it resets all Params
   const resetAllParams = useCallback(() => {
@@ -96,6 +106,19 @@ export default function Route({
     return {};
   }, [urlParams, route]);
 
+  const styles = useMemo(() => {
+    return {
+      tryRequestContainer: darkMode
+        ? "bg-gray-900 border-gray-700"
+        : "bg-white border-gray-300",
+      methodContainer: darkMode ? "border-gray-700" : "border-gray-300",
+      headerText: darkMode ? "text-gray-100" : "text-gray-800",
+      documentationContainer: `px-4 border rounded overflow-x-hidden ${
+        darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-300"
+      }`,
+    };
+  }, [darkMode]);
+
   // @todo store API response in local storage in a responses tab that is re-playable
   // useEffect(() => {
   //   if (response || error || loading) {
@@ -103,59 +126,37 @@ export default function Route({
   //   }
   // }, [response, loading, error, route]);
 
-  // Route plugins completely override workspace plugins
-  // If Route plugins are not specified, this will default to workspace plugins
-  const plugins =
-    route.plugins && route.plugins.length ? route.plugins : workspacePlugins;
-
   return (
     <div>
+      <div className={`text-xl ${styles.headerText}`}>Try Request</div>
       <div
-        className={`text-xl ${darkMode ? "text-gray-100" : "text-gray-800"}`}
-      >
-        Try Request
-      </div>
-      <div
-        className={`overflow-hidden p-2 border rounded overflow-x-hidden mb-4 ${
-          darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-300"
-        }`}
+        className={`overflow-hidden p-2 border rounded overflow-x-hidden mb-4 ${styles.tryRequestContainer}`}
       >
         <div className="flex justify-start items-center mb-4">
           <div
-            className={`w-16 flex flex-shrink-0 items-center justify-center text-xs text-gray-700 font-semibold p-1 mr-2 border rounded ${
-              darkMode ? "border-gray-700" : "border-gray-300"
-            }`}
+            className={`w-16 flex flex-shrink-0 items-center justify-center text-xs text-gray-700 font-semibold p-1 mr-2 border rounded ${styles.methodContainer}`}
             style={{
               backgroundColor: get(Helpers.colors.routes, method),
             }}
           >
-            {method.toUpperCase()}
+            {method}
           </div>
 
           {route?.deprecated && (
-            <div
-              className={`flex flex-shrink-0 items-center justify-center text-xs text-white font-semibold p-1 mr-2 bg-red-700 rounded`}
-            >
+            <div className="flex flex-shrink-0 items-center justify-center text-xs text-white font-semibold p-1 mr-2 bg-red-700 rounded">
               DEPRECATED
             </div>
           )}
 
-          <div
-            className={`flex flex-grow-2 mr-auto ${
-              darkMode ? "text-gray-100" : "text-gray-800"
-            }`}
-          >
-            {Helpers.buildUrl({
+          <div className={`flex flex-grow-2 mr-auto ${styles.headerText}`}>
+            {Helpers.buildPath({
               route,
               urlParams,
-              baseUrl: "",
               qsParams,
             })}
           </div>
           <div
-            className={`flex text-right ml-2 mr-1 items-center ${
-              darkMode ? "text-gray-100" : "text-gray-800"
-            }`}
+            className={`flex text-right ml-2 mr-1 items-center ${styles.headerText}`}
           >
             {route.name}
           </div>
@@ -163,14 +164,7 @@ export default function Route({
 
         <div className="flex p-2 mb-2">
           <>
-            <InjectPlugins
-              style={{ flex: 1, marginRight: "1rem" }}
-              inject={Inject.asRequest}
-              route={route}
-              reFetch={reFetchWithValidation}
-              loading={loading}
-              plugins={plugins || []}
-            >
+            <div className="flex flex-col flex-grow mr-4">
               <Params
                 paramType={ParamType.urlParams}
                 reFetch={reFetchWithValidation}
@@ -200,43 +194,30 @@ export default function Route({
                 </div>
               ) : null}
 
-              <Button outline onClick={resetAllParams}>
-                Reset
-              </Button>
-              <Button
-                className="ml-2"
-                disabled={loading}
-                onClick={reFetchWithValidation}
-              >
-                {loading ? "Loading..." : "Try"}
-              </Button>
-            </InjectPlugins>
-            <InjectPlugins
-              style={{ flex: 3, overflow: "hidden" }}
-              inject={Inject.asResponse}
-              route={route}
-              reFetch={reFetchWithValidation}
-              loading={loading}
-              plugins={plugins || []}
-            >
+              <div className="flex">
+                <Button outline onClick={resetAllParams}>
+                  Reset
+                </Button>
+                <Button
+                  className="ml-2"
+                  disabled={loading}
+                  onClick={reFetchWithValidation}
+                >
+                  {loading ? "Loading..." : "Try"}
+                </Button>
+              </div>
+            </div>
+            <div style={{ flex: 3, overflow: "hidden" }}>
               <BodyPreview body={body} />
               <ApiResponse response={response} />
               <ApiError error={error as AxiosError} />
-            </InjectPlugins>
+            </div>
           </>
         </div>
       </div>
 
-      <div
-        className={`text-xl ${darkMode ? "text-gray-100" : "text-gray-800"}`}
-      >
-        Documentation
-      </div>
-      <div
-        className={`px-4 border rounded overflow-x-hidden ${
-          darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-300"
-        }`}
-      >
+      <div className={`text-xl ${styles.headerText}`}>Documentation</div>
+      <div className={styles.documentationContainer}>
         <Docs documentation={route.documentation} darkMode={darkMode} />
       </div>
     </div>

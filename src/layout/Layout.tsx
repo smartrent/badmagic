@@ -27,16 +27,14 @@ export function Layout({ workspaces }: { workspaces: Workspace[] }) {
   const setActiveWorkspaceNames = useCallback(
     (workspaceNames: string[]) => {
       setActiveWorkspaceNamesInState(workspaceNames);
-      Storage.set({ key: "activeWorkspaces", value: workspaceNames });
+      Storage.set("activeWorkspaces", workspaceNames);
     },
     [setActiveWorkspaceNamesInState]
   );
 
   // On page load, fetch active workspaces stored in local storage and filter down to those
   useEffect(() => {
-    const activeWorkspacesFromLocalStorage = Storage.get({
-      key: "activeWorkspaces",
-    });
+    const activeWorkspacesFromLocalStorage = Storage.get("activeWorkspaces");
 
     setActiveWorkspaceNames(activeWorkspacesFromLocalStorage || workspaceNames);
   }, []);
@@ -70,13 +68,28 @@ export function Layout({ workspaces }: { workspaces: Workspace[] }) {
     );
   }, [allRoutes, keywords, activeWorkspaceNames]);
 
-  const activeRoute = useMemo(() => {
-    return activeRouteName
+  const { activeRoute, activeWorkspace } = useMemo(() => {
+    const activeRoute = activeRouteName
       ? filteredRoutes.find(({ name }) => name === activeRouteName)
       : null;
+
+    const activeWorkspace = (workspaces || []).find(
+      ({ name }) => activeRoute?.workspaceName === name
+    );
+
+    return { activeRoute, activeWorkspace };
   }, [activeRouteName, filteredRoutes]);
 
-  const iconColor = useMemo(() => (darkMode ? "#eee" : "#333"), [darkMode]);
+  const styles = useMemo(() => {
+    return {
+      iconColor: darkMode ? "#eee" : "#333",
+      headerBackground: darkMode
+        ? "bg-gray-900 border-gray-700"
+        : "bg-white border-gray-300",
+      sidebarRouteText: darkMode ? "text-gray-400" : "text-gray-800",
+      sidebarMethodBorder: darkMode ? "border-gray-700" : "border-gray-300",
+    };
+  }, [darkMode]);
 
   const setKeywordsCallback = useCallback(
     (e: React.FormEvent<HTMLInputElement>) =>
@@ -87,9 +100,7 @@ export function Layout({ workspaces }: { workspaces: Workspace[] }) {
   return (
     <>
       <div
-        className={`w-full flex justify-between p-2 w-full border-b fixed top-0 right-0 left-0 z-10 ${
-          darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-300"
-        }`}
+        className={`w-full flex justify-between p-2 w-full border-b fixed top-0 right-0 left-0 z-10 ${styles.headerBackground}`}
       >
         <div className="flex items-center">
           <a
@@ -102,7 +113,7 @@ export function Layout({ workspaces }: { workspaces: Workspace[] }) {
 
         <div className="flex items-center">
           <div className="flex items-center cursor-pointer">
-            <Clock color={iconColor} size={24} />
+            <Clock color={styles.iconColor} size={24} />
           </div>
           <div className="flex items-center ml-2">
             <Config
@@ -133,16 +144,12 @@ export function Layout({ workspaces }: { workspaces: Workspace[] }) {
             {filteredRoutes.map((r: RouteType & { baseUrl: string }, idx) => (
               <div
                 key={`${r.method || "GET"}-${r.path}-${idx}`}
-                className={`mb-2 cursor-pointer ${
-                  darkMode ? "text-gray-400" : "text-gray-800"
-                }`}
+                className={`mb-2 cursor-pointer ${styles.sidebarRouteText}`}
                 onClick={() => setActiveRouteName(r.name)}
               >
                 <div className="flex">
                   <div
-                    className={`text-xs w-12 flex flex-shrink items-center justify-center text-gray-700 font-semibold mr-1 p-0 border rounded ${
-                      darkMode ? "border-gray-700" : "border-gray-300"
-                    }`}
+                    className={`text-xs w-12 flex flex-shrink items-center justify-center text-gray-700 font-semibold mr-1 p-0 border rounded ${styles.sidebarMethodBorder}`}
                     style={{
                       backgroundColor: get(
                         Helpers.colors.routes,
@@ -160,9 +167,12 @@ export function Layout({ workspaces }: { workspaces: Workspace[] }) {
           </div>
         </div>
         <div className="col-span-9 p-4">
-          {activeRoute ? (
+          {activeRoute && activeWorkspace ? (
             <>
-              <Route route={activeRoute} baseUrl={activeRoute?.baseUrl} />
+              {activeWorkspace?.AuthForm ? (
+                <activeWorkspace.AuthForm workspaceId={activeWorkspace.id} />
+              ) : null}
+              <Route route={activeRoute} workspace={activeWorkspace} />
             </>
           ) : null}
         </div>

@@ -4,7 +4,7 @@ import { map } from "lodash-es";
 import Label from "../common/Label";
 import { useGlobalContext } from "../context/Context";
 
-export default function Headers({ headers }: { headers: any }) {
+export default function Headers({ headers }: { headers: Record<string, any> }) {
   const { darkMode } = useGlobalContext();
   const [collapsed, setCollapsed] = useState(true);
   if (!headers) {
@@ -13,11 +13,8 @@ export default function Headers({ headers }: { headers: any }) {
 
   return (
     <div className="mt-2">
-      <div
-        onClick={() => setCollapsed(!collapsed)}
-        style={{ cursor: "pointer" }}
-      >
-        <Label>Headers {collapsed ? "+" : "-"}</Label>
+      <div onClick={() => setCollapsed(!collapsed)} className="cursor-pointer">
+        <Label>Response Headers {collapsed ? "+" : "-"}</Label>
       </div>
       {!collapsed && (
         <div

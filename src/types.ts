@@ -29,6 +29,16 @@ export type Workspace = {
   tags?: OpenApiTag[];
   security?: OpenApiSecurityRequirement[];
   externalDocs?: OpenApiExternalDocs;
+  AuthForm?: ({ workspaceId }: { workspaceId: string }) => React.ReactElement; // a form you can render to have the user specify their auth credentials
+
+  useAxiosMiddleware?: (requestBag: {
+    method: undefined | Method;
+    urlParams: Record<string, any>;
+    qsParams: Record<string, any>;
+    body: Record<string, any>;
+    url: string;
+    route: Route;
+  }) => any; // intercepted callback function before submitting an API request
 };
 
 export type Route = {
@@ -42,7 +52,8 @@ export type Route = {
   plugins?: Plugin[];
   documentation?: string;
   example?: Record<string, any>; // e.g. {first_name: "John", last_name: "Doe", ...}
-  sticky?: boolean; // whether the route should stick to the top of the workspace or not
+  sticky?: boolean; // whether the route should stick to the top of the wor or not
+  baseUrl?: string; // if not specified on the route but exists on workspace.config.baseUrl, it will default to that
 
   responses?: OpenApiResponses; // OpenApi Responses
   tags?: string[];
@@ -89,11 +100,13 @@ export enum Method {
   DELETE = "DELETE",
 }
 
+// @todo remove
 export enum Inject {
   asRequest = "asRequest",
   asResponse = "asResponse",
 }
 
+// @todo remove
 export type PluginProps = {
   route: Route;
   plugin: Plugin;
@@ -102,8 +115,9 @@ export type PluginProps = {
   reFetch: OnSubmitFn;
 };
 
+// @todo remove
 export type Plugin = {
-  inject: Inject;
+  inject?: Inject;
   Component: React.ComponentType<PluginProps>;
 };
 

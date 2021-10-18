@@ -1,4 +1,4 @@
-export { Context, ContextProvider, useGlobalContext } from "./context/Context";
+export { useGlobalContext } from "./context/Context";
 export { default as Route } from "./Route";
 export { default as Params } from "./route/Params";
 
@@ -20,10 +20,4 @@ export { default as Helpers } from "./lib/helpers";
 export { default as OpenApi } from "./lib/openapi";
 export { default as Storage } from "./lib/storage";
 
-export {
-  Inject,
-  Method,
-  ParamType,
-  PluginProps,
-  Workspace as WorkspaceProps,
-} from "./types";
+export { Method, ParamType, Workspace as WorkspaceProps } from "./types";
