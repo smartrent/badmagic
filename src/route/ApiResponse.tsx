@@ -8,6 +8,7 @@ import Helpers from "../lib/helpers";
 import { Route } from "../types";
 
 export default function ApiResponse({ route }: { route: Route }) {
+  const [shouldRenderHTML, setShouldRenderHTML] = React.useState(false);
   const { routeConfig, darkMode } = useGlobalContext();
   const routeConfigVars = get(routeConfig, route.name, {
     response: {
@@ -33,6 +34,7 @@ export default function ApiResponse({ route }: { route: Route }) {
   }
 
   const isJSON = response.data && isObject(response.data);
+  const isHTML = !isJSON && response.data && response.data.startsWith("<");
 
   const hasResponseHeaders = !!Object.keys(response?.headers || {}).length;
 
@@ -85,13 +87,47 @@ export default function ApiResponse({ route }: { route: Route }) {
         />
       )}
 
-      {response.data && !isJSON && (
+      {isHTML && !shouldRenderHTML && (
+        <div
+          className={`border border-gray-400 p-2 relative ${
+            darkMode ? "text-white" : ""
+          }`}
+        >
+          <button
+            className="bg-red-600 text-xs text-white rounded p-1 absolute"
+            style={{ top: "0.25rem", right: "0.25rem" }}
+            onClick={() => setShouldRenderHTML(true)}
+          >
+            ⚠ Render HTML
+          </button>
+          {response.data}
+        </div>
+      )}
+
+      {isHTML && shouldRenderHTML && (
+        <div
+          className={`border border-gray-400 p-2 relative ${
+            darkMode ? "text-white" : ""
+          }`}
+        >
+          <button
+            className="bg-blue-600 text-xs text-white rounded p-1 absolute"
+            style={{ top: "0.25rem", right: "0.25rem" }}
+            onClick={() => setShouldRenderHTML(false)}
+          >
+            View Raw HTML
+          </button>
+          <iframe style={{ width: "100%" }} srcDoc={response.data} />
+        </div>
+      )}
+
+      {response.data && !isHTML && !isJSON && (
         <div
           className={`border border-gray-400 p-2 ${
             darkMode ? "text-white" : ""
           }`}
         >
-          {response.data}
+          {`${response.data}`}
         </div>
       )}
 

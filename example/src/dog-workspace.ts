@@ -41,6 +41,21 @@ export const dogWorkspace = {
         },
       },
     },
+    {
+      name: "HTML response",
+      path: "/views/breeds.html",
+      responses: {
+        "200": {
+          description: "successful operation",
+          // schema: {
+          //   type: "array",
+          //   items: {
+          //     $ref: "#/definitions/Dog",
+          //   },
+          // },
+        },
+      },
+    },
 
     {
       name: "View Random Breed Image",
