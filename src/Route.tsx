@@ -45,10 +45,10 @@ export default function Route({
   const { response, loading, error, reFetch } = workspace.useAxiosMiddleware
     ? workspace.useAxiosMiddleware({
         method,
-        urlParams,
-        qsParams,
+        urlParams, // included in case it's needed, but `url` should already have everything we need
+        qsParams, // included in case it's needed, but `url` should already have everything we need
         body,
-        url,
+        url, // url includes qsParams and urlParams
         route,
       })
     : useAxios({

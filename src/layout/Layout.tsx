@@ -170,7 +170,9 @@ export function Layout({ workspaces }: { workspaces: Workspace[] }) {
           {activeRoute && activeWorkspace ? (
             <>
               {activeWorkspace?.AuthForm ? (
-                <activeWorkspace.AuthForm workspaceId={activeWorkspace.id} />
+                <activeWorkspace.AuthForm
+                  workspaceConfig={activeWorkspace.config}
+                />
               ) : null}
               <Route route={activeRoute} workspace={activeWorkspace} />
             </>

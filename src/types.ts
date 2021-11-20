@@ -10,15 +10,17 @@ import {
   OpenApiSchema,
 } from "openapi-v3";
 
+export type WorkspaceConfig = {
+  baseUrl: string;
+} & Record<string, any>;
+
 export type Workspace = {
   id: string;
   version?: string; // semver
   routes: Route[];
   name: string;
-  plugins: Plugin[];
-  config: {
-    baseUrl: string;
-  };
+  plugins?: Plugin[]; // @todo remove
+  config: WorkspaceConfig;
 
   // OpenApi
   components?: OpenApiComponents;
@@ -29,7 +31,11 @@ export type Workspace = {
   tags?: OpenApiTag[];
   security?: OpenApiSecurityRequirement[];
   externalDocs?: OpenApiExternalDocs;
-  AuthForm?: ({ workspaceId }: { workspaceId: string }) => React.ReactElement; // a form you can render to have the user specify their auth credentials
+  AuthForm?: ({
+    workspaceConfig,
+  }: {
+    workspaceConfig: WorkspaceConfig;
+  }) => React.ReactElement; // a form you can render to have the user specify their auth credentials
 
   useAxiosMiddleware?: (requestBag: {
     method: undefined | Method;
@@ -49,7 +55,7 @@ export type Route = {
   body?: Param[];
   qsParams?: Param[];
   method?: Method;
-  plugins?: Plugin[];
+  plugins?: Plugin[]; // @todo remove
   documentation?: string;
   example?: Record<string, any>; // e.g. {first_name: "John", last_name: "Doe", ...}
   sticky?: boolean; // whether the route should stick to the top of the wor or not

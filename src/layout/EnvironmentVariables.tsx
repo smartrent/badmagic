@@ -16,7 +16,7 @@ export default function EnvironmentVariables() {
   const [newVarName, setNewVarName] = useState("");
   const checkIfSubmitted = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e && e.key === "Enter") {
-      setEnvVar({ key: newVarName, value: "" });
+      setEnvVar(newVarName, "");
       setNewVarName("");
     }
   };
@@ -43,13 +43,13 @@ export default function EnvironmentVariables() {
                 type="text"
                 value={value || ""}
                 onChange={(e: React.FormEvent<HTMLInputElement>) =>
-                  setEnvVar({ key, value: e.currentTarget.value })
+                  setEnvVar(key, e.currentTarget.value)
                 }
               />
             </div>
             <button
               className="mb-3" // Slight margin-bottom to faux-align with text inputs
-              onClick={() => deleteEnvVar({ key })}
+              onClick={() => deleteEnvVar(key)}
             >
               <Minus size={14} color={"#f56565"} />
             </button>
