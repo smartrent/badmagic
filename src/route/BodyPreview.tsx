@@ -2,7 +2,7 @@ import React from "react";
 import { isEmpty } from "lodash-es";
 import ReactJson from "react-json-view";
 
-import { useGlobalContext } from "../context/Context";
+import { useDarkMode } from "../hooks/use-dark-mode";
 import Helpers from "../lib/helpers";
 
 interface BodyPreviewProps {
@@ -10,7 +10,7 @@ interface BodyPreviewProps {
 }
 
 export default function BodyPreview({ body }: BodyPreviewProps) {
-  const { darkMode } = useGlobalContext();
+  const [darkMode] = useDarkMode();
 
   if (isEmpty(body)) {
     return null;

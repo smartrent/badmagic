@@ -1,30 +1,41 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { get } from "lodash-es";
 import useAxios from "@smartrent/use-axios";
 import axios from "axios";
 import { AxiosError } from "axios";
 import * as yup from "yup";
+import ReactMarkdown from "react-markdown";
 
-import { useGlobalContext } from "./context/Context";
+import { useDarkMode } from "./hooks/use-dark-mode";
+import { useHistoricResponses } from "./hooks/use-historic-responses";
+
 import Params from "./route/Params";
 import BodyPreview from "./route/BodyPreview";
 import ApiError from "./route/ApiError";
 import ApiResponse from "./route/ApiResponse";
 import Error from "./common/Error";
 import Button from "./common/Button";
-import Docs from "./route/Documentation";
 
 import Helpers from "./lib/helpers";
-import { Route, ParamType, Workspace, Method } from "./types";
+import {
+  Route,
+  ParamType,
+  Workspace,
+  Method,
+  ApplyAxiosInterceptors,
+} from "./types";
 
 export default function Route({
   route,
-  workspace,
+  applyAxiosInterceptors,
 }: {
   route: Route;
-  workspace: Workspace;
+  applyAxiosInterceptors?: ApplyAxiosInterceptors;
 }) {
-  const { darkMode } = useGlobalContext();
+  const [darkMode] = useDarkMode();
+  const [_, storeHistoricResponse] = useHistoricResponses({
+    route,
+  });
   const [validationErrors, setValidationErrors] = useState([]);
   const [urlParams, setUrlParams] = useState({});
   const [qsParams, setQsParams] = useState({});
@@ -41,27 +52,36 @@ export default function Route({
       qsParams: qsParams || {},
     });
   }, [route, urlParams, qsParams]);
+  const pathWithQS = useMemo(() => {
+    return Helpers.buildPathWithQS({
+      route,
+      urlParams,
+      qsParams,
+    });
+  }, [route, urlParams, qsParams]);
 
-  const { response, loading, error, reFetch } = workspace.useAxiosMiddleware
-    ? workspace.useAxiosMiddleware({
-        method,
-        urlParams, // included in case it's needed, but `url` should already have everything we need
-        qsParams, // included in case it's needed, but `url` should already have everything we need
-        body,
-        url, // url includes qsParams and urlParams
-        route,
-      })
-    : useAxios({
-        axios: axios.create({
-          baseURL: route?.baseUrl,
-          headers: {}, // by default no headers are set. If you need to pass headers, use `useAxiosMiddleware`
-        }),
-        method,
-        url,
-        options: {
-          data: route.body ? body : null,
-        },
-      });
+  // The end-user can optionally load Axios Interceptors at this point. https://axios-http.com/docs/interceptors
+  const axiosInstance = useMemo(() => {
+    const axiosInstance = axios.create({
+      baseURL: route?.baseUrl,
+      headers: {}, // by default no headers are set. If you need to pass headers, use `useAxiosMiddleware`
+    });
+    return applyAxiosInterceptors
+      ? applyAxiosInterceptors({
+          axios: axiosInstance,
+          storeHistoricResponse,
+        })
+      : axiosInstance;
+  }, [route, storeHistoricResponse]);
+
+  const { response, loading, error, reFetch } = useAxios({
+    axios: axiosInstance,
+    method,
+    url,
+    options: {
+      data: route.body ? body : null, // Don't sent data if `body` is not specified by the `route` definition
+    },
+  });
 
   // When a Reset button is clicked, it resets all Params
   const resetAllParams = useCallback(() => {
@@ -89,10 +109,8 @@ export default function Route({
     const yupUrlParamSchema = yup.object().shape(requiredUrlParams);
     try {
       yupUrlParamSchema.validateSync(urlParams);
-      return reFetch();
     } catch (err) {
       // Yup returns errors like `urlParams.someField is required`, so we trim off the prefix
-
       // @ts-ignore
       if (err?.errors?.length) {
         setValidationErrors(
@@ -103,28 +121,21 @@ export default function Route({
         );
       }
     }
-    return {};
+    return reFetch();
   }, [urlParams, route]);
 
   const styles = useMemo(() => {
     return {
       tryRequestContainer: darkMode
         ? "bg-gray-900 border-gray-700"
-        : "bg-white border-gray-300",
-      methodContainer: darkMode ? "border-gray-700" : "border-gray-300",
+        : "bg-gray-200 border-gray-400",
+      methodContainer: darkMode ? "border-gray-700" : "border-gray-400",
       headerText: darkMode ? "text-gray-100" : "text-gray-800",
       documentationContainer: `px-4 border rounded overflow-x-hidden ${
-        darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-300"
+        darkMode ? "bg-gray-900 border-gray-700" : "bg-gray-200 border-gray-300"
       }`,
     };
   }, [darkMode]);
-
-  // @todo store API response in local storage in a responses tab that is re-playable
-  // useEffect(() => {
-  //   if (response || error || loading) {
-  //     console.log(response, error, loading);
-  //   }
-  // }, [response, loading, error, route]);
 
   return (
     <div>
@@ -136,7 +147,7 @@ export default function Route({
           <div
             className={`w-16 flex flex-shrink-0 items-center justify-center text-xs text-gray-700 font-semibold p-1 mr-2 border rounded ${styles.methodContainer}`}
             style={{
-              backgroundColor: get(Helpers.colors.routes, method),
+              backgroundColor: get(Helpers.colors.routes, method.toLowerCase()),
             }}
           >
             {method}
@@ -149,11 +160,7 @@ export default function Route({
           )}
 
           <div className={`flex flex-grow-2 mr-auto ${styles.headerText}`}>
-            {Helpers.buildPath({
-              route,
-              urlParams,
-              qsParams,
-            })}
+            {pathWithQS}
           </div>
           <div
             className={`flex text-right ml-2 mr-1 items-center ${styles.headerText}`}
@@ -216,10 +223,18 @@ export default function Route({
         </div>
       </div>
 
-      <div className={`text-xl ${styles.headerText}`}>Documentation</div>
-      <div className={styles.documentationContainer}>
-        <Docs documentation={route.documentation} darkMode={darkMode} />
-      </div>
+      {route.documentation ? (
+        <>
+          <div className={`text-xl ${styles.headerText}`}>Documentation</div>
+          <div className={styles.documentationContainer}>
+            <ReactMarkdown
+              className={`badmagic-markdown ${darkMode ? "dark" : ""}`}
+              source={route.documentation}
+              escapeHtml={false}
+            />
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-export { useGlobalContext } from "./context/Context";
+export { useDarkMode } from "./hooks/use-dark-mode";
 export { default as Route } from "./Route";
 export { default as Params } from "./route/Params";
 

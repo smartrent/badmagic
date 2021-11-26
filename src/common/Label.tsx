@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useGlobalContext } from "../context/Context";
+import { useDarkMode } from "../hooks/use-dark-mode";
 import Helpers from "../lib/helpers";
 
 import { Size } from "../types";
@@ -20,7 +20,7 @@ export default function Label({
   size,
   marginBottomClass,
 }: Props) {
-  const { darkMode } = useGlobalContext();
+  const [darkMode] = useDarkMode();
 
   return (
     <div

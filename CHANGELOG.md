@@ -2,6 +2,14 @@
 
 ## v0.0.29
 
+### Features
+
+- todo
+### Breaking Changes
+
+- Removes `useGlobalContext` in favor of `useDarkMode`
+- Removes the `plugins` system. See `Readme` for information on how to convert from `plugins` to using `AuthForm` and `applyAxiosInterceptors`
+
 ## v0.0.28
 
 ### Bugfixes

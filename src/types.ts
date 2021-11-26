@@ -1,3 +1,4 @@
+import { AxiosResponse } from "axios";
 import {
   OpenApiComponents,
   OpenApiResponses,
@@ -13,6 +14,16 @@ import {
 export type WorkspaceConfig = {
   baseUrl: string;
 } & Record<string, any>;
+
+export interface HistoricResponse {
+  response: null | AxiosResponse;
+  error: null | Record<string, any>; // @todo research for to deeply strip functions from a definition
+  // The end-user can store what they want in the HistoricResponse like who issued the request
+  metadata?: Record<string, any>;
+}
+export type StoreHistoricResponse = (
+  historicResponse: HistoricResponse
+) => void;
 
 export type Workspace = {
   id: string;
@@ -31,11 +42,6 @@ export type Workspace = {
   tags?: OpenApiTag[];
   security?: OpenApiSecurityRequirement[];
   externalDocs?: OpenApiExternalDocs;
-  AuthForm?: ({
-    workspaceConfig,
-  }: {
-    workspaceConfig: WorkspaceConfig;
-  }) => React.ReactElement; // a form you can render to have the user specify their auth credentials
 
   useAxiosMiddleware?: (requestBag: {
     method: undefined | Method;
@@ -207,4 +213,24 @@ export interface RemoveArrayCellButtonProps {
   onRemoveCell?: () => void;
   className?: string;
   label?: string;
+}
+
+export type ApplyAxiosInterceptors = ({
+  axios,
+  storeHistoricResponse,
+}: {
+  axios: any;
+  storeHistoricResponse: StoreHistoricResponse;
+}) => any; // @todo type return is AxiosInstance
+
+export interface BadMagicProps {
+  workspaces: Workspace[];
+
+  applyAxiosInterceptors?: ApplyAxiosInterceptors;
+
+  AuthForm?: ({
+    workspaceConfig,
+  }: {
+    workspaceConfig: WorkspaceConfig;
+  }) => React.ReactElement; // a form you can render to have the user specify their auth credentials
 }

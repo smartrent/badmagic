@@ -6,13 +6,14 @@ import OpenApi from "./openapi";
 
 import { Route, Workspace, ParamType, SetParamFn } from "../types";
 
-function buildPath({
+// Given a Route, URL Params, and QSParams, returns a route's path with the QS params included
+function buildPathWithQS({
   route,
   urlParams,
   qsParams,
 }: {
   route: Route;
-  urlParams: Record<string, any>;
+  urlParams?: Record<string, any>;
   qsParams?: Record<string, any>;
 }) {
   const stringifiedQS =
@@ -64,10 +65,10 @@ const Helpers = {
     urlParams: Record<string, any>;
     qsParams?: Record<string, any>;
   }) {
-    return `${route.baseUrl}${buildPath({ route, urlParams, qsParams })}`;
+    return `${route.baseUrl}${buildPathWithQS({ route, urlParams, qsParams })}`;
   },
 
-  buildPath,
+  buildPathWithQS,
 
   getUrlParamsFromPath(
     path: string
@@ -123,7 +124,7 @@ const Helpers = {
         return darkMode
           ? {
               backgroundColor: "#1A1F27",
-              color: "#fff",
+              color: "#FBFAF5",
             }
           : {};
       case "fixedHeader":
@@ -133,7 +134,7 @@ const Helpers = {
               borderBottom: "1px solid rgb(56, 56, 56)",
             }
           : {
-              backgroundColor: "#fff",
+              backgroundColor: "#FBFAF5",
               borderBottom: "1px solid #eee",
             };
 

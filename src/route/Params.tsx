@@ -11,7 +11,7 @@ import { RemoveArrayCellButton } from "../common/RemoveArrayCellButton";
 
 import Helpers from "../lib/helpers";
 
-import { useGlobalContext } from "../context/Context";
+import { useDarkMode } from "../hooks/use-dark-mode";
 
 import {
   Route,
@@ -102,7 +102,7 @@ function RenderObject({
   values,
   setValues,
 }: RenderObjectProps) {
-  const { darkMode } = useGlobalContext();
+  const [darkMode] = useDarkMode();
 
   // Initialize value(s) for this input in local storage and state if they aren't already set
   // useEffect(() => {
@@ -297,12 +297,11 @@ function RenderInputs({
 }: RenderInputsProps) {
   return (
     <>
-      {map(inputs, (param: Param, idx: number) => {
+      {inputs.map((param: Param) => {
         return (
-          <div className={className} key={idx}>
+          <div className={className} key={param.name}>
             <RenderInputByDataType
               param={param}
-              key={idx}
               onSubmit={onSubmit}
               pathToValue={`${pathToValue}[${param.name}]`}
               values={values}
@@ -313,6 +312,20 @@ function RenderInputs({
       })}
     </>
   );
+}
+
+function fetchInputsFromRouteDefinition(
+  route: Route,
+  paramType: ParamType
+): Param[] {
+  if (paramType === ParamType.body) {
+    return route.body || [];
+  } else if (paramType === ParamType.qsParams) {
+    return route.qsParams || [];
+  }
+
+  // URL params is the only other valid options
+  return Helpers.getUrlParamsFromPath(route.path);
 }
 
 export default function Params({
@@ -328,23 +341,18 @@ export default function Params({
   values: Record<string, any>;
   setValues: (values: any) => void;
 }) {
-  // Checks if we have body params, url params, or QS params for this route.
-  // If we don't, we can cancel further rendering
-  let inputs: Param[] = [];
-  if (paramType === ParamType.body) {
-    inputs = route.body || [];
-  } else if (paramType === ParamType.qsParams) {
-    inputs = route.qsParams || [];
-  } else if (paramType === ParamType.urlParams) {
-    inputs = Helpers.getUrlParamsFromPath(route.path);
-  }
+  const inputs = fetchInputsFromRouteDefinition(route, paramType);
 
+  // Checks if we have body params, url params, or QS params for this route (based on ParamType).
+  // If we don't, we can cancel further rendering
   if (!inputs?.length) {
     return null;
   }
 
-  // Fetches all kv pairs from qsParams, body, or urlParams that are stored in local storage (and state)
-  const pathToValue = `[${route?.name}][${paramType}]`;
+  // `pathToValue` is used to track which value is being edited in a potentially deeply nested object with `_.get`
+  // This handles recursively refecting the deeply nested value
+  // Since this is the top level, we are starting at the top-level, we have no pathToValue yet, so we set ""
+  const pathToValue = "";
 
   return (
     <div className="mb-2">

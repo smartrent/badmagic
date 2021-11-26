@@ -4,12 +4,12 @@ import ReactJson from "react-json-view";
 import { AxiosError } from "axios";
 
 import Headers from "./Headers";
-import { useGlobalContext } from "../context/Context";
+import { useDarkMode } from "../hooks/use-dark-mode";
 
 import Helpers from "../lib/helpers";
 
 export default function ApiError({ error }: { error: null | AxiosError }) {
-  const { darkMode } = useGlobalContext();
+  const [darkMode] = useDarkMode();
   if (!error?.response) {
     return null;
   }
