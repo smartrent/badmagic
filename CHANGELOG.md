@@ -7,8 +7,8 @@
 - todo
 ### Breaking Changes
 
-- Removes `useGlobalContext` in favor of `useDarkMode`
 - Removes the `plugins` system. See `Readme` for information on how to convert from `plugins` to using `AuthForm` and `applyAxiosInterceptors`
+- Removes the `EnvVar` system. It wasn't being used except for Auth Profiles which are now handled outside of BadMagic through interceptors
 
 ## v0.0.28
 

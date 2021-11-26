@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import HelpIcon from "../common/icons/Help";
 import Tooltip from "rc-tooltip";
 
-import { useDarkMode } from "../hooks/use-dark-mode";
+import { useGlobalContext } from "../context/GlobalContext";
 
 export default function BadmagicTooltip({
   description,
 }: {
   description: null | undefined | string;
 }) {
-  const [darkMode] = useDarkMode();
+  const { darkMode } = useGlobalContext();
   if (!description) {
     return null;
   }

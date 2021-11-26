@@ -15,7 +15,6 @@ export function useHistoricResponses({
   route: Route;
 }): [HistoricResponse[], StoreHistoricResponse] {
   const storageKey = "historic-responses";
-
   const [historicResponses, setHistoricResponseInState] = useState<
     HistoricResponse[]
   >([]);
@@ -48,7 +47,7 @@ export function useHistoricResponses({
       storage.set(storageKey, newHistoricResponses);
       setHistoricResponseInState(newHistoricResponses);
     },
-    [historicResponses, , route]
+    [historicResponses, route]
   );
 
   // Note: usually `useState` has a pattern of `[values, setValues]` but here are returning

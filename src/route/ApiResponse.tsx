@@ -4,7 +4,7 @@ import ReactJson from "react-json-view";
 import { AxiosResponse } from "axios";
 
 import Headers from "./Headers";
-import { useDarkMode } from "../hooks/use-dark-mode";
+import { useGlobalContext } from "../context/GlobalContext";
 import Helpers from "../lib/helpers";
 
 export default function ApiResponse({
@@ -12,7 +12,7 @@ export default function ApiResponse({
 }: {
   response: null | AxiosResponse;
 }) {
-  const [darkMode] = useDarkMode();
+  const { darkMode } = useGlobalContext();
 
   if (!response) {
     return null;

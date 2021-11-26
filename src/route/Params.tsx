@@ -11,7 +11,7 @@ import { RemoveArrayCellButton } from "../common/RemoveArrayCellButton";
 
 import Helpers from "../lib/helpers";
 
-import { useDarkMode } from "../hooks/use-dark-mode";
+import { useGlobalContext } from "../context/GlobalContext";
 
 import {
   Route,
@@ -102,7 +102,7 @@ function RenderObject({
   values,
   setValues,
 }: RenderObjectProps) {
-  const [darkMode] = useDarkMode();
+  const { darkMode } = useGlobalContext();
 
   // Initialize value(s) for this input in local storage and state if they aren't already set
   // useEffect(() => {

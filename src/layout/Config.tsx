@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { findIndex } from "lodash-es";
 
-import { useDarkMode } from "../hooks/use-dark-mode";
+import { useGlobalContext } from "../context/GlobalContext";
 import Helpers from "../lib/helpers";
 import Button from "../common/Button";
 
@@ -24,7 +24,7 @@ export default function Config({
   activeWorkspaceNames: string[];
   setActiveWorkspaceNames: (workspaces: string[]) => void;
 }) {
-  const [darkMode, setDarkMode] = useDarkMode();
+  const { darkMode, setDarkMode } = useGlobalContext();
   const [collapsed, setCollapsed] = useState(true);
 
   const iconColor = darkMode ? "#eee" : "#333";
@@ -35,13 +35,15 @@ export default function Config({
     collapsed,
   ]);
 
-  const toggleDarkMode = useCallback(() => setDarkMode(!darkMode), [
-    darkMode,
-    setDarkMode,
-  ]);
+  const toggleDarkMode = useCallback(() => setDarkMode(!darkMode), [darkMode]);
 
-  const textColor = useMemo(() => {
-    return darkMode ? "text-gray-400" : "text-gray-800";
+  const styles = useMemo(() => {
+    return {
+      textColor: darkMode ? "text-gray-400" : "text-gray-800",
+      background: darkMode
+        ? "bg-gray-900 border-gray-700"
+        : "bg-gray-200 border-gray-400",
+    };
   }, [darkMode]);
 
   return (
@@ -51,11 +53,7 @@ export default function Config({
       </button>
       {!collapsed && (
         <div
-          className={`absolute flex flex-col border p-2 z-10 rounded ${
-            darkMode
-              ? "bg-gray-900 border-gray-700"
-              : "bg-gray-200 border-gray-400"
-          }`}
+          className={`absolute flex flex-col border p-2 z-10 rounded ${styles.background}`}
           style={{ top: "0.25rem", right: "0.25rem" }}
         >
           <div className="flex self-end">
@@ -63,7 +61,7 @@ export default function Config({
               <Close size={14} color={iconColor} />
             </button>
           </div>
-          <div className={`px-2 ${textColor}`}>
+          <div className={`px-2 ${styles.textColor}`}>
             <div className="text-md mb-2">Active Workspaces:</div>
             {workspaceNames.map((workspaceName) => {
               return (
@@ -103,7 +101,7 @@ export default function Config({
           </div>
           <div className="flex mt-3 pt-3 border-t border-gray-400">
             <button
-              className={`w-full flex justify-center items-center ${textColor}`}
+              className={`w-full flex justify-center items-center ${styles.textColor}`}
               onClick={toggleDarkMode}
             >
               <div className="mr-1">

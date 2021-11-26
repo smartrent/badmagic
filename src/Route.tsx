@@ -6,7 +6,7 @@ import { AxiosError } from "axios";
 import * as yup from "yup";
 import ReactMarkdown from "react-markdown";
 
-import { useDarkMode } from "./hooks/use-dark-mode";
+import { useGlobalContext } from "./context/GlobalContext";
 import { useHistoricResponses } from "./hooks/use-historic-responses";
 
 import Params from "./route/Params";
@@ -17,13 +17,7 @@ import Error from "./common/Error";
 import Button from "./common/Button";
 
 import Helpers from "./lib/helpers";
-import {
-  Route,
-  ParamType,
-  Workspace,
-  Method,
-  ApplyAxiosInterceptors,
-} from "./types";
+import { Route, ParamType, Method, ApplyAxiosInterceptors } from "./types";
 
 export default function Route({
   route,
@@ -32,7 +26,9 @@ export default function Route({
   route: Route;
   applyAxiosInterceptors?: ApplyAxiosInterceptors;
 }) {
-  const [darkMode] = useDarkMode();
+  const { darkMode } = useGlobalContext();
+
+  console.log("darkMode in Route.tsx", darkMode);
   const [_, storeHistoricResponse] = useHistoricResponses({
     route,
   });
