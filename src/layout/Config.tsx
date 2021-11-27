@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { findIndex } from "lodash-es";
+import { findIndex, flatMap } from "lodash-es";
 
 import { useGlobalContext } from "../context/GlobalContext";
 import Helpers from "../lib/helpers";
@@ -11,23 +11,36 @@ import DarkMode from "../common/icons/DarkMode";
 import Download from "../common/icons/Download";
 import Close from "../common/icons/Close";
 
-import { Route } from "../types";
+import { Route, Workspace } from "../types";
 
 export default function Config({
-  routes,
-  workspaceNames,
-  activeWorkspaceNames, // workspace names
+  workspaces,
+  activeWorkspaceNames,
   setActiveWorkspaceNames,
 }: {
-  routes: Route[];
-  workspaceNames: string[];
+  workspaces: Workspace[];
   activeWorkspaceNames: string[];
-  setActiveWorkspaceNames: (workspaces: string[]) => void;
+  setActiveWorkspaceNames: (workspaceNames: string[]) => void;
 }) {
   const { darkMode, setDarkMode } = useGlobalContext();
   const [collapsed, setCollapsed] = useState(true);
 
   const iconColor = darkMode ? "#eee" : "#333";
+
+  const workspaceNames = useMemo(() => {
+    return workspaces.map(({ name }) => name);
+  }, [workspaces]);
+
+  const routes = useMemo(() => {
+    const activeWorkspaces = workspaces.filter(({ name }) =>
+      activeWorkspaceNames.includes(name)
+    );
+    return flatMap(activeWorkspaces, ({ routes, config }) => {
+      return routes.map((route) => {
+        return { ...route, baseUrl: config?.baseUrl };
+      });
+    });
+  }, [workspaces]);
 
   // @todo downloadJson
 
@@ -120,7 +133,6 @@ export default function Config({
                     id: "",
                     name: "",
                     config: { baseUrl: "" },
-                    plugins: [],
                   },
                 })
               }

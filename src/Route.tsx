@@ -1,23 +1,15 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { get } from "lodash-es";
 import useAxios from "@smartrent/use-axios";
-import axios from "axios";
-import { AxiosError } from "axios";
-import * as yup from "yup";
-import ReactMarkdown from "react-markdown";
+import axios, { AxiosResponse, AxiosError } from "axios";
 
 import { useGlobalContext } from "./context/GlobalContext";
-import { useHistoricResponses } from "./hooks/use-historic-responses";
 
-import Params from "./route/Params";
-import BodyPreview from "./route/BodyPreview";
-import ApiError from "./route/ApiError";
-import ApiResponse from "./route/ApiResponse";
-import Error from "./common/Error";
-import Button from "./common/Button";
+import { RequestResponse } from "./common/route/RequestResponse";
+import { Documentation } from "./common/route/Documentation";
 
-import Helpers from "./lib/helpers";
-import { Route, ParamType, Method, ApplyAxiosInterceptors } from "./types";
+import { History } from "./common/History";
+
+import { Route, ApplyAxiosInterceptors } from "./types";
 
 export default function Route({
   route,
@@ -26,211 +18,14 @@ export default function Route({
   route: Route;
   applyAxiosInterceptors?: ApplyAxiosInterceptors;
 }) {
-  const { darkMode } = useGlobalContext();
-
-  console.log("darkMode in Route.tsx", darkMode);
-  const [_, storeHistoricResponse] = useHistoricResponses({
-    route,
-  });
-  const [validationErrors, setValidationErrors] = useState([]);
-  const [urlParams, setUrlParams] = useState({});
-  const [qsParams, setQsParams] = useState({});
-  const [body, setBody] = useState({});
-
-  const method: Method = useMemo(() => {
-    return route.method ? route.method : Method.GET;
-  }, [route]);
-
-  const url = useMemo(() => {
-    return Helpers.buildUrl({
-      route,
-      urlParams,
-      qsParams: qsParams || {},
-    });
-  }, [route, urlParams, qsParams]);
-  const pathWithQS = useMemo(() => {
-    return Helpers.buildPathWithQS({
-      route,
-      urlParams,
-      qsParams,
-    });
-  }, [route, urlParams, qsParams]);
-
-  // The end-user can optionally load Axios Interceptors at this point. https://axios-http.com/docs/interceptors
-  const axiosInstance = useMemo(() => {
-    const axiosInstance = axios.create({
-      baseURL: route?.baseUrl,
-      headers: {}, // by default no headers are set. If you need to pass headers, use `useAxiosMiddleware`
-    });
-    return applyAxiosInterceptors
-      ? applyAxiosInterceptors({
-          axios: axiosInstance,
-          storeHistoricResponse,
-        })
-      : axiosInstance;
-  }, [route, storeHistoricResponse]);
-
-  const { response, loading, error, reFetch } = useAxios({
-    axios: axiosInstance,
-    method,
-    url,
-    options: {
-      data: route.body ? body : null, // Don't sent data if `body` is not specified by the `route` definition
-    },
-  });
-
-  // When a Reset button is clicked, it resets all Params
-  const resetAllParams = useCallback(() => {
-    setQsParams({});
-    setBody({});
-    setUrlParams({});
-  }, [setUrlParams, setBody, setUrlParams]);
-
-  // Before submitting a network request, validate that the request is valid
-  // Note: Currently only supports URL Param validation
-  const reFetchWithValidation = useCallback(() => {
-    // @todo: Use Yup to validate all nested, required fields, currently this only supports urlParams
-    const requiredUrlParams = Helpers.getUrlParamsFromPath(route.path).reduce(
-      (accumulator, { name }) => {
-        accumulator[name] = yup
-          .string()
-          .required()
-          .min(1);
-
-        return accumulator;
-      },
-      {} as Record<string, any>
-    );
-
-    const yupUrlParamSchema = yup.object().shape(requiredUrlParams);
-    try {
-      yupUrlParamSchema.validateSync(urlParams);
-    } catch (err) {
-      // Yup returns errors like `urlParams.someField is required`, so we trim off the prefix
-      // @ts-ignore
-      if (err?.errors?.length) {
-        setValidationErrors(
-          // @ts-ignore
-          err?.errors?.map((message: string) =>
-            message.slice(message.indexOf(".") + 1)
-          )
-        );
-      }
-    }
-    return reFetch();
-  }, [urlParams, route]);
-
-  const styles = useMemo(() => {
-    return {
-      tryRequestContainer: darkMode
-        ? "bg-gray-900 border-gray-700"
-        : "bg-gray-200 border-gray-400",
-      methodContainer: darkMode ? "border-gray-700" : "border-gray-400",
-      headerText: darkMode ? "text-gray-100" : "text-gray-800",
-      documentationContainer: `px-4 border rounded overflow-x-hidden ${
-        darkMode ? "bg-gray-900 border-gray-700" : "bg-gray-200 border-gray-300"
-      }`,
-    };
-  }, [darkMode]);
-
   return (
     <div>
-      <div className={`text-xl ${styles.headerText}`}>Try Request</div>
-      <div
-        className={`overflow-hidden p-2 border rounded overflow-x-hidden mb-4 ${styles.tryRequestContainer}`}
-      >
-        <div className="flex justify-start items-center mb-4">
-          <div
-            className={`w-16 flex flex-shrink-0 items-center justify-center text-xs text-gray-700 font-semibold p-1 mr-2 border rounded ${styles.methodContainer}`}
-            style={{
-              backgroundColor: get(Helpers.colors.routes, method.toLowerCase()),
-            }}
-          >
-            {method}
-          </div>
-
-          {route?.deprecated && (
-            <div className="flex flex-shrink-0 items-center justify-center text-xs text-white font-semibold p-1 mr-2 bg-red-700 rounded">
-              DEPRECATED
-            </div>
-          )}
-
-          <div className={`flex flex-grow-2 mr-auto ${styles.headerText}`}>
-            {pathWithQS}
-          </div>
-          <div
-            className={`flex text-right ml-2 mr-1 items-center ${styles.headerText}`}
-          >
-            {route.name}
-          </div>
-        </div>
-
-        <div className="flex p-2 mb-2">
-          <>
-            <div className="flex flex-col flex-grow mr-4">
-              <Params
-                paramType={ParamType.urlParams}
-                reFetch={reFetchWithValidation}
-                route={route}
-                values={urlParams}
-                setValues={setUrlParams}
-              />
-              <Params
-                paramType={ParamType.body}
-                reFetch={reFetchWithValidation}
-                route={route}
-                values={body}
-                setValues={setBody}
-              />
-              <Params
-                paramType={ParamType.qsParams}
-                reFetch={reFetchWithValidation}
-                route={route}
-                values={qsParams}
-                setValues={setQsParams}
-              />
-              {!!validationErrors?.length ? (
-                <div className="my-2">
-                  {(validationErrors || []).map((validationError, idx) => (
-                    <Error key={idx}>{validationError}</Error>
-                  ))}
-                </div>
-              ) : null}
-
-              <div className="flex">
-                <Button outline onClick={resetAllParams}>
-                  Reset
-                </Button>
-                <Button
-                  className="ml-2"
-                  disabled={loading}
-                  onClick={reFetchWithValidation}
-                >
-                  {loading ? "Loading..." : "Try"}
-                </Button>
-              </div>
-            </div>
-            <div style={{ flex: 3, overflow: "hidden" }}>
-              <BodyPreview body={body} />
-              <ApiResponse response={response} />
-              <ApiError error={error as AxiosError} />
-            </div>
-          </>
-        </div>
-      </div>
-
-      {route.documentation ? (
-        <>
-          <div className={`text-xl ${styles.headerText}`}>Documentation</div>
-          <div className={styles.documentationContainer}>
-            <ReactMarkdown
-              className={`badmagic-markdown ${darkMode ? "dark" : ""}`}
-              source={route.documentation}
-              escapeHtml={false}
-            />
-          </div>
-        </>
-      ) : null}
+      <RequestResponse
+        route={route}
+        applyAxiosInterceptors={applyAxiosInterceptors}
+      />
+      <History activeRoute={route} />
+      <Documentation documentation={route.documentation} />
     </div>
   );
 }

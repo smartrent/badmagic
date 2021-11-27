@@ -7,6 +7,7 @@ import TextInput from "../common/TextInput";
 import Route from "../Route";
 import Helpers from "../lib/helpers";
 import Storage from "../lib/storage";
+import { Sidebar } from "./Sidebar";
 
 import { Clock } from "../common/icons/Clock";
 
@@ -17,14 +18,10 @@ export function Layout({
   AuthForm,
   applyAxiosInterceptors,
 }: BadMagicProps) {
-  const workspaceNames = useMemo(() => workspaces.map(({ name }) => name), [
-    workspaces,
-  ]);
   const { darkMode } = useGlobalContext();
-
-  console.log("badmagic hooks", darkMode);
-  const [keywords, setKeywords] = useState("");
-  const [activeRouteName, setActiveRouteName] = useState("");
+  const [activeRoute, setActiveRoute] = useState<
+    null | (RouteType & { workspaceName: string; baseUrl: string })
+  >(null);
   const [activeWorkspaceNames, setActiveWorkspaceNamesInState] = useState<
     string[]
   >([]);
@@ -38,51 +35,17 @@ export function Layout({
     [setActiveWorkspaceNamesInState]
   );
 
-  // On page load, fetch active workspaces stored in local storage and filter down to those
+  // On mount, fetch active workspaces from local storage
   useEffect(() => {
-    const activeWorkspacesFromLocalStorage = Storage.get("activeWorkspaces");
-    setActiveWorkspaceNames(activeWorkspacesFromLocalStorage || workspaceNames);
+    const activeWorkspacesFromStorage = Storage.get("activeWorkspaces");
+    if (activeWorkspacesFromStorage) {
+      setActiveWorkspaceNames(activeWorkspacesFromStorage);
+    }
   }, []);
 
-  const allRoutes = useMemo(() => {
-    return flatMap(workspaces, ({ routes, config, name }) => {
-      return routes.map((route) => {
-        return {
-          ...route,
-          baseUrl: config?.baseUrl || window.location.origin,
-          workspaceName: name,
-        };
-      });
-    });
-  }, [workspaces]);
-
-  const filteredRoutes = useMemo(() => {
-    return allRoutes.filter(
-      ({
-        name,
-        path,
-        sticky,
-        workspaceName,
-      }: RouteType & { workspaceName: string }) =>
-        (!keywords ||
-          name.toLowerCase().includes(keywords.toLowerCase()) ||
-          path.toLowerCase().includes(keywords.toLowerCase()) ||
-          sticky) &&
-        activeWorkspaceNames.includes(workspaceName)
-    );
-  }, [allRoutes, keywords, activeWorkspaceNames]);
-
-  const { activeRoute, activeWorkspace } = useMemo(() => {
-    const activeRoute = activeRouteName
-      ? filteredRoutes.find(({ name }) => name === activeRouteName)
-      : null;
-
-    const activeWorkspace = (workspaces || []).find(
-      ({ name }) => activeRoute?.workspaceName === name
-    );
-
-    return { activeRoute, activeWorkspace };
-  }, [activeRouteName, filteredRoutes]);
+  const activeWorkspaces = useMemo(() => {
+    return workspaces.filter(({ name }) => activeWorkspaceNames.includes(name));
+  }, [activeWorkspaceNames]);
 
   const styles = useMemo(() => {
     return {
@@ -92,17 +55,9 @@ export function Layout({
         : "bg-gray-200 border-gray-400",
       sidebarRouteText: darkMode ? "text-gray-400" : "text-gray-800",
       sidebarMethodBorder: darkMode ? "border-gray-700" : "border-gray-400",
-      sidebarBackground: darkMode ? "bg-gray-800" : "bg-gray-200",
+      background: darkMode ? "bg-gray-800" : "bg-gray-200",
     };
   }, [darkMode]);
-
-  console.log("darkMode in BadMagic.tsx", darkMode);
-
-  const setKeywordsCallback = useCallback(
-    (e: React.FormEvent<HTMLInputElement>) =>
-      setKeywords(e.currentTarget.value),
-    [setKeywords]
-  );
 
   return (
     <>
@@ -124,8 +79,7 @@ export function Layout({
           </div>
           <div className="flex items-center ml-2">
             <Config
-              routes={filteredRoutes}
-              workspaceNames={workspaceNames}
+              workspaces={workspaces}
               activeWorkspaceNames={activeWorkspaceNames}
               setActiveWorkspaceNames={setActiveWorkspaceNames}
             />
@@ -133,49 +87,25 @@ export function Layout({
         </div>
       </div>
       <div
-        className={`grid grid-cols-12 mt-12 min-h-screen divide-x ${styles.sidebarBackground}`}
+        className={`grid grid-cols-12 mt-12 min-h-screen divide-x ${styles.background}`}
       >
-        <div className="text-sm col-span-3 p-2">
-          <div className="mt-1 mb-2 mr-2">
-            <TextInput
-              type="text"
-              placeholder="Search Routes"
-              value={keywords}
-              onChange={setKeywordsCallback}
-            />
-          </div>
-          <div className="overflow-scroll" style={{ height: "95vh" }}>
-            {/* @todo move to separate component */}
-            {filteredRoutes.map((r: RouteType & { baseUrl: string }, idx) => (
-              <div
-                key={`${r.method || "GET"}-${r.path}-${idx}`}
-                className={`mb-2 cursor-pointer ${styles.sidebarRouteText}`}
-                onClick={() => setActiveRouteName(r.name)}
-              >
-                <div className="flex">
-                  <div
-                    className={`text-xs w-12 flex flex-shrink items-center justify-center text-gray-700 font-semibold mr-1 p-0 border rounded ${styles.sidebarMethodBorder}`}
-                    style={{
-                      backgroundColor: get(
-                        Helpers.colors.routes,
-                        r.method ? r.method.toLowerCase() : "get"
-                      ),
-                    }}
-                  >
-                    {(r.method || "GET").toUpperCase()}
-                  </div>
-                  <div className="font-bold">{r.name}</div>
-                </div>
-                <div className="italic">{r.path}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <Sidebar
+          setActiveRoute={setActiveRoute}
+          workspaces={activeWorkspaces}
+        />
         <div className="col-span-9 p-4">
-          {activeRoute && activeWorkspace ? (
+          {activeRoute ? (
             <>
               {AuthForm ? (
-                <AuthForm workspaceConfig={activeWorkspace.config} />
+                <AuthForm
+                  workspaceConfig={
+                    (
+                      activeWorkspaces.find(
+                        ({ name }) => name === activeRoute?.workspaceName
+                      ) || {}
+                    ).config
+                  }
+                />
               ) : null}
               <Route
                 route={activeRoute}

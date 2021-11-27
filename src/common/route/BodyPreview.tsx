@@ -2,8 +2,8 @@ import React from "react";
 import { isEmpty } from "lodash-es";
 import ReactJson from "react-json-view";
 
-import { useGlobalContext } from "../context/GlobalContext";
-import Helpers from "../lib/helpers";
+import { useGlobalContext } from "../../context/GlobalContext";
+import Helpers from "../../lib/helpers";
 
 interface BodyPreviewProps {
   body: Record<string, any>;

@@ -1,4 +1,4 @@
-import { AxiosResponse } from "axios";
+import { AxiosResponse, AxiosError } from "axios";
 import {
   OpenApiComponents,
   OpenApiResponses,
@@ -11,18 +11,54 @@ import {
   OpenApiSchema,
 } from "openapi-v3";
 
-export type WorkspaceConfig = {
-  baseUrl: string;
-} & Record<string, any>;
+export type WorkspaceConfig =
+  | undefined
+  | ({
+      baseUrl: string;
+    } & Record<string, any>);
+
+export interface ApiResponse {
+  config: {
+    headers: Record<string, any>;
+  };
+  status: number;
+  data: any;
+  headers: Record<string, any>;
+}
+
+export interface ApiError {
+  code: string | undefined;
+  isAxiosError: boolean;
+  response: {
+    status: number | undefined;
+    data: any;
+    headers: Record<string, any>;
+  };
+}
+
+export interface StoreHistoricResponsePayload {
+  metadata: Record<string, any>;
+  response: null | AxiosResponse;
+  error: null | AxiosError;
+  route: Route;
+  urlParams: Record<string, any>;
+  qsParams: Record<string, any>;
+  body: Record<string, any>;
+}
 
 export interface HistoricResponse {
-  response: null | AxiosResponse;
-  error: null | Record<string, any>; // @todo research for to deeply strip functions from a definition
-  // The end-user can store what they want in the HistoricResponse like who issued the request
-  metadata?: Record<string, any>;
+  response: null | ApiResponse;
+  error: null | ApiError;
+  // Engineers can store what they want in the HistoricResponse like who issued the request
+  metadata: Record<string, any>;
+  route: Route;
+  urlParams: Record<string, any>;
+  qsParams: Record<string, any>;
+  body: Record<string, any>;
 }
+
 export type StoreHistoricResponse = (
-  historicResponse: HistoricResponse
+  payload: StoreHistoricResponsePayload
 ) => void;
 
 export type Workspace = {
@@ -30,7 +66,6 @@ export type Workspace = {
   version?: string; // semver
   routes: Route[];
   name: string;
-  plugins?: Plugin[]; // @todo remove
   config: WorkspaceConfig;
 
   // OpenApi
@@ -61,10 +96,8 @@ export type Route = {
   body?: Param[];
   qsParams?: Param[];
   method?: Method;
-  plugins?: Plugin[]; // @todo remove
   documentation?: string;
   example?: Record<string, any>; // e.g. {first_name: "John", last_name: "Doe", ...}
-  sticky?: boolean; // whether the route should stick to the top of the wor or not
   baseUrl?: string; // if not specified on the route but exists on workspace.config.baseUrl, it will default to that
 
   responses?: OpenApiResponses; // OpenApi Responses
@@ -111,28 +144,6 @@ export enum Method {
   GET = "GET",
   DELETE = "DELETE",
 }
-
-// @todo remove
-export enum Inject {
-  asRequest = "asRequest",
-  asResponse = "asResponse",
-}
-
-// @todo remove
-export type PluginProps = {
-  route: Route;
-  plugin: Plugin;
-  context: Record<string, any>;
-  loading: boolean;
-  reFetch: OnSubmitFn;
-};
-
-// @todo remove
-export type Plugin = {
-  inject?: Inject;
-  Component: React.ComponentType<PluginProps>;
-};
-
 export interface Icon {
   size?: number;
   color: string;

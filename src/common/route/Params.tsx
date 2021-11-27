@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { map, startCase, get, set } from "lodash-es";
 
-import Input from "../common/Input";
-import Label from "../common/Label";
-import Required from "../common/Required";
-import { ClearValueButton } from "../common/ClearValueButton";
-import { ApplyNullValueButton } from "../common/ApplyNullValueButton";
-import { AddArrayCell } from "../common/AddArrayCell";
-import { RemoveArrayCellButton } from "../common/RemoveArrayCellButton";
+import Input from "../Input";
+import Label from "../Label";
+import Required from "../Required";
+import { ClearValueButton } from "../ClearValueButton";
+import { ApplyNullValueButton } from "../ApplyNullValueButton";
+import { AddArrayCell } from "../AddArrayCell";
+import { RemoveArrayCellButton } from "../RemoveArrayCellButton";
 
-import Helpers from "../lib/helpers";
+import Helpers from "../../lib/helpers";
 
-import { useGlobalContext } from "../context/GlobalContext";
+import { useGlobalContext } from "../../context/GlobalContext";
 
 import {
   Route,
@@ -23,8 +23,8 @@ import {
   RenderInputByDataTypeProps,
   RenderObjectProps,
   RenderArrayOfInputsProps,
-} from "../types";
-import Tooltip from "../common/Tooltip";
+} from "../../types";
+import Tooltip from "../Tooltip";
 
 function RenderArrayOfInputs({
   onSubmit,
