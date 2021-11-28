@@ -105,13 +105,8 @@ export function RequestResponse({
     <div
       className={`overflow-hidden p-4 border rounded overflow-x-hidden mb-4 ${styles.container}`}
     >
-      <TopBar
-        route={route}
-        darkMode={darkMode}
-        qsParams={qsParams}
-        urlParams={urlParams}
-      />
-      <div className="flex py-2 mb-2">
+      <TopBar route={route} qsParams={qsParams} urlParams={urlParams} />
+      <div className="flex py-2">
         <Request
           route={route}
           resetAllParams={resetAllParams}

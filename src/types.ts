@@ -234,14 +234,23 @@ export type ApplyAxiosInterceptors = ({
   storeHistoricResponse: StoreHistoricResponse;
 }) => any; // @todo type return is AxiosInstance
 
+export type AuthForm = ({
+  workspaceConfig,
+}: {
+  workspaceConfig: WorkspaceConfig;
+}) => React.ReactElement;
+
+export type HistoryMetadata = ({
+  metadata,
+}: {
+  metadata: Record<string, any>;
+}) => React.ReactElement;
+
 export interface BadMagicProps {
   workspaces: Workspace[];
 
   applyAxiosInterceptors?: ApplyAxiosInterceptors;
 
-  AuthForm?: ({
-    workspaceConfig,
-  }: {
-    workspaceConfig: WorkspaceConfig;
-  }) => React.ReactElement; // a form you can render to have the user specify their auth credentials
+  AuthForm?: AuthForm; // a form you can render to have the user specify their auth credentials
+  HistoryMetadata?: HistoryMetadata; // a React component that can be rendered to display additional metadata
 }

@@ -1,30 +1,35 @@
 import React, { useMemo, useState, useEffect, useCallback } from "react";
-import { flatMap, get } from "lodash-es";
 
-import Config from "./Config";
 import { useGlobalContext } from "../context/GlobalContext";
-import TextInput from "../common/TextInput";
 import Route from "../Route";
-import Helpers from "../lib/helpers";
 import Storage from "../lib/storage";
-import { Sidebar } from "./Sidebar";
-
-import { Clock } from "../common/icons/Clock";
+import { SideBar } from "./SideBar";
+import { TopBar } from "./TopBar";
+import { History } from "../common/History";
 
 import { Route as RouteType, BadMagicProps } from "../types";
+
+type RouteWithWorkspaceConfig = RouteType & {
+  workspaceName: string;
+  baseUrl: string;
+};
 
 export function Layout({
   workspaces,
   AuthForm,
+  HistoryMetadata,
   applyAxiosInterceptors,
 }: BadMagicProps) {
   const { darkMode } = useGlobalContext();
-  const [activeRoute, setActiveRoute] = useState<
-    null | (RouteType & { workspaceName: string; baseUrl: string })
-  >(null);
+  const [
+    activeRoute,
+    setActiveRoute,
+  ] = useState<null | RouteWithWorkspaceConfig>(null);
   const [activeWorkspaceNames, setActiveWorkspaceNamesInState] = useState<
     string[]
   >([]);
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [historyActive, setHistoryActive] = useState(false);
 
   // Saves activeWorkspaces to local storage so on page refresh the user doesn't need to re-filter
   const setActiveWorkspaceNames = useCallback(
@@ -47,74 +52,81 @@ export function Layout({
     return workspaces.filter(({ name }) => activeWorkspaceNames.includes(name));
   }, [activeWorkspaceNames]);
 
+  const workspaceConfig = useMemo(() => {
+    if (!activeRoute) {
+      return null;
+    }
+
+    return (
+      activeWorkspaces.find(
+        ({ name }) => name === activeRoute?.workspaceName
+      ) || {}
+    ).config;
+  }, [activeRoute, activeWorkspaces]);
+
   const styles = useMemo(() => {
     return {
-      iconColor: darkMode ? "#eee" : "#333",
-      headerBackground: darkMode
-        ? "bg-gray-900 border-gray-700"
-        : "bg-gray-200 border-gray-400",
-      sidebarRouteText: darkMode ? "text-gray-400" : "text-gray-800",
-      sidebarMethodBorder: darkMode ? "border-gray-700" : "border-gray-400",
       background: darkMode ? "bg-gray-800" : "bg-gray-200",
+      textColor: darkMode ? "text-white" : "",
+      totalColumns: `grid-cols-${(sidebarExpanded ? 1 : 0) +
+        (activeRoute ? 3 : 0) +
+        (historyActive ? 3 : 0)}`,
     };
-  }, [darkMode]);
+  }, [darkMode, activeRoute, sidebarExpanded, historyActive]);
+
+  const toggleSidebar = useCallback(() => {
+    setSidebarExpanded(!sidebarExpanded);
+  }, [sidebarExpanded]);
+
+  const toggleHistory = useCallback(() => {
+    setHistoryActive(!historyActive);
+  }, [historyActive]);
 
   return (
-    <>
+    <div className="overflow-y-hidden min-h-full">
+      <TopBar
+        workspaces={workspaces}
+        activeWorkspaceNames={activeWorkspaceNames}
+        setActiveWorkspaceNames={setActiveWorkspaceNames}
+        toggleHistory={toggleHistory}
+      />
       <div
-        className={`w-full flex justify-between p-2 w-full border-b fixed top-0 right-0 left-0 z-10 ${styles.headerBackground}`}
+        className={`w-full grid mt-12 divide-x h-screen ${styles.background} ${styles.totalColumns}`}
       >
-        <div className="flex items-center">
-          <a
-            className="text-3xl leading-none mt-1"
-            href="https://github.com/smartrent/badmagic"
-          >
-            🔮
-          </a>
-        </div>
-
-        <div className="flex items-center">
-          <div className="flex items-center cursor-pointer">
-            <Clock color={styles.iconColor} size={24} />
-          </div>
-          <div className="flex items-center ml-2">
-            <Config
-              workspaces={workspaces}
-              activeWorkspaceNames={activeWorkspaceNames}
-              setActiveWorkspaceNames={setActiveWorkspaceNames}
+        {sidebarExpanded ? (
+          <div className="col-span-1">
+            <SideBar
+              setActiveRoute={setActiveRoute}
+              workspaces={activeWorkspaces}
             />
           </div>
-        </div>
-      </div>
-      <div
-        className={`grid grid-cols-12 mt-12 min-h-screen divide-x ${styles.background}`}
-      >
-        <Sidebar
-          setActiveRoute={setActiveRoute}
-          workspaces={activeWorkspaces}
-        />
-        <div className="col-span-9 p-4">
-          {activeRoute ? (
-            <>
-              {AuthForm ? (
-                <AuthForm
-                  workspaceConfig={
-                    (
-                      activeWorkspaces.find(
-                        ({ name }) => name === activeRoute?.workspaceName
-                      ) || {}
-                    ).config
-                  }
-                />
-              ) : null}
+        ) : null}
+        {activeRoute ? (
+          <div className="p-4 col-span-3 overflow-y-scroll">
+            <div
+              onClick={toggleSidebar}
+              className={`${styles.textColor} cursor-pointer mb-2 text-sm`}
+            >
+              {sidebarExpanded ? "Hide Sidebar" : "Show Sidebar"}
+            </div>
+
+            {activeRoute ? (
               <Route
                 route={activeRoute}
+                AuthForm={AuthForm}
+                workspaceConfig={workspaceConfig}
                 applyAxiosInterceptors={applyAxiosInterceptors}
+                HistoryMetadata={HistoryMetadata}
               />
-            </>
-          ) : null}
-        </div>
+            ) : null}
+          </div>
+        ) : null}
+        {historyActive ? (
+          <div className="p-4 col-span-3 overflow-y-scroll">
+            <History HistoryMetadata={HistoryMetadata} />
+          </div>
+        ) : null}
       </div>
-    </>
+    </div>
   );
 }

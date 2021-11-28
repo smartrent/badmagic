@@ -7,7 +7,7 @@ import Helpers from "../lib/helpers";
 
 import { Route, Workspace } from "../types";
 
-export function Sidebar({
+export function SideBar({
   setActiveRoute,
   workspaces,
 }: {
@@ -42,6 +42,7 @@ export function Sidebar({
     return {
       sidebarRouteText: darkMode ? "text-gray-400" : "text-gray-800",
       sidebarMethodBorder: darkMode ? "border-gray-700" : "border-gray-400",
+      textColor: darkMode ? "text-white" : "",
     };
   }, [darkMode]);
 
@@ -52,20 +53,26 @@ export function Sidebar({
   );
 
   return (
-    <div className="text-sm col-span-3 p-2">
-      <div className="mt-1 mb-2 mr-2">
-        <TextInput
-          type="text"
-          placeholder="Search Routes"
-          value={keywords}
-          onChange={setKeywordsCallback}
-        />
-      </div>
-      <div className="overflow-scroll" style={{ height: "95vh" }}>
+    <div className="text-sm p-4 overflow-x-hidden relative">
+      <TextInput
+        type="text"
+        placeholder="Search"
+        value={keywords}
+        onChange={setKeywordsCallback}
+        autoFocus={true}
+      />
+
+      <div className="overflow-y-scroll h-screen">
+        {!filteredRoutes.length ? (
+          <div className={`${styles.textColor} text-center mt-4`}>
+            No routes found. Please select one or more Workspaces from the
+            Config menu to load routes.
+          </div>
+        ) : null}
         {filteredRoutes.map((route, idx) => (
           <div
             key={`${route.method || "GET"}-${route.path}-${idx}`}
-            className={`my-2 cursor-pointer ${styles.sidebarRouteText}`}
+            className={`my-3 pb-2 cursor-pointer border-b border-gray-300 ${styles.sidebarRouteText}`}
             onClick={() => setActiveRoute(route)}
           >
             <div className="flex">

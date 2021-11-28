@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { get } from "lodash-es";
 
 import helpers from "../../lib/helpers";
+import { useGlobalContext } from "../../context/GlobalContext";
 
 import { Route } from "../../types";
 
@@ -9,13 +10,12 @@ export function TopBar({
   route,
   urlParams,
   qsParams,
-  darkMode,
 }: {
   route: Route;
   urlParams: Record<string, any>;
   qsParams: Record<string, any>;
-  darkMode: boolean;
 }) {
+  const { darkMode } = useGlobalContext();
   const pathWithQS = useMemo(() => {
     return helpers.buildPathWithQS({
       route,

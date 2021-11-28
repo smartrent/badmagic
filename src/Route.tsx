@@ -1,31 +1,43 @@
-import React, { useState, useCallback, useMemo } from "react";
-import useAxios from "@smartrent/use-axios";
-import axios, { AxiosResponse, AxiosError } from "axios";
+import React from "react";
 
-import { useGlobalContext } from "./context/GlobalContext";
 
 import { RequestResponse } from "./common/route/RequestResponse";
 import { Documentation } from "./common/route/Documentation";
 
 import { History } from "./common/History";
 
-import { Route, ApplyAxiosInterceptors } from "./types";
+import {
+  Route,
+  ApplyAxiosInterceptors,
+  WorkspaceConfig,
+  AuthForm,
+  HistoryMetadata
+} from "./types";
 
 export default function Route({
   route,
   applyAxiosInterceptors,
+  AuthForm,
+  HistoryMetadata
+  workspaceConfig,
 }: {
   route: Route;
   applyAxiosInterceptors?: ApplyAxiosInterceptors;
+  AuthForm: undefined | AuthForm;
+  HistoryMetadata: undefined | HistoryMetadata;
+  workspaceConfig: null | WorkspaceConfig;
 }) {
   return (
-    <div>
+    <>
+      {AuthForm && workspaceConfig ? (
+        <AuthForm workspaceConfig={workspaceConfig} />
+      ) : null}
       <RequestResponse
         route={route}
         applyAxiosInterceptors={applyAxiosInterceptors}
       />
-      <History activeRoute={route} />
+      <History activeRoute={route} HistoryMetadata={HistoryMetadata} />
       <Documentation documentation={route.documentation} />
-    </div>
+    </>
   );
 }

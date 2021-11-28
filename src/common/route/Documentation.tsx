@@ -12,7 +12,7 @@ export function Documentation({
   const styles = useMemo(() => {
     return {
       headerText: darkMode ? "text-gray-100" : "text-gray-800",
-      documentationContainer: `px-4 border rounded overflow-x-hidden ${
+      documentationContainer: `px-4 mt-4 border rounded overflow-x-hidden ${
         darkMode ? "bg-gray-900 border-gray-700" : "bg-gray-200 border-gray-300"
       }`,
     };
@@ -23,15 +23,12 @@ export function Documentation({
   }
 
   return (
-    <>
-      <div className={`text-xl ${styles.headerText}`}>Documentation</div>
-      <div className={styles.documentationContainer}>
-        <ReactMarkdown
-          className={`badmagic-markdown ${darkMode ? "dark" : ""}`}
-          source={documentation}
-          escapeHtml={false}
-        />
-      </div>
-    </>
+    <div className={styles.documentationContainer}>
+      <ReactMarkdown
+        className={`badmagic-markdown ${darkMode ? "dark" : ""}`}
+        source={documentation}
+        escapeHtml={false}
+      />
+    </div>
   );
 }

@@ -1,16 +1,18 @@
 import React, { useMemo, useState } from "react";
 
 import { useGlobalContext } from "../context/GlobalContext";
-import ApiResponse from "./route/ApiResponse";
-import ApiError from "./route/ApiError";
-import BodyPreview from "./route/BodyPreview";
-import { TopBar } from "./route/TopBar";
-import Headers from "./route/Headers";
 import Button from "./Button";
+import { HistoricRecord } from "./HistoricRecord";
 
-import { Route, HistoricResponse } from "../types";
+import { Route, HistoricResponse, HistoryMetadata } from "../types";
 
-export function History({ activeRoute }: { activeRoute?: Route }) {
+export function History({
+  activeRoute,
+  HistoryMetadata,
+}: {
+  activeRoute?: Route;
+  HistoryMetadata: undefined | HistoryMetadata;
+}) {
   const { darkMode, historicResponses } = useGlobalContext();
 
   // If user is on the History page, don't collapse
@@ -24,6 +26,9 @@ export function History({ activeRoute }: { activeRoute?: Route }) {
     }
 
     return historicResponses.filter((historicResponse: HistoricResponse) => {
+      if (!activeRoute) {
+        return historicResponse;
+      }
       return historicResponse.route?.name === activeRoute.name;
     });
   }, [historicResponses, activeRoute]);
@@ -34,59 +39,38 @@ export function History({ activeRoute }: { activeRoute?: Route }) {
         ? "bg-gray-900 border-gray-700"
         : "bg-gray-200 border-gray-400",
       headerText: darkMode ? "text-gray-100" : "text-gray-800",
+      textColor: darkMode ? "text-white" : "",
     };
   }, [darkMode]);
 
-  if (!filteredHistory?.length) {
-    return null;
-  }
-
   return (
-    <div className={`p-4 border rounded ${styles.container}`}>
-      <div className={`text-xl ${styles.headerText}`}>
-        History ({filteredHistory.length})
-      </div>
+    <>
+      <div className={`p-4 border rounded ${styles.container}`}>
+        <div className={`text-xl ${styles.headerText}`}>
+          History ({filteredHistory.length})
+        </div>
 
-      {collapsed ? (
-        <Button onClick={() => setCollapsed(false)} className="mt-4">
-          Show
-        </Button>
-      ) : null}
-      {collapsed
-        ? null
-        : filteredHistory.map(
-            (
-              {
-                route,
-                qsParams,
-                urlParams,
-                body,
-                response,
-                error,
-              }: HistoricResponse,
-              idx: number
-            ) => (
-              <div key={idx} className="my-4 border-t py-2">
-                <TopBar
-                  route={route}
-                  darkMode={darkMode}
-                  qsParams={qsParams}
-                  urlParams={urlParams}
-                />
-                <BodyPreview body={body} />
-                <ApiResponse response={response} />
-                <ApiError error={error} />
-                <Headers
-                  headers={response?.config?.headers}
-                  label="Request Headers"
-                />
-                <Headers
-                  label="Response Headers"
-                  headers={response?.headers || error?.response?.headers}
-                />
-              </div>
-            )
-          )}
-    </div>
+        {!filteredHistory.length ? (
+          <div className={styles.textColor}>
+            API requests and responses that you make will show up here.
+          </div>
+        ) : null}
+
+        {filteredHistory.length && collapsed ? (
+          <Button onClick={() => setCollapsed(false)} className="mt-4">
+            Show
+          </Button>
+        ) : null}
+        {collapsed
+          ? null
+          : filteredHistory.map((historicResponse: HistoricResponse) => (
+              <HistoricRecord
+                key={historicResponse.metadata.insertedAt}
+                historicResponse={historicResponse}
+                HistoryMetadata={HistoryMetadata}
+              />
+            ))}
+      </div>
+    </>
   );
 }
