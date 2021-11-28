@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { isObject } from "lodash-es";
 import ReactJson from "react-json-view";
 
@@ -11,6 +11,14 @@ import { ApiError } from "../../types";
 
 export default function ApiError({ error }: { error: null | ApiError }) {
   const { darkMode } = useGlobalContext();
+  const styles = useMemo(() => {
+    return {
+      responseStatus: darkMode
+        ? "bg-gray-800 border-gray-900"
+        : "bg-gray-200 border-gray-400",
+      textColor: darkMode ? "text-white" : "",
+    };
+  }, [darkMode]);
   if (!error?.response) {
     return null;
   }
@@ -32,6 +40,7 @@ export default function ApiError({ error }: { error: null | ApiError }) {
     <div>
       {error?.response?.status ? (
         <div
+          className={`flex-shrink-0 inline-flex text-xs font-bold border rounded py-1 px-2 mb-1 ${styles.responseStatus}`}
           style={{
             color: responseColor,
           }}

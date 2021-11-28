@@ -160,7 +160,7 @@ export type Size = "xs" | "sm" | "lg" | "xl";
 
 export type OnSubmitFn = () => void;
 export interface RenderInputsProps {
-  pathToValue: string;
+  pathToValue: null | string;
   inputs: Param[];
   onSubmit: OnSubmitFn;
   className: string;
@@ -169,7 +169,7 @@ export interface RenderInputsProps {
 }
 
 export interface RenderInputByDataTypeProps {
-  pathToValue: string;
+  pathToValue: null | string;
   onSubmit: OnSubmitFn;
   param: Param;
   onRemoveCell?: () => void;
@@ -178,7 +178,7 @@ export interface RenderInputByDataTypeProps {
 }
 
 export interface RenderObjectProps {
-  pathToValue: string;
+  pathToValue: null | string;
   param: Param;
   onSubmit: OnSubmitFn;
   label?: string;
@@ -188,7 +188,7 @@ export interface RenderObjectProps {
 }
 
 export interface RenderArrayOfInputsProps {
-  pathToValue: string;
+  pathToValue: null | string;
   param: Param;
   onSubmit: OnSubmitFn;
   label: string;
@@ -213,7 +213,7 @@ export interface ClearValueButtonProps {
 }
 
 export interface AddArrayCellProps {
-  values: Record<string, any>[];
+  values: Record<string, any>;
   pathToValue: string;
   param: Param;
   arrayOfValues: any[];

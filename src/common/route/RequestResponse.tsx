@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import useAxios from "@smartrent/use-axios";
 import axios, { AxiosResponse, AxiosError } from "axios";
 
@@ -27,9 +27,19 @@ export function RequestResponse({
   const [urlParams, setUrlParams] = useState({});
   const [qsParams, setQsParams] = useState({});
   const [body, setBody] = useState({});
+  const [response, setResponse] = useState<null | AxiosResponse>(null);
+  const [error, setError] = useState<null | AxiosError>(null);
 
   const method: Method = useMemo(() => {
     return route.method ? route.method : Method.GET;
+  }, [route]);
+
+  // When the route changes, reset params
+  useEffect(() => {
+    setUrlParams({});
+    setQsParams({});
+    setBody({});
+    setResponse(null);
   }, [route]);
 
   const url = useMemo(() => {
@@ -64,9 +74,9 @@ export function RequestResponse({
 
   // @ts-ignore
   const {
-    response,
+    response: axiosResponse,
     loading,
-    error,
+    error: axiosError,
     reFetch,
   }: {
     response: null | AxiosResponse;
@@ -81,6 +91,11 @@ export function RequestResponse({
       data: route.body ? body : null, // Don't sent data if `body` is not specified by the `route` definition
     },
   });
+
+  useEffect(() => {
+    setResponse(axiosResponse);
+    setError(axiosError);
+  }, [axiosResponse, axiosError]);
 
   // When a Reset button is clicked, it resets all Params
   const resetAllParams = useCallback(() => {
@@ -97,9 +112,12 @@ export function RequestResponse({
     };
   }, [darkMode]);
 
+  // When the route changes or the response changes, regenerate ResponseDOM
   const responseDOM = useMemo(() => {
     return <Response response={response} body={body} error={error} />;
   }, [response, body, error]);
+
+  console.log(body);
 
   return (
     <div

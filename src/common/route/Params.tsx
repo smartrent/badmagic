@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { map, startCase, get, set } from "lodash-es";
+import React from "react";
+import { startCase, get, set, unset } from "lodash-es";
 
 import Input from "../Input";
 import Label from "../Label";
@@ -34,23 +34,10 @@ function RenderArrayOfInputs({
   values,
   setValues,
 }: RenderArrayOfInputsProps) {
-  const arrayOfValues = get(values, pathToValue);
-
-  // Initialize value(s) for this input in local storage and state if they aren't already set
-  useEffect(() => {
-    if (!Array.isArray(arrayOfValues)) {
-      const defaultVal =
-        param?.defaultValue && Array.isArray(param?.defaultValue)
-          ? param?.defaultValue
-          : [];
-      setValues(set({ ...values }, pathToValue, defaultVal));
-    }
-  }, [pathToValue, arrayOfValues]);
-
-  // Wait for initialization before rendering further
-  if (!Array.isArray(values)) {
-    return null;
-  }
+  const newPathToValue = pathToValue
+    ? `${pathToValue}[${param.name}]`
+    : `[${param.name}]`;
+  const arrayOfValues = get(values, newPathToValue) || [];
 
   return (
     <>
@@ -62,10 +49,10 @@ function RenderArrayOfInputs({
       >
         <AddArrayCell
           param={param}
-          values={arrayOfValues}
+          values={values}
           setValues={setValues}
           arrayOfValues={arrayOfValues}
-          pathToValue={pathToValue}
+          pathToValue={newPathToValue}
         />
         <Tooltip description={param.description} />
       </InputLabelContainer>
@@ -75,15 +62,21 @@ function RenderArrayOfInputs({
         return (
           <InputContainer key={valueIdx} className="mb-1">
             <RenderInputByDataType
-              pathToValue={`${pathToValue}[${valueIdx}]`}
+              pathToValue={`${newPathToValue}[${valueIdx}]`}
               onSubmit={onSubmit}
               param={{ ...param, array: false }}
               values={values}
               setValues={setValues}
               onRemoveCell={() => {
-                let newValues = [...arrayOfValues];
-                newValues.splice(valueIdx, 1);
-                setValues(set({ ...values }, pathToValue, newValues));
+                let newArrayValues = [...arrayOfValues];
+                newArrayValues.splice(valueIdx, 1);
+                if (newArrayValues.length) {
+                  setValues(set({ ...values }, newPathToValue, newArrayValues));
+                } else {
+                  const newValues = { ...values };
+                  unset(newValues, newPathToValue); //mutates
+                  setValues(newValues);
+                }
               }}
             />
           </InputContainer>
@@ -103,18 +96,6 @@ function RenderObject({
   setValues,
 }: RenderObjectProps) {
   const { darkMode } = useGlobalContext();
-
-  // Initialize value(s) for this input in local storage and state if they aren't already set
-  // useEffect(() => {
-  //   if (!value) {
-  //     setValue(param?.defaultValue || {}); // default cannot be null
-  //   }
-  // }, [pathToValue, param, value]);
-
-  // // Initialize before rendering further
-  // if (!value) {
-  //   return null;
-  // }
 
   // Make typescript happy
   if (param.properties === undefined) {
@@ -150,7 +131,7 @@ function RenderObject({
           <RenderInputs
             inputs={param.properties}
             onSubmit={onSubmit}
-            pathToValue={pathToValue}
+            pathToValue={pathToValue ? pathToValue : `[${param.name}]`}
             className="mb-4"
             values={values}
             setValues={setValues}
@@ -234,7 +215,10 @@ function RenderInputByDataType({
     );
   }
 
-  const value = get(values, pathToValue);
+  const newPathToValue = pathToValue
+    ? `${pathToValue}[${param.name}]`
+    : `[${param.name}]`;
+  const value = get(values, newPathToValue);
 
   return (
     <InputContainer className="flex-col">
@@ -257,13 +241,13 @@ function RenderInputByDataType({
           placeholder={param.placeholder}
           required={param.required}
           onChange={(newValue: any) =>
-            setValues(set({ ...values }, pathToValue, newValue))
+            setValues(set({ ...values }, newPathToValue, newValue))
           }
           onSubmit={onSubmit}
         />
         <ClearValueButton
           onRemoveCell={onRemoveCell}
-          pathToValue={pathToValue}
+          pathToValue={newPathToValue}
           hidden={
             param.required
               ? true
@@ -275,7 +259,7 @@ function RenderInputByDataType({
         {param.nullable !== false ? (
           <ApplyNullValueButton
             onRemoveCell={onRemoveCell}
-            pathToValue={pathToValue}
+            pathToValue={newPathToValue}
             value={value}
             values={values}
             setValues={setValues}
@@ -303,7 +287,7 @@ function RenderInputs({
             <RenderInputByDataType
               param={param}
               onSubmit={onSubmit}
-              pathToValue={`${pathToValue}[${param.name}]`}
+              pathToValue={pathToValue}
               values={values}
               setValues={setValues}
             />

@@ -1,6 +1,5 @@
 import React from "react";
 
-
 import { RequestResponse } from "./common/route/RequestResponse";
 import { Documentation } from "./common/route/Documentation";
 
@@ -11,14 +10,14 @@ import {
   ApplyAxiosInterceptors,
   WorkspaceConfig,
   AuthForm,
-  HistoryMetadata
+  HistoryMetadata,
 } from "./types";
 
 export default function Route({
   route,
   applyAxiosInterceptors,
   AuthForm,
-  HistoryMetadata
+  HistoryMetadata,
   workspaceConfig,
 }: {
   route: Route;

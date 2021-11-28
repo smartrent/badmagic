@@ -11,7 +11,7 @@ import DarkMode from "../common/icons/DarkMode";
 import Download from "../common/icons/Download";
 import Close from "../common/icons/Close";
 
-import { Route, Workspace } from "../types";
+import { Workspace } from "../types";
 
 export default function Config({
   workspaces,
@@ -30,19 +30,6 @@ export default function Config({
   const workspaceNames = useMemo(() => {
     return workspaces.map(({ name }) => name);
   }, [workspaces]);
-
-  const routes = useMemo(() => {
-    const activeWorkspaces = workspaces.filter(({ name }) =>
-      activeWorkspaceNames.includes(name)
-    );
-    return flatMap(activeWorkspaces, ({ routes, config }) => {
-      return routes.map((route) => {
-        return { ...route, baseUrl: config?.baseUrl };
-      });
-    });
-  }, [workspaces]);
-
-  // @todo downloadJson
 
   const toggleCollapsed = useCallback(() => setCollapsed(!collapsed), [
     collapsed,
@@ -75,7 +62,7 @@ export default function Config({
             </button>
           </div>
           <div className={`px-2 ${styles.textColor}`}>
-            <div className="text-md mb-2">Active Workspaces:</div>
+            <div className="text-md mb-2">Workspaces:</div>
             {workspaceNames.map((workspaceName) => {
               return (
                 <div key={workspaceName}>
@@ -112,7 +99,7 @@ export default function Config({
               );
             })}
           </div>
-          <div className="flex mt-3 pt-3 border-t border-gray-400">
+          <div className="flex mt-3 py-3 border-t border-b border-gray-400">
             <button
               className={`w-full flex justify-center items-center ${styles.textColor}`}
               onClick={toggleDarkMode}
@@ -123,26 +110,32 @@ export default function Config({
               <div>Dark Mode</div>
             </button>
           </div>
-          <div className="flex mt-3 pt-3 border-t border-gray-400">
-            <Button
-              className="w-full flex justify-center items-center"
-              onClick={() =>
-                Helpers.downloadOpenApiJson({
-                  workspace: {
-                    routes,
-                    id: "",
-                    name: "",
-                    config: { baseUrl: "" },
-                  },
-                })
-              }
-            >
-              <div className="mr-1">
-                <Download size={16} color="#eee" />
-              </div>
-              <div>Download OpenAPI</div>
-            </Button>
-          </div>
+          {activeWorkspaceNames.length === 1 ? (
+            <div className="flex pt-2">
+              <Button
+                className="w-full flex justify-center items-center"
+                onClick={() =>
+                  Helpers.downloadOpenApiJson({
+                    workspace: workspaces.find(({ name }) =>
+                      activeWorkspaceNames.includes(name)
+                    ),
+                  })
+                }
+              >
+                <div className="mr-1">
+                  <Download size={16} color="#eee" />
+                </div>
+                <div>Download OpenAPI</div>
+              </Button>
+            </div>
+          ) : null}
+
+          {activeWorkspaceNames.length !== 1 ? (
+            <div className={`${styles.textColor} text-xs mt-2`}>
+              <div>Select a single workspace</div>
+              <div>to download OpenAPI</div>
+            </div>
+          ) : null}
         </div>
       )}
     </>
