@@ -7,7 +7,7 @@ import { SideBar } from "./SideBar";
 import { TopBar } from "./TopBar";
 import { History } from "../common/History";
 
-import { Route as RouteType, BadMagicProps } from "../types";
+import { Route as RouteType, BadMagicProps, WorkspaceConfig } from "../types";
 
 type RouteWithWorkspaceConfig = RouteType & {
   workspaceName: string;
@@ -57,11 +57,11 @@ export function Layout({
       return null;
     }
 
-    return (
-      activeWorkspaces.find(
-        ({ name }) => name === activeRoute?.workspaceName
-      ) || {}
-    ).config;
+    const activeWorkspace = activeWorkspaces.find(
+      ({ name }) => name === activeRoute?.workspaceName
+    );
+
+    return activeWorkspace ? activeWorkspace.config : null;
   }, [activeRoute, activeWorkspaces]);
 
   const styles = useMemo(() => {
@@ -110,7 +110,7 @@ export function Layout({
               {sidebarExpanded ? "Hide Sidebar" : "Show Sidebar"}
             </div>
 
-            {activeRoute ? (
+            {activeRoute && workspaceConfig ? (
               <Route
                 route={activeRoute}
                 AuthForm={AuthForm}

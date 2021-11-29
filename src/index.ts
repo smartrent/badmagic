@@ -14,4 +14,4 @@ export { default as Required } from "./common/Required";
 // Helper functions that can be used with interceptors
 export { default as Helpers } from "./lib/helpers";
 
-export { Method } from "./types";
+export { Method, WorkspaceConfig } from "./types";

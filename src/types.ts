@@ -11,11 +11,9 @@ import {
   OpenApiSchema,
 } from "openapi-v3";
 
-export type WorkspaceConfig =
-  | undefined
-  | ({
-      baseUrl: string;
-    } & Record<string, any>);
+export type WorkspaceConfig = {
+  baseUrl: string;
+} & Record<string, any>;
 
 export interface ApiResponse {
   config: {

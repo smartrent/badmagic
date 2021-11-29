@@ -24,7 +24,7 @@ export default function Route({
   applyAxiosInterceptors?: ApplyAxiosInterceptors;
   AuthForm: undefined | AuthForm;
   HistoryMetadata: undefined | HistoryMetadata;
-  workspaceConfig: null | WorkspaceConfig;
+  workspaceConfig: WorkspaceConfig;
 }) {
   return (
     <>

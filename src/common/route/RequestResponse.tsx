@@ -117,8 +117,6 @@ export function RequestResponse({
     return <Response response={response} body={body} error={error} />;
   }, [response, body, error]);
 
-  console.log(body);
-
   return (
     <div
       className={`overflow-hidden p-4 border rounded overflow-x-hidden mb-4 ${styles.container}`}
