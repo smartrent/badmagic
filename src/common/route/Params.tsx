@@ -34,10 +34,7 @@ function RenderArrayOfInputs({
   values,
   setValues,
 }: RenderArrayOfInputsProps) {
-  const newPathToValue = pathToValue
-    ? `${pathToValue}[${param.name}]`
-    : `[${param.name}]`;
-  const arrayOfValues = get(values, newPathToValue, param?.defaultValue || []);
+  const arrayOfValues = get(values, pathToValue, param?.defaultValue || []);
 
   return (
     <>
@@ -52,7 +49,7 @@ function RenderArrayOfInputs({
           values={values}
           setValues={setValues}
           arrayOfValues={arrayOfValues}
-          pathToValue={newPathToValue}
+          pathToValue={pathToValue}
         />
         <Tooltip description={param.description} />
       </InputLabelContainer>
@@ -62,7 +59,7 @@ function RenderArrayOfInputs({
         return (
           <InputContainer key={valueIdx} className="mb-1">
             <RenderInputByDataType
-              pathToValue={`${newPathToValue}[${valueIdx}]`}
+              pathToValue={`${pathToValue}[${valueIdx}]`}
               onSubmit={onSubmit}
               param={{ ...param, array: false }}
               values={values}
@@ -71,10 +68,10 @@ function RenderArrayOfInputs({
                 let newArrayValues = [...arrayOfValues];
                 newArrayValues.splice(valueIdx, 1);
                 if (newArrayValues.length) {
-                  setValues(set({ ...values }, newPathToValue, newArrayValues));
+                  setValues(set({ ...values }, pathToValue, newArrayValues));
                 } else {
                   const newValues = { ...values };
-                  unset(newValues, newPathToValue); //mutates
+                  unset(newValues, pathToValue); //mutates
                   setValues(newValues);
                 }
               }}
@@ -215,10 +212,7 @@ function RenderInputByDataType({
     );
   }
 
-  const newPathToValue = pathToValue
-    ? `${pathToValue}[${param.name}]`
-    : `[${param.name}]`;
-  const value = get(values, newPathToValue, param?.defaultValue);
+  const value = get(values, pathToValue, param?.defaultValue);
 
   return (
     <InputContainer className="flex-col">
@@ -250,13 +244,13 @@ function RenderInputByDataType({
               }
             }
 
-            return setValues(set({ ...values }, newPathToValue, parsedValue));
+            return setValues(set({ ...values }, pathToValue, parsedValue));
           }}
           onSubmit={onSubmit}
         />
         <ClearValueButton
           onRemoveCell={onRemoveCell}
-          pathToValue={newPathToValue}
+          pathToValue={pathToValue}
           hidden={
             param.required
               ? true
@@ -268,7 +262,7 @@ function RenderInputByDataType({
         {param.nullable !== false ? (
           <ApplyNullValueButton
             onRemoveCell={onRemoveCell}
-            pathToValue={newPathToValue}
+            pathToValue={pathToValue}
             value={value}
             values={values}
             setValues={setValues}
@@ -296,7 +290,11 @@ function RenderInputs({
             <RenderInputByDataType
               param={param}
               onSubmit={onSubmit}
-              pathToValue={pathToValue}
+              pathToValue={
+                pathToValue
+                  ? `${pathToValue}[${param.name}]`
+                  : `[${param.name}]`
+              }
               values={values}
               setValues={setValues}
             />

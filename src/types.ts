@@ -160,7 +160,7 @@ export interface RenderInputsProps {
 }
 
 export interface RenderInputByDataTypeProps {
-  pathToValue: null | string;
+  pathToValue: string;
   onSubmit: OnSubmitFn;
   param: Param;
   onRemoveCell?: () => void;
@@ -179,7 +179,7 @@ export interface RenderObjectProps {
 }
 
 export interface RenderArrayOfInputsProps {
-  pathToValue: null | string;
+  pathToValue: string;
   param: Param;
   onSubmit: OnSubmitFn;
   label: string;

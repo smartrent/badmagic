@@ -23,6 +23,7 @@ refer to the `README` to see how usage guidelines and examples.
 - Removes the `EnvVar` system. It wasn't being used except for Auth Profiles which are now handled outside of BadMagic through interceptors
 - Removes support for `sticky` attribute on a route
 - Removes most of the exports from `badmagic` including `Layout`, `Theme`, `ContextProvider`, `Workspaces` and `Workspace`
+- Request param values are no longer stored in local storage
 
 ## v0.0.28
 
