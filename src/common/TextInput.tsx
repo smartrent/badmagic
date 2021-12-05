@@ -1,6 +1,6 @@
 import React from "react";
 
-const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({
+const TextInput: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({
   className,
   ...rest
 }) => {
@@ -15,4 +15,4 @@ const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({
   );
 };
 
-export default Input;
+export default TextInput;

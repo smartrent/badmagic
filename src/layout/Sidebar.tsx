@@ -62,7 +62,7 @@ export function SideBar({
         autoFocus={true}
       />
 
-      <div className="overflow-y-scroll h-screen">
+      <div className="overflow-y-scroll" style={{ height: "93vh" }}>
         {!filteredRoutes.length ? (
           <div className={`${styles.textColor} text-center mt-4`}>
             No routes found. Please select one or more Workspaces from the

@@ -83,7 +83,9 @@ export function Layout({
   }, [historyActive]);
 
   return (
-    <div className="overflow-y-hidden min-h-full">
+    <div
+      className={`overflow-y-hidden min-h-full flex flex-col ${styles.background}`}
+    >
       <TopBar
         workspaces={workspaces}
         activeWorkspaceNames={activeWorkspaceNames}
@@ -91,7 +93,8 @@ export function Layout({
         toggleHistory={toggleHistory}
       />
       <div
-        className={`w-full grid mt-12 divide-x h-screen ${styles.background} ${styles.totalColumns}`}
+        className={`w-full flex-grow grid divide-x ${styles.totalColumns}`}
+        style={{ height: "98vh" }}
       >
         {sidebarExpanded ? (
           <div className="col-span-1">

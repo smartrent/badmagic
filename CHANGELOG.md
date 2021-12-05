@@ -2,14 +2,27 @@
 
 ## v0.0.29
 
+v0.0.29 is a partial rewrite of `badmagic` with significant changes to the implementation. It's designed to be 
+easier to implement and reduced complexity with hooking into `axios` by using it's `interceptor`. See `README` for 
+example usage.
+
+There's likely additional work that needs to be done in future versions with css styles and
+potentially bugfixes from the rewrite.
 ### Features
 
-- todo
+- Adds new `History` section to see previous api requests and responses
+- Simplifies implementation and simplifies badmagic codebase
+- Adds support for `applyAxiosInterceptors`, `AuthForm` (which renders above the `Route` component), and `HistoryMetadata` (which renders at the bottom of each `HistoricRecord` component)
+
 ### Breaking Changes
+
+There are a lot of breaking changes in this version upgrade. A few of the major ones are listed below, but
+refer to the `README` to see how usage guidelines and examples.
 
 - Removes the `plugins` system. See `Readme` for information on how to convert from `plugins` to using `AuthForm` and `applyAxiosInterceptors`
 - Removes the `EnvVar` system. It wasn't being used except for Auth Profiles which are now handled outside of BadMagic through interceptors
 - Removes support for `sticky` attribute on a route
+- Removes most of the exports from `badmagic` including `Layout`, `Theme`, `ContextProvider`, `Workspaces` and `Workspace`
 
 ## v0.0.28
 

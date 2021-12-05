@@ -48,18 +48,16 @@ In the `example directory` run the follow commands:
 ## General Usage
 
 ```javascript
-import { ContextProvider, Workspaces, Workspace, Theme } from "badmagic";
+import { BadMagic } from "badmagic";
 import { Method } from "badmagic/dist/types";
 
-export default function BadMagic() {
-  const superheroes = {
+export function BadMagicClient() {
+  const superheroWorkspace = {
     id: "superheroes",
     name: "Superheroes",
     config: {
       baseUrl: `${window.location.origin}/api`,
     },
-    plugins: [],
-
     routes: [
       {
         name: "Search Superheroes",
@@ -90,7 +88,6 @@ export default function BadMagic() {
           },
         ],
       },
-
       {
         name: "Update Superhero",
         path: "/v1/superheroes/:superhero_id",
@@ -120,88 +117,108 @@ export default function BadMagic() {
   };
 
   return (
-    <ContextProvider workspaces={[superheroes]}>
-      <Theme>
-        <Workspaces />
-        <Workspace />
-      </Theme>
-    </ContextProvider>
+    <BadMagic workspaces={[superheroWorkspace]} />
   );
 }
 ```
 
-## Plugins
+## Axios Interceptors
 
-`badmagic` supports plugins at the workspace level or plugins specific to routes. If plugins are specified for a route, they will override all plugins at the workspace level.
+`badmagic` uses Axios as the API library and Axios has [Interceptors](https://axios-http.com/docs/interceptors) which make it easy to intercept requests or responses to do tasks like injecting auth headers.
 
-### Sample Startup
+### Injecting Auth Headers
 
-Here is a sample `BearerAuth.tsx` plugin that will prompt the user to select a named access token from env vars that will then inject as an `Authorization` header with any routes that utilize this plugin:
+Here is an example of injecting a Bearer auth header where the function `getAccessToken()` is a way on your 
+frontend to fetch the current user's access token.
 
 ```javascript
-import React, { useState } from "react";
-import { map, get, omitBy } from "lodash-es";
+export const applyAxiosInterceptors = ({ axios }) => {
+  axios.interceptors.request.use((config: AxiosRequestConfig) => {
+    return {
+      ...config,
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    };
+  });
 
-import { Button, Select, Success, Params } from "badmagic";
-import { ParamType } from "badmagic/dist/types";
+  return axios;
+};
+```
 
-export default function BearerAuthorization({
-  context,
-  route,
-  reFetch,
-  loading,
+Usage:
+
+```javascript
+<BadMagic
+  applyAxiosInterceptors={applyAxiosInterceptors}
+  workspaces={workspaces}
+/>
+```
+
+### Prepending Request/Response To History
+
+`badmagic` can also use Axios Interceptors to intercept the response to append the request/response to local storage
+so that you can see prior API requests you made.
+
+Here's an example:
+
+```javascript
+export const applyAxiosInterceptors = ({ axios, storeHistoricResponse }) => {
+  axios.interceptors.response.use(
+    (response: AxiosResponse) => {
+      storeHistoricResponse({
+        metadata: getMetadata() // Metadata can store any data you want like which access token was used, etc.
+        response,
+        error: null,
+      }); // Adds success response to BadMagic's `History` tab
+      return response;
+    },
+    (error: AxiosError) => {
+      storeHistoricResponse({
+        metadata: getMetadata() // Metadata can store any data you want like which access token was used, etc.
+        response: null,
+        error,
+      }); // Adds error response to BadMagic's `History` tab
+      return Promise.reject(error);
+    }
+  );
+
+  return axios;
+};
+```
+
+Usage:
+
+```javascript
+<BadMagic
+  applyAxiosInterceptors={applyAxiosInterceptors}
+  workspaces={workspaces}
+/>
+```
+
+#### Displaying Metadata
+
+`badmagic` allows rendering a custom subsection in the `History` section for each historic API request where you can
+take the `metadata` you stored and display it in any custom way you'd like.
+
+Note: By default, `insertedAt` is stored on `metadata`.
+
+Example:
+
+```javascript
+export function HistoryMetadata({
+  metadata,
+}: {
+  metadata: Record<string, any>;
 }) {
-  const { environment, routeConfig, setHeader } = context;
-  if (!(route && route.name)) {
+  if (!metadata?.accessToken) {
     return null;
   }
-  const routeConfigVars = routeConfig[route.name];
-  const bearerAuth = get(routeConfigVars, "headers.Authorization");
-  const [success, setSuccess] = useState("");
-  const envVars = omitBy(environment, (value, key) => !key.includes("Access"));
 
   return (
-    <div>
-      <Params paramType={ParamType.urlParams} reFetch={reFetch} route={route} />
-      <Params paramType={ParamType.body} reFetch={reFetch} route={route} />
-      <Params paramType={ParamType.qsParams} reFetch={reFetch} route={route} />
-      <Select
-        value={bearerAuth ? bearerAuth.replace("Bearer ", "") : ""}
-        style={{ marginRight: "4px" }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            reFetch();
-          }
-        }}
-        onChange={(e) => {
-          if (e.currentTarget.value) {
-            setHeader({
-              route,
-              key: "Authorization",
-              value: `Bearer ${e.currentTarget.value}`,
-            });
-            setSuccess("Authorization header set");
-          } else {
-            setHeader({
-              route,
-              key: "Authorization",
-              value: "",
-            });
-            setSuccess("");
-          }
-        }}
-      >
-        <option value="">Select Authorization</option>
-        {map(envVars, (value, key) => (
-          <option key={key} value={value}>
-            {key.replace("Access - ", "")}
-          </option>
-        ))}
-      </Select>
-      <Success>{success}</Success>
-      <Button disabled={loading} onClick={reFetch}>
-        {loading ? "Loading..." : "Try"}
-      </Button>
+    <div className="flex justify-between">
+      <div>Access Token: {metadata.accessToken}</div>
+      <div>{new Date(metadata.insertedAt).toLocaleString()}</div>
     </div>
   );
 }
@@ -210,77 +227,11 @@ export default function BearerAuthorization({
 Usage:
 
 ```javascript
-const superheroes = {
-    id: "superheroes",
-    name: "Superheroes",
-    config: {
-      baseUrl: `${window.location.origin}/api`,
-    },
-    plugins: [
-    {
-      Component: BearerAuthorization,
-      inject: Inject.asRequest,
-    },
-  ],,
-
-    routes: [
-      {
-        name: "Search Superheroes",
-        path: "/v1/superheroes",
-      },
-
-      {
-        name: "Fetch Superhero",
-        path: "/v1/superheroes/:superhero_id",
-      },
-
-      {
-        name: "Create Superhero",
-        path: "/v1/superheroes",
-        method: Method.POST,
-        body: [
-          { name: "first_name", required: true },
-          { name: "last_name" },
-          { name: "phone", placeholder: "Some digits to reach this superhero" },
-          { name: "superpowers", type: "textarea" },
-          {
-            name: "age",
-            options: [
-              { label: "6", value: 6 },
-              { label: "18", value: 18 },
-              { label: "60", value: 60 },
-            ],
-          },
-        ],
-      },
-
-      {
-        name: "Update Superhero",
-        path: "/v1/superheroes/:superhero_id",
-        method: Method.PATCH,
-        body: [
-          { name: "first_name", required: true },
-          { name: "last_name" },
-          { name: "phone", placeholder: "Some digits to reach this superhero" },
-          { name: "superpowers", type: "textarea" },
-          {
-            name: "age",
-            options: [
-              { label: "6", value: 6 },
-              { label: "18", value: 18 },
-              { label: "60", value: 60 },
-            ],
-          },
-        ],
-      },
-
-      {
-        name: "Delete Superhero",
-        path: "/v1/superheroes/:superhero_id",
-        method: Method.DELETE,
-      },
-    ],
-  };
+<BadMagic
+  HistoryMetadata={HistoryMetadata}
+  applyAxiosInterceptors={applyAxiosInterceptors}
+  workspaces={workspaces}
+/>
 ```
 
 ## Route Documentation

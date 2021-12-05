@@ -90,7 +90,7 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
 
       const newHistoricResponses = [newResponse, ...historicResponses].slice(
         0,
-        49
+        50
       ); // prepend the new HistoricResponse, and ensure the array has a max of 50 cells
 
       storage.set(storageKeys.historicResponses, newHistoricResponses);

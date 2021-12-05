@@ -147,13 +147,6 @@ export interface Icon {
   color: string;
 }
 
-export interface SetParamPayload {
-  param?: Param;
-  value: any;
-  pathToValue: string;
-}
-export type SetParamFn = (payload: SetParamPayload) => void;
-
 export type Size = "xs" | "sm" | "lg" | "xl";
 
 export type OnSubmitFn = () => void;

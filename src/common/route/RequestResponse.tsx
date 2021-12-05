@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from "react";
-import useAxios from "@smartrent/use-axios";
+import { useAxios } from "../../hooks/use-axios";
 import axios, { AxiosResponse, AxiosError } from "axios";
 
 import { useGlobalContext } from "../../context/GlobalContext";
@@ -8,12 +8,13 @@ import { Response } from "./Response";
 import { Request } from "./Request";
 import { TopBar } from "./TopBar";
 
-import Helpers from "../../lib/helpers";
+import helpers from "../../lib/helpers";
 import {
   Route,
   Method,
   ApplyAxiosInterceptors,
   StoreHistoricResponsePayload,
+  Param,
 } from "../../types";
 
 export function RequestResponse({
@@ -27,8 +28,6 @@ export function RequestResponse({
   const [urlParams, setUrlParams] = useState({});
   const [qsParams, setQsParams] = useState({});
   const [body, setBody] = useState({});
-  const [response, setResponse] = useState<null | AxiosResponse>(null);
-  const [error, setError] = useState<null | AxiosError>(null);
 
   const method: Method = useMemo(() => {
     return route.method ? route.method : Method.GET;
@@ -36,14 +35,18 @@ export function RequestResponse({
 
   // When the route changes, reset params
   useEffect(() => {
+    // Set default values in state, but this currently doesn't handle recursive default values like
+    // object properties or array default values
+    const defaultBodyParams = helpers.reduceDefaultParamValues(route?.body);
+    const defaultQsParams = helpers.reduceDefaultParamValues(route?.qsParams);
+
     setUrlParams({});
-    setQsParams({});
-    setBody({});
-    setResponse(null);
+    setQsParams(defaultQsParams);
+    setBody(defaultBodyParams);
   }, [route]);
 
   const url = useMemo(() => {
-    return Helpers.buildUrl({
+    return helpers.buildUrl({
       route,
       urlParams,
       qsParams: qsParams || {},
@@ -74,9 +77,9 @@ export function RequestResponse({
 
   // @ts-ignore
   const {
-    response: axiosResponse,
+    response,
     loading,
-    error: axiosError,
+    error,
     reFetch,
   }: {
     response: null | AxiosResponse;
@@ -88,14 +91,9 @@ export function RequestResponse({
     method,
     url,
     options: {
-      data: route.body ? body : null, // Don't sent data if `body` is not specified by the `route` definition
+      data: route.body ? body : null, // Don't send data if `body` is not specified by the `route` definition
     },
   });
-
-  useEffect(() => {
-    setResponse(axiosResponse);
-    setError(axiosError);
-  }, [axiosResponse, axiosError]);
 
   // When a Reset button is clicked, it resets all Params
   const resetAllParams = useCallback(() => {

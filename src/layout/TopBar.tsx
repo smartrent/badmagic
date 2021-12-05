@@ -32,7 +32,7 @@ export function TopBar({
   // TopBar needs z-10 so that anything from AuthForm (if it exists) renders underneath
   return (
     <div
-      className={`flex justify-between items-center p-2 w-full border-b fixed top-0 right-0 left-0 z-10 ${styles.headerBackground}`}
+      className={`flex justify-between items-center p-2 w-full border-b z-10 ${styles.headerBackground}`}
     >
       <div className="flex items-center">
         <a

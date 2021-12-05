@@ -4,7 +4,7 @@ import { stringify } from "querystring";
 
 import OpenApi from "./openapi";
 
-import { Route, Workspace, ParamType, SetParamFn } from "../types";
+import { Route, Workspace, ParamType, Param } from "../types";
 
 // Given a Route, URL Params, and QSParams, returns a route's path with the QS params included
 function buildPathWithQS({
@@ -64,6 +64,17 @@ const Helpers = {
     return newValues;
   },
 
+  reduceDefaultParamValues(params: undefined | Param[]) {
+    return (params || []).reduce((memo: Record<string, any>, param: Param) => {
+      if (param?.defaultValue) {
+        memo[param?.name] = param.json
+          ? JSON.parse(param.defaultValue)
+          : param.defaultValue;
+      }
+      return memo;
+    }, {} as Record<string, any>);
+  },
+
   buildUrl({
     route,
     urlParams,
@@ -109,21 +120,6 @@ const Helpers = {
       put: "rgb(255, 234, 195)",
       patch: "rgb(255, 234, 195)",
     },
-  },
-
-  resetRequest(route: Route, setParamFn: SetParamFn): void {
-    setParamFn({
-      value: {},
-      pathToValue: `[${route.name}][${ParamType.urlParams}]`,
-    });
-    setParamFn({
-      value: {},
-      pathToValue: `[${route.name}][${ParamType.body}]`,
-    });
-    setParamFn({
-      value: {},
-      pathToValue: `[${route.name}][${ParamType.qsParams}]`,
-    });
   },
 
   getStyles(darkMode: boolean, category: string): React.CSSProperties {

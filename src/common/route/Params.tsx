@@ -37,7 +37,7 @@ function RenderArrayOfInputs({
   const newPathToValue = pathToValue
     ? `${pathToValue}[${param.name}]`
     : `[${param.name}]`;
-  const arrayOfValues = get(values, newPathToValue) || [];
+  const arrayOfValues = get(values, newPathToValue, param?.defaultValue || []);
 
   return (
     <>
@@ -218,7 +218,7 @@ function RenderInputByDataType({
   const newPathToValue = pathToValue
     ? `${pathToValue}[${param.name}]`
     : `[${param.name}]`;
-  const value = get(values, newPathToValue);
+  const value = get(values, newPathToValue, param?.defaultValue);
 
   return (
     <InputContainer className="flex-col">
@@ -240,9 +240,18 @@ function RenderInputByDataType({
           type={param.type}
           placeholder={param.placeholder}
           required={param.required}
-          onChange={(newValue: any) =>
-            setValues(set({ ...values }, newPathToValue, newValue))
-          }
+          onChange={(newValue: any) => {
+            let parsedValue = newValue;
+            if (param.json) {
+              try {
+                parsedValue = JSON.parse(newValue);
+              } catch (err) {
+                //
+              }
+            }
+
+            return setValues(set({ ...values }, newPathToValue, parsedValue));
+          }}
           onSubmit={onSubmit}
         />
         <ClearValueButton
