@@ -128,10 +128,9 @@ export function BadMagicClient() {
 
 ### Injecting Auth Headers
 
-Here is an example of injecting a Bearer auth header where the function `getAccessToken()` is a way on your 
-frontend to fetch the current user's access token.
+Here is an example of injecting a Bearer auth header where the function `getAccessToken()` is a way on your frontend to fetch the current user's access token.
 
-```javascript
+```jsx
 export const applyAxiosInterceptors = ({ axios }) => {
   axios.interceptors.request.use((config: AxiosRequestConfig) => {
     return {
@@ -148,8 +147,46 @@ export const applyAxiosInterceptors = ({ axios }) => {
 
 Usage:
 
-```javascript
+```jsx
 <BadMagic
+  applyAxiosInterceptors={applyAxiosInterceptors}
+  workspaces={workspaces}
+/>
+```
+
+#### Adding AuthForm
+
+If needed, you can prompt the end-user to enter auth credentials and/or to generate access tokens, etc., by using a
+form that can be injected and rendered above the `Route` component called `AuthForm`.
+
+`workspaceConfig` is passed in as an argument so if you have multiple workspaces with different auth strategies, you
+can use the information in `workspaceConfig` to determine which form to render.
+
+Here's some pseudocode to give you an idea:
+
+```jsx
+export function AuthForm({
+  workspaceConfig,
+}) {
+  return (
+    <div>
+      <TextInput name="email" />
+      <TextInput name="password" />
+      <Button onClick={() => {
+        // axios request to login user, fetch access token, and store access token in state or local storage
+        // then in the `applyAxiosInterceptors`, the `getAccessToken()` function can fetch the token from state or 
+        // local storage
+      }}>
+    </div>
+  );
+};
+```
+
+Usage:
+
+```jsx
+<BadMagic
+  AuthForm={AuthForm}
   applyAxiosInterceptors={applyAxiosInterceptors}
   workspaces={workspaces}
 />
@@ -162,7 +199,7 @@ so that you can see prior API requests you made.
 
 Here's an example:
 
-```javascript
+```jsx
 export const applyAxiosInterceptors = ({ axios, storeHistoricResponse }) => {
   axios.interceptors.response.use(
     (response: AxiosResponse) => {
@@ -189,7 +226,7 @@ export const applyAxiosInterceptors = ({ axios, storeHistoricResponse }) => {
 
 Usage:
 
-```javascript
+```jsx
 <BadMagic
   applyAxiosInterceptors={applyAxiosInterceptors}
   workspaces={workspaces}
@@ -205,7 +242,7 @@ Note: By default, `insertedAt` is stored on `metadata`.
 
 Example:
 
-```javascript
+```jsx
 export function HistoryMetadata({
   metadata,
 }: {
@@ -226,7 +263,7 @@ export function HistoryMetadata({
 
 Usage:
 
-```javascript
+```jsx
 <BadMagic
   HistoryMetadata={HistoryMetadata}
   applyAxiosInterceptors={applyAxiosInterceptors}
@@ -250,36 +287,20 @@ Usage:
 
 Usage:
 
-```javascript
+```jsx
+import SuperHero Documentation from "./docs/superheroes.md";
+
 const superheroes = {
   id: "superheroes",
   name: "Superheroes",
   config: {
     baseUrl: `${window.location.origin}/api`,
   },
-  plugins: [
-    {
-      Component: BearerAuthorization,
-      inject: Inject.asRequest,
-    },
-  ],
   routes: [
     {
       name: "Search Superheroes",
       path: "/v1/superheroes",
-      documentation: `
-      # Fetches list of all super heros
-      ## Reponse
-      \`\`\`json
-      [
-        {
-          "name": "Spiderman",
-          "age": "29",
-          "location": "Forest Hills"
-        }
-      ]
-      \`\`\`
-      `,
+      documentation: SuperHeroDocumentation,
     },
     {
       name: "Fetch Superhero",
