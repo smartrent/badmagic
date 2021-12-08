@@ -8,7 +8,7 @@ export default function Headers({
   headers,
   label,
 }: {
-  headers: undefined | Record<string, any>;
+  headers?: undefined | Record<string, any>;
   label: string;
 }) {
   const { darkMode } = useGlobalContext();

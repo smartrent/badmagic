@@ -33,7 +33,9 @@ export function Response({
       <Headers
         label="Response Headers"
         headers={
-          response?.headers || (isAxiosError(error) && error?.response?.headers)
+          response?.headers ||
+          (isAxiosError(error) && error?.response?.headers) ||
+          {}
         }
       />
     </div>

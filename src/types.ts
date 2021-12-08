@@ -36,8 +36,8 @@ export interface ApiError {
 
 export interface StoreHistoricResponsePayload {
   metadata: Record<string, any>;
-  response: null | AxiosResponse;
-  error: null | AxiosError;
+  response: null | ApiResponse;
+  error: null | ApiError;
   route: Route;
   urlParams: Record<string, any>;
   qsParams: Record<string, any>;
