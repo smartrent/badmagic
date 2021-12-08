@@ -11,13 +11,17 @@ import {
   ApiResponse as ApiResponseProp,
 } from "../../types";
 
+export const isAxiosError = (err: any): err is AxiosError => {
+  return err && typeof err === "object" && err.isAxiosError;
+};
+
 export function Response({
   response,
   body,
   error,
 }: {
   response: null | AxiosResponse;
-  error: null | AxiosError;
+  error: null | Error | AxiosError;
   body: Record<string, any>;
 }) {
   return (
@@ -28,7 +32,9 @@ export function Response({
       <Headers headers={response?.config?.headers} label="Request Headers" />
       <Headers
         label="Response Headers"
-        headers={response?.headers || error?.response?.headers}
+        headers={
+          response?.headers || (isAxiosError(error) && error?.response?.headers)
+        }
       />
     </div>
   );

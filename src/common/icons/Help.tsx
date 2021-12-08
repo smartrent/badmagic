@@ -6,7 +6,6 @@ import { Icon } from "../../types";
 const Help = ({ size, color, ...props }: Icon) => (
   <Svg
     {...props}
-    // @ts-ignore
     viewBox="0 0 29.536 29.536"
     width={size}
     height={size}

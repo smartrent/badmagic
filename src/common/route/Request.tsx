@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback } from "react";
 import * as yup from "yup";
 
 import Params from "./Params";
@@ -32,7 +32,7 @@ export function Request({
   resetAllParams: () => void;
   loading: boolean;
 }) {
-  const [validationErrors, setValidationErrors] = useState([]);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   // Before submitting a network request, validate that the request is valid
   // Note: Currently only supports URL Param validation
@@ -55,10 +55,8 @@ export function Request({
       yupUrlParamSchema.validateSync(urlParams);
     } catch (err) {
       // Yup returns errors like `urlParams.someField is required`, so we trim off the prefix
-      // @ts-ignore
-      if (err?.errors?.length) {
+      if (err instanceof yup.ValidationError && err?.errors?.length) {
         setValidationErrors(
-          // @ts-ignore
           err?.errors?.map((message: string) =>
             message.slice(message.indexOf(".") + 1)
           )

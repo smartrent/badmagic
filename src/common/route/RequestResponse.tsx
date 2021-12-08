@@ -14,7 +14,6 @@ import {
   Method,
   ApplyAxiosInterceptors,
   StoreHistoricResponsePayload,
-  Param,
 } from "../../types";
 
 export function RequestResponse({
@@ -75,18 +74,7 @@ export function RequestResponse({
       : axiosInstance;
   }, [route, storeHistoricResponseWithRoute]);
 
-  // @ts-ignore
-  const {
-    response,
-    loading,
-    error,
-    reFetch,
-  }: {
-    response: null | AxiosResponse;
-    loading: boolean;
-    error: null | AxiosError;
-    reFetch: () => void;
-  } = useAxios({
+  const { response, loading, error, reFetch } = useAxios({
     axios: axiosInstance,
     method,
     url,

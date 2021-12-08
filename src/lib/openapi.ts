@@ -11,6 +11,7 @@ import {
   OpenApiMap,
   OpenApi,
   OpenApiParameter,
+  OpenApiReference,
 } from "openapi-v3";
 
 import Helpers from "./helpers";
@@ -54,10 +55,9 @@ function getObjectProperties(
 
   return reduce(
     properties,
-    (memo: OpenApiSchema["properties"], property) => {
+    (memo: OpenApiMap<OpenApiSchema | OpenApiReference>, property) => {
       const { name } = property;
 
-      // @ts-ignore - TODO
       memo[name] = deriveSchemaFromParam(property);
 
       return memo;
@@ -131,8 +131,7 @@ function deriveSchemaFromRoute(route: Route): OpenApiSchema {
   if (route.body) {
     properties = reduce(
       route.body,
-      (memo: OpenApiSchema["properties"], bodyParam) => {
-        // @ts-ignore - TODO
+      (memo: OpenApiMap<OpenApiSchema | OpenApiReference>, bodyParam) => {
         memo[bodyParam.name] = deriveSchemaFromParam(bodyParam);
         return memo;
       },
