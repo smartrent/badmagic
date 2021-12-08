@@ -236,7 +236,7 @@ Usage:
 #### Displaying Metadata
 
 `badmagic` allows rendering a custom subsection in the `History` section for each historic API request where you can
-take the `metadata` you stored and display it in any custom way you'd like.
+take the `metadata` you stored using the axios intercepter and display it in any custom way you'd like.
 
 Note: By default, `insertedAt` is stored on `metadata`.
 
