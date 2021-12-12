@@ -30,11 +30,7 @@ function buildPathWithQS({
 }
 
 const Helpers = {
-  downloadOpenApiJson: ({
-    workspace,
-  }: {
-    workspace?: Workspace;
-  }) => {
+  downloadOpenApiJson: ({ workspace }: { workspace?: Workspace }) => {
     if (!workspace) {
       return null;
     }
