@@ -25,10 +25,10 @@ export interface ApiResponse {
 }
 
 export interface ApiError {
-  code: string | undefined;
+  code?: string;
   isAxiosError: boolean;
   response: {
-    status: number | undefined;
+    status?: number;
     data: any;
     headers: Record<string, any>;
   };
