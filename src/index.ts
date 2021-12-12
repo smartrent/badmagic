@@ -1,18 +1,8 @@
-export { Context, ContextProvider, useGlobalContext } from "./context/Context";
-export { default as Route } from "./Route";
-export { default as Request } from "./route/Request";
-export { default as Response } from "./route/Response";
-export { default as Params } from "./route/Params";
+export { useGlobalContext } from "./context/GlobalContext";
 
-// dev note: don't change export name to `Layout` from `Workspaces` until ready for breaking changes
-export { default as Workspaces } from "./layout/Layout";
+export { BadMagic } from "./BadMagic";
 
-export { default as Workspace } from "./Workspace";
-export { default as Theme } from "./Theme";
-export { default as BodyPreview } from "./route/BodyPreview";
-export { default as ApiResponse } from "./route/ApiResponse";
-export { default as ApiError } from "./route/ApiError";
-
+// UI elements that can be used with AuthForm
 export { default as TextInput } from "./common/TextInput";
 export { default as Select } from "./common/Select";
 export { default as Button } from "./common/Button";
@@ -21,14 +11,7 @@ export { default as Success } from "./common/Success";
 export { default as Error } from "./common/Error";
 export { default as Required } from "./common/Required";
 
+// Helper functions that can be used with interceptors
 export { default as Helpers } from "./lib/helpers";
-export { default as OpenApi } from "./lib/openapi";
-export { default as Storage } from "./lib/storage";
 
-export {
-  Inject,
-  Method,
-  ParamType,
-  PluginProps,
-  Workspace as WorkspaceProps,
-} from "./types";
+export { Method, WorkspaceConfig } from "./types";

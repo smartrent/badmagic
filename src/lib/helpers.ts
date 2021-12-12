@@ -1,44 +1,44 @@
 import React from "react";
-import {
-  get,
-  set,
-  reduce,
-  find,
-  compact,
-  map,
-  startCase,
-  transform,
-} from "lodash-es";
+import { get, set, reduce, compact, map, startCase } from "lodash-es";
 import { stringify } from "querystring";
 
-import Storage from "./storage";
 import OpenApi from "./openapi";
 
-import {
-  Route,
-  Workspace,
-  ParamType,
-  RouteConfig,
-  RouteConfigVars,
-  SetParamFn,
-  Param,
-} from "../types";
+import { Route, Workspace, ParamType, Param } from "../types";
 
-function defaultRouteConfigVars(): RouteConfigVars {
-  return {
-    urlParams: {},
-    qsParams: {},
-    body: {},
-    headers: {},
-    response: null,
-    error: null,
-    loading: false,
-    validationErrors: [],
-  };
+// Given a Route, URL Params, and QSParams, returns a route's path with the QS params included
+function buildPathWithQS({
+  route,
+  urlParams,
+  qsParams,
+}: {
+  route: Route;
+  urlParams?: Record<string, any>;
+  qsParams?: Record<string, any>;
+}) {
+  const stringifiedQS =
+    qsParams && !!Object.keys(qsParams).length ? stringify(qsParams) : "";
+
+  return reduce(
+    Helpers.getUrlParamsFromPath(route.path),
+    (memo, urlParam) => {
+      const value = get(urlParams || {}, urlParam.name);
+      return memo.replace(`:${urlParam.name}`, value || `:${urlParam.name}`);
+    },
+    `${route.path}${stringifiedQS ? `?${stringifiedQS}` : ""}`
+  );
 }
 
 const Helpers = {
-  downloadOpenApiJson: ({ workspace }: { workspace: Workspace }) => {
+  downloadOpenApiJson: ({
+    workspace,
+  }: {
+    workspace?: Workspace;
+  }) => {
+    if (!workspace) {
+      return null;
+    }
+
     const openApiResult = OpenApi.generate({
       workspace,
     });
@@ -58,125 +58,36 @@ const Helpers = {
     aLink.dispatchEvent(event);
   },
 
-  defaultRouteConfigVars,
-
-  // Sets a default set of Route Config Variables for a Route
-  initializeRoute(routeConfig: RouteConfig, route: Route): RouteConfig {
-    // Already initialized
-    if (routeConfig[route.name]) {
-      return routeConfig;
-    }
-    return set(routeConfig, route.name, defaultRouteConfigVars());
-  },
-
-  getEnvForWorkspace(workspace: Workspace) {
-    if (!(workspace && workspace.id)) {
-      return null;
-    }
-    // Default environment with any changes specified by end-user
-    return Storage.get({ key: `${workspace.id}-env` });
-  },
-
-  getDefaultWorkspace(): Workspace {
-    return {
-      id: "",
-      routes: [],
-      name: "",
-      plugins: [],
-      config: {
-        baseUrl: "",
-      },
-    };
-  },
-
-  findWorkspaceByName(workspaces: Workspace[], name: null | string): Workspace {
-    let workspace;
-    if (name) {
-      workspace = find(workspaces, { name });
-    }
-    return workspace || Helpers.getDefaultWorkspace();
-  },
-
   setArrayCellValue(values: any[], cell: number, newValue: any): any[] {
     let newValues = [...values];
     newValues[cell] = newValue;
     return newValues;
   },
 
-  findRouteConfigByWorkspace(workspace: Workspace): Record<string, any> {
-    if (!workspace) {
-      return {};
-    }
-    const routeConfig = Storage.get({
-      key: `${workspace.id}-route-config`,
-    });
-
-    if (routeConfig) {
-      return routeConfig;
-    }
-
-    // stub out routeConfig
-
-    const initialRouteConfig = transform(
-      workspace.routes,
-      (memo: Record<string, any>, route) => {
-        memo[route.name] = {
-          headers: {},
-          urlParams: {},
-          body: transform(
-            route.body ? route.body : [],
-            (bodyMemo: Record<string, any>, param: Param) => {
-              bodyMemo[param.name] = param.defaultValue;
-            },
-            {}
-          ),
-          qsParams: transform(
-            route.qsParams || [],
-            (qsMemo: Record<string, any>, param: Param) => {
-              qsMemo[param.name] = param.defaultValue;
-            },
-            {}
-          ),
-          error: {},
-          response: {},
-          loading: false,
-        };
-        return memo;
-      },
-      {}
-    );
-
-    Storage.set({
-      key: `${workspace.id}-route-config`,
-      value: initialRouteConfig,
-    });
-
-    return initialRouteConfig;
+  reduceDefaultParamValues(params: undefined | Param[]) {
+    return (params || []).reduce((memo: Record<string, any>, param: Param) => {
+      if (param?.defaultValue) {
+        memo[param?.name] = param.json
+          ? JSON.parse(param.defaultValue)
+          : param.defaultValue;
+      }
+      return memo;
+    }, {} as Record<string, any>);
   },
 
   buildUrl({
     route,
-    baseUrl,
     urlParams,
     qsParams,
   }: {
     route: Route;
-    baseUrl: string;
     urlParams: Record<string, any>;
     qsParams?: Record<string, any>;
   }) {
-    const stringifiedQS =
-      qsParams && !!Object.keys(qsParams).length ? stringify(qsParams) : "";
-
-    return reduce(
-      Helpers.getUrlParamsFromPath(route.path),
-      (memo, urlParam) => {
-        const value = get(urlParams || {}, urlParam.name);
-        return memo.replace(`:${urlParam.name}`, value || `:${urlParam.name}`);
-      },
-      `${baseUrl}${route.path}${stringifiedQS ? `?${stringifiedQS}` : ""}`
-    );
+    return `${route.baseUrl}${buildPathWithQS({ route, urlParams, qsParams })}`;
   },
+
+  buildPathWithQS,
 
   getUrlParamsFromPath(
     path: string
@@ -211,28 +122,13 @@ const Helpers = {
     },
   },
 
-  resetRequest(route: Route, setParamFn: SetParamFn): void {
-    setParamFn({
-      value: {},
-      pathToValue: `[${route.name}][${ParamType.urlParams}]`,
-    });
-    setParamFn({
-      value: {},
-      pathToValue: `[${route.name}][${ParamType.body}]`,
-    });
-    setParamFn({
-      value: {},
-      pathToValue: `[${route.name}][${ParamType.qsParams}]`,
-    });
-  },
-
   getStyles(darkMode: boolean, category: string): React.CSSProperties {
     switch (category) {
       case "themeContainer":
         return darkMode
           ? {
               backgroundColor: "#1A1F27",
-              color: "#fff",
+              color: "#FBFAF5",
             }
           : {};
       case "fixedHeader":
@@ -242,7 +138,7 @@ const Helpers = {
               borderBottom: "1px solid rgb(56, 56, 56)",
             }
           : {
-              backgroundColor: "#fff",
+              backgroundColor: "#FBFAF5",
               borderBottom: "1px solid #eee",
             };
 

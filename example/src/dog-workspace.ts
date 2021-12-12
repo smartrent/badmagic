@@ -17,7 +17,6 @@ export const dogWorkspace = {
   config: {
     baseUrl: "http://localhost:3333",
   },
-  plugins: [],
   servers: [
     {
       url: "http://localhost:3333",

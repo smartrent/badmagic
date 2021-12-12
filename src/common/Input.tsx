@@ -59,7 +59,7 @@ export default function Input({
   } else if (type === "textarea") {
     inputDOM = (
       <textarea
-        className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+        className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-400 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-gray-200 focus:border-gray-500"
         onChange={(e: React.FormEvent<HTMLTextAreaElement>) =>
           onChange(e.currentTarget.value)
         }
