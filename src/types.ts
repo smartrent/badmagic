@@ -77,7 +77,7 @@ export type Workspace = {
   externalDocs?: OpenApiExternalDocs;
 
   useAxiosMiddleware?: (requestBag: {
-    method: undefined | Method;
+    method?: Method;
     urlParams: Record<string, any>;
     qsParams: Record<string, any>;
     body: Record<string, any>;
