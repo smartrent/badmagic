@@ -1,50 +1,45 @@
-import React, { useContext } from "react";
-import { get, isObject } from "lodash-es";
+import React, { useMemo } from "react";
+import { isObject } from "lodash-es";
 import ReactJson from "react-json-view";
 
 import Headers from "./Headers";
-import { useGlobalContext } from "../context/Context";
-import Helpers from "../lib/helpers";
-import { Route } from "../types";
+import { useGlobalContext } from "../../context/GlobalContext";
+import Helpers from "../../lib/helpers";
+import { ApiResponse } from "../../types";
 
-export default function ApiResponse({ route }: { route: Route }) {
-  const { routeConfig, darkMode } = useGlobalContext();
-  const routeConfigVars = get(routeConfig, route.name, {
-    response: {
-      status: 0,
-      data: "",
-      config: {
-        url: "",
-      },
-      headers: {},
-    },
-  });
+export default function ApiResponse({
+  response,
+}: {
+  response: null | ApiResponse;
+}) {
+  const { darkMode } = useGlobalContext();
+  const styles = useMemo(() => {
+    return {
+      responseStatus: darkMode
+        ? "bg-gray-800 border-gray-900"
+        : "bg-gray-200 border-gray-400",
+      textColor: darkMode ? "text-white" : "",
+    };
+  }, [darkMode]);
+  const responseColor = useMemo(() => {
+    if (response?.status && response.status >= 200 && response.status < 300) {
+      return Helpers.colors.green;
+    } else if (response?.status && response.status >= 400) {
+      return Helpers.colors.red;
+    }
+  }, [response]);
 
-  const { response } = routeConfigVars;
   if (!response) {
     return null;
   }
 
-  let responseColor;
-  if (response.status >= 200 && response.status < 300) {
-    responseColor = Helpers.colors.green;
-  } else if (response.status >= 400) {
-    responseColor = Helpers.colors.red;
-  }
-
   const isJSON = response.data && isObject(response.data);
-
-  const hasResponseHeaders = !!Object.keys(response?.headers || {}).length;
 
   return (
     <div>
       {response?.status ? (
         <div
-          className={`flex-shrink-0 inline-flex text-xs font-bold border rounded py-1 px-2 mb-1 ${
-            darkMode
-              ? "bg-gray-800 border-gray-900"
-              : "bg-gray-200 border-gray-400"
-          }`}
+          className={`flex-shrink-0 inline-flex text-xs font-bold border rounded py-1 px-2 mb-1 ${styles.responseStatus}`}
           style={{
             color: responseColor,
           }}
@@ -86,16 +81,10 @@ export default function ApiResponse({ route }: { route: Route }) {
       )}
 
       {response.data && !isJSON && (
-        <div
-          className={`border border-gray-400 p-2 ${
-            darkMode ? "text-white" : ""
-          }`}
-        >
+        <div className={`border border-gray-400 p-2 ${styles.textColor}`}>
           {response.data}
         </div>
       )}
-
-      {hasResponseHeaders ? <Headers headers={response.headers} /> : null}
     </div>
   );
 }

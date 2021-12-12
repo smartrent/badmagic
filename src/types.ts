@@ -1,5 +1,4 @@
-import { AxiosResponse } from "axios";
-
+import { AxiosResponse, AxiosError } from "axios";
 import {
   OpenApiComponents,
   OpenApiResponses,
@@ -12,15 +11,60 @@ import {
   OpenApiSchema,
 } from "openapi-v3";
 
+export type WorkspaceConfig = {
+  baseUrl: string;
+} & Record<string, any>;
+
+export interface ApiResponse {
+  config: {
+    headers: Record<string, any>;
+  };
+  status: number;
+  data: any;
+  headers: Record<string, any>;
+}
+
+export interface ApiError {
+  code?: string;
+  isAxiosError: boolean;
+  response: {
+    status?: number;
+    data: any;
+    headers: Record<string, any>;
+  };
+}
+
+export interface StoreHistoricResponsePayload {
+  metadata: Record<string, any>;
+  response: null | ApiResponse;
+  error: null | ApiError;
+  route: Route;
+  urlParams: Record<string, any>;
+  qsParams: Record<string, any>;
+  body: Record<string, any>;
+}
+
+export interface HistoricResponse {
+  response: null | ApiResponse;
+  error: null | ApiError;
+  // Engineers can store what they want in the HistoricResponse like who issued the request
+  metadata: Record<string, any>;
+  route: Route;
+  urlParams: Record<string, any>;
+  qsParams: Record<string, any>;
+  body: Record<string, any>;
+}
+
+export type StoreHistoricResponse = (
+  payload: StoreHistoricResponsePayload
+) => void;
+
 export type Workspace = {
   id: string;
   version?: string; // semver
   routes: Route[];
   name: string;
-  plugins: Plugin[];
-  config: {
-    baseUrl: string;
-  };
+  config: WorkspaceConfig;
 
   // OpenApi
   components?: OpenApiComponents;
@@ -31,21 +75,15 @@ export type Workspace = {
   tags?: OpenApiTag[];
   security?: OpenApiSecurityRequirement[];
   externalDocs?: OpenApiExternalDocs;
-};
 
-// Route Config is a set of initialized Route Variables for a workspace. (See below)
-export type RouteConfig = Record<string, RouteConfigVars>;
-
-// Variables for a route saved to React state and local storage
-export type RouteConfigVars = {
-  urlParams: Record<string, Param>;
-  qsParams: Record<string, Param>;
-  body: Record<string, Param>;
-  headers: Record<string, any>;
-  response: null | AxiosResponse;
-  error: null | any;
-  loading: boolean;
-  validationErrors: string[]; // yup validation errors
+  useAxiosMiddleware?: (requestBag: {
+    method?: Method;
+    urlParams: Record<string, any>;
+    qsParams: Record<string, any>;
+    body: Record<string, any>;
+    url: string;
+    route: Route;
+  }) => any; // intercepted callback function before submitting an API request
 };
 
 export type Route = {
@@ -56,10 +94,9 @@ export type Route = {
   body?: Param[];
   qsParams?: Param[];
   method?: Method;
-  plugins?: Plugin[];
   documentation?: string;
   example?: Record<string, any>; // e.g. {first_name: "John", last_name: "Doe", ...}
-  sticky?: boolean; // whether the route should stick to the top of the workspace or not
+  baseUrl?: string; // if not specified on the route but exists on workspace.config.baseUrl, it will default to that
 
   responses?: OpenApiResponses; // OpenApi Responses
   tags?: string[];
@@ -105,45 +142,21 @@ export enum Method {
   GET = "GET",
   DELETE = "DELETE",
 }
-
-export enum Inject {
-  asRequest = "asRequest",
-  asResponse = "asResponse",
-}
-
-export type PluginProps = {
-  route: Route;
-  plugin: Plugin;
-  context: Record<string, any>;
-  loading: boolean;
-  reFetch: OnSubmitFn;
-};
-
-export type Plugin = {
-  inject: Inject;
-  Component: React.ComponentType<PluginProps>;
-};
-
 export interface Icon {
   size?: number;
   color: string;
 }
 
-export interface SetParamPayload {
-  param?: Param;
-  value: any;
-  pathToValue: string;
-}
-export type SetParamFn = (payload: SetParamPayload) => void;
-
 export type Size = "xs" | "sm" | "lg" | "xl";
 
 export type OnSubmitFn = () => void;
 export interface RenderInputsProps {
-  pathToValue: string;
+  pathToValue: null | string;
   inputs: Param[];
   onSubmit: OnSubmitFn;
   className: string;
+  values: Record<string, any>;
+  setValues: (values: any) => void;
 }
 
 export interface RenderInputByDataTypeProps {
@@ -151,14 +164,18 @@ export interface RenderInputByDataTypeProps {
   onSubmit: OnSubmitFn;
   param: Param;
   onRemoveCell?: () => void;
+  values: Record<string, any>;
+  setValues: (values: any) => void;
 }
 
 export interface RenderObjectProps {
-  pathToValue: string;
+  pathToValue: null | string;
   param: Param;
   onSubmit: OnSubmitFn;
   label?: string;
   onRemoveCell?: () => void;
+  values: Record<string, any>;
+  setValues: (values: any) => void;
 }
 
 export interface RenderArrayOfInputsProps {
@@ -166,28 +183,65 @@ export interface RenderArrayOfInputsProps {
   param: Param;
   onSubmit: OnSubmitFn;
   label: string;
+  values: Record<string, any>;
+  setValues: (values: any) => void;
 }
 
 export interface ApplyNullValueButtonProps {
   value: any;
   pathToValue: string;
   onRemoveCell?: () => void;
+  values: Record<string, any>;
+  setValues: (values: any) => void;
 }
 
 export interface ClearValueButtonProps {
   pathToValue: string;
   onRemoveCell?: () => void;
   hidden: boolean;
+  setValues: (values: any) => void;
+  values: Record<string, any>;
 }
 
 export interface AddArrayCellProps {
-  values: any[];
+  values: Record<string, any>;
   pathToValue: string;
   param: Param;
+  arrayOfValues: any[];
+  setValues: (values: any) => void;
 }
 
 export interface RemoveArrayCellButtonProps {
   onRemoveCell?: () => void;
   className?: string;
   label?: string;
+}
+
+export type ApplyAxiosInterceptors = ({
+  axios,
+  storeHistoricResponse,
+}: {
+  axios: any;
+  storeHistoricResponse: StoreHistoricResponse;
+}) => any; // @todo type return is AxiosInstance
+
+export type AuthForm = ({
+  workspaceConfig,
+}: {
+  workspaceConfig: WorkspaceConfig;
+}) => React.ReactElement;
+
+export type HistoryMetadata = ({
+  metadata,
+}: {
+  metadata: Record<string, any>;
+}) => React.ReactElement;
+
+export interface BadMagicProps {
+  workspaces: Workspace[];
+
+  applyAxiosInterceptors?: ApplyAxiosInterceptors;
+
+  AuthForm?: AuthForm; // a form you can render to have the user specify their auth credentials
+  HistoryMetadata?: HistoryMetadata; // a React component that can be rendered to display additional metadata
 }

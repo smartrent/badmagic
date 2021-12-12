@@ -8,7 +8,7 @@ const Select: React.FC<React.SelectHTMLAttributes<HTMLSelectElement>> = ({
     <div className="relative w-full">
       <select
         className={
-          "block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 " +
+          "block appearance-none w-full bg-gray-200 border border-gray-400 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-gray-200 focus:border-gray-500 " +
           className
         }
         {...rest}

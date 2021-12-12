@@ -1,6 +1,6 @@
 import React from "react";
+import { set } from "lodash-es";
 
-import { useGlobalContext } from "../context/Context";
 import Button from "./Button";
 
 import { ApplyNullValueButtonProps } from "../types";
@@ -9,9 +9,9 @@ export function ApplyNullValueButton({
   value,
   pathToValue,
   onRemoveCell,
+  values,
+  setValues,
 }: ApplyNullValueButtonProps) {
-  const { setParam } = useGlobalContext();
-
   // If the value is already null or undefined, don't show a button to make the value null
   if (value === null || value === undefined) {
     return null;
@@ -27,12 +27,7 @@ export function ApplyNullValueButton({
     <Button
       outline
       className="flex-shrink-0 ml-1"
-      onClick={() =>
-        setParam({
-          value: null,
-          pathToValue,
-        })
-      }
+      onClick={() => setValues(set({ ...values }, pathToValue, null))}
     >
       Null
     </Button>

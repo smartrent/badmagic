@@ -1,74 +1,134 @@
-import React, { useContext } from "react";
-import { map } from "lodash-es";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
 
-import Config from "./Config";
-import { useGlobalContext } from "../context/Context";
-import { Workspace } from "../types";
-import TextInput from "../common/TextInput";
-import Select from "../common/Select";
+import { useGlobalContext } from "../context/GlobalContext";
+import Route from "../Route";
+import Storage from "../lib/storage";
+import { SideBar } from "./SideBar";
+import { TopBar } from "./TopBar";
+import { History } from "../common/History";
 
-export default function Workspaces() {
-  const {
-    workspaces,
-    setWorkspaceName,
-    workspace,
-    darkMode,
-    getWorkspaceSearchKeywords,
-    setWorkspaceSearchKeywords,
-  } = useGlobalContext();
+import { Route as RouteType, BadMagicProps, WorkspaceConfig } from "../types";
 
-  const keywords = getWorkspaceSearchKeywords();
+type RouteWithWorkspaceConfig = RouteType & {
+  workspaceName: string;
+  baseUrl: string;
+};
+
+export function Layout({
+  workspaces,
+  AuthForm,
+  HistoryMetadata,
+  applyAxiosInterceptors,
+}: BadMagicProps) {
+  const { darkMode } = useGlobalContext();
+  const [
+    activeRoute,
+    setActiveRoute,
+  ] = useState<null | RouteWithWorkspaceConfig>(null);
+  const [activeWorkspaceNames, setActiveWorkspaceNamesInState] = useState<
+    string[]
+  >([]);
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [historyActive, setHistoryActive] = useState(false);
+
+  // Saves activeWorkspaces to local storage so on page refresh the user doesn't need to re-filter
+  const setActiveWorkspaceNames = useCallback(
+    (workspaceNames: string[]) => {
+      setActiveWorkspaceNamesInState(workspaceNames);
+      Storage.set("activeWorkspaces", workspaceNames);
+    },
+    [setActiveWorkspaceNamesInState]
+  );
+
+  // On mount, fetch active workspaces from local storage
+  useEffect(() => {
+    const activeWorkspacesFromStorage = Storage.get("activeWorkspaces");
+    if (activeWorkspacesFromStorage) {
+      setActiveWorkspaceNames(activeWorkspacesFromStorage);
+    }
+  }, []);
+
+  const activeWorkspaces = useMemo(() => {
+    return workspaces.filter(({ name }) => activeWorkspaceNames.includes(name));
+  }, [activeWorkspaceNames]);
+
+  const workspaceConfig = useMemo(() => {
+    if (!activeRoute) {
+      return null;
+    }
+
+    const activeWorkspace = activeWorkspaces.find(
+      ({ name }) => name === activeRoute?.workspaceName
+    );
+
+    return activeWorkspace ? activeWorkspace.config : null;
+  }, [activeRoute, activeWorkspaces]);
+
+  const styles = useMemo(() => {
+    return {
+      background: darkMode ? "bg-gray-800" : "bg-gray-200",
+      textColor: darkMode ? "text-white" : "",
+      totalColumns: `grid-cols-${(sidebarExpanded ? 1 : 0) +
+        (activeRoute ? 3 : 0) +
+        (historyActive ? 3 : 0)}`,
+    };
+  }, [darkMode, activeRoute, sidebarExpanded, historyActive]);
+
+  const toggleSidebar = useCallback(() => {
+    setSidebarExpanded(!sidebarExpanded);
+  }, [sidebarExpanded]);
+
+  const toggleHistory = useCallback(() => {
+    setHistoryActive(!historyActive);
+  }, [historyActive]);
 
   return (
     <div
-      className={
-        darkMode
-          ? "bg-gray-900 w-full border-b border-gray-700 fixed top-0 right-0 left-0 z-10"
-          : "bg-white w-full border-b border-gray-300 fixed top-0 right-0 left-0 z-10"
-      }
+      className={`overflow-y-hidden min-h-full flex flex-col ${styles.background}`}
     >
-      <div className="w-full flex justify-between p-2">
-        <div className="flex items-center">
-          <a
-            className="text-3xl leading-none mt-1"
-            href="https://github.com/smartrent/badmagic"
-          >
-            🔮
-          </a>
-        </div>
-        <div className="flex items-center">
-          <div>
-            <Select
-              value={workspace && workspace.name ? workspace.name : ""}
-              onChange={(e: React.FormEvent<HTMLSelectElement>) =>
-                setWorkspaceName(e.currentTarget.value)
-              }
+      <TopBar
+        workspaces={workspaces}
+        activeWorkspaceNames={activeWorkspaceNames}
+        setActiveWorkspaceNames={setActiveWorkspaceNames}
+        toggleHistory={toggleHistory}
+      />
+      <div
+        className={`w-full flex-grow grid divide-x ${styles.totalColumns}`}
+        style={{ height: "98vh" }}
+      >
+        {sidebarExpanded ? (
+          <div className="col-span-1">
+            <SideBar
+              setActiveRoute={setActiveRoute}
+              workspaces={activeWorkspaces}
+            />
+          </div>
+        ) : null}
+        {activeRoute ? (
+          <div className="p-4 col-span-3 overflow-y-scroll">
+            <div
+              onClick={toggleSidebar}
+              className={`${styles.textColor} cursor-pointer mb-2 text-sm`}
             >
-              <option value="">Select Workspace</option>
-              {map(workspaces, (w: Workspace) => (
-                <option value={w.name} key={w.name}>
-                  {w.name}
-                </option>
-              ))}
-            </Select>
-          </div>
-          {workspace && workspace.name && (
-            <div className="ml-2">
-              <TextInput
-                type="text"
-                placeholder="Search Routes"
-                value={keywords}
-                onChange={(e: React.FormEvent<HTMLInputElement>) =>
-                  setWorkspaceSearchKeywords(e.currentTarget.value)
-                }
-              />
+              {sidebarExpanded ? "Hide Sidebar" : "Show Sidebar"}
             </div>
-          )}
 
-          <div className="flex items-center ml-2">
-            <Config />
+            {activeRoute && workspaceConfig ? (
+              <Route
+                route={activeRoute}
+                AuthForm={AuthForm}
+                workspaceConfig={workspaceConfig}
+                applyAxiosInterceptors={applyAxiosInterceptors}
+                HistoryMetadata={HistoryMetadata}
+              />
+            ) : null}
           </div>
-        </div>
+        ) : null}
+        {historyActive ? (
+          <div className="p-4 col-span-3 overflow-y-scroll">
+            <History HistoryMetadata={HistoryMetadata} />
+          </div>
+        ) : null}
       </div>
     </div>
   );

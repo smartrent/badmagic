@@ -1,14 +1,7 @@
-type GetPayload = {
-  key: string;
-};
-
-type SetPayload = {
-  key: string;
-  value: any;
-};
+type GetAllResponse = Record<string, any>[];
 
 export default {
-  get({ key }: GetPayload): any {
+  get(key: string): any {
     try {
       const item = localStorage.getItem(key);
 
@@ -23,9 +16,18 @@ export default {
     }
   },
 
-  set({ key, value }: SetPayload): void {
+  set(key: string, value: any): any {
     try {
       localStorage.setItem(key, JSON.stringify(value));
+      return value;
+    } catch (err) {
+      console.error("Unable to stringify JSON for localStorage", err);
+    }
+  },
+
+  delete(key: string): void {
+    try {
+      localStorage.removeItem(key);
     } catch (err) {
       console.error("Unable to stringify JSON for localStorage", err);
     }

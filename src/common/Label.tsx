@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useGlobalContext } from "../context/Context";
+import { useGlobalContext } from "../context/GlobalContext";
 import Helpers from "../lib/helpers";
 
 import { Size } from "../types";

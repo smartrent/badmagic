@@ -48,18 +48,16 @@ In the `example directory` run the follow commands:
 ## General Usage
 
 ```javascript
-import { ContextProvider, Workspaces, Workspace, Theme } from "badmagic";
+import { BadMagic } from "badmagic";
 import { Method } from "badmagic/dist/types";
 
-export default function BadMagic() {
-  const superheroes = {
+export function BadMagicClient() {
+  const superheroWorkspace = {
     id: "superheroes",
     name: "Superheroes",
     config: {
       baseUrl: `${window.location.origin}/api`,
     },
-    plugins: [],
-
     routes: [
       {
         name: "Search Superheroes",
@@ -90,7 +88,6 @@ export default function BadMagic() {
           },
         ],
       },
-
       {
         name: "Update Superhero",
         path: "/v1/superheroes/:superhero_id",
@@ -120,88 +117,145 @@ export default function BadMagic() {
   };
 
   return (
-    <ContextProvider workspaces={[superheroes]}>
-      <Theme>
-        <Workspaces />
-        <Workspace />
-      </Theme>
-    </ContextProvider>
+    <BadMagic workspaces={[superheroWorkspace]} />
   );
 }
 ```
 
-## Plugins
+## Axios Interceptors
 
-`badmagic` supports plugins at the workspace level or plugins specific to routes. If plugins are specified for a route, they will override all plugins at the workspace level.
+`badmagic` uses Axios as the API library and Axios has [Interceptors](https://axios-http.com/docs/interceptors) which make it easy to intercept requests or responses to do tasks like injecting auth headers.
 
-### Sample Startup
+### Injecting Auth Headers
 
-Here is a sample `BearerAuth.tsx` plugin that will prompt the user to select a named access token from env vars that will then inject as an `Authorization` header with any routes that utilize this plugin:
+Here is an example of injecting a Bearer auth header where the function `getAccessToken()` is a way on your frontend to fetch the current user's access token.
 
-```javascript
-import React, { useState } from "react";
-import { map, get, omitBy } from "lodash-es";
+```jsx
+export const applyAxiosInterceptors = ({ axios }) => {
+  axios.interceptors.request.use((config: AxiosRequestConfig) => {
+    return {
+      ...config,
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    };
+  });
 
-import { Button, Select, Success, Params } from "badmagic";
-import { ParamType } from "badmagic/dist/types";
+  return axios;
+};
+```
 
-export default function BearerAuthorization({
-  context,
-  route,
-  reFetch,
-  loading,
+Usage:
+
+```jsx
+<BadMagic
+  applyAxiosInterceptors={applyAxiosInterceptors}
+  workspaces={workspaces}
+/>
+```
+
+#### Adding AuthForm
+
+If needed, you can prompt the end-user to enter auth credentials and/or to generate access tokens, etc., by using a
+form that can be injected and rendered above the `Route` component called `AuthForm`.
+
+`workspaceConfig` is passed in as an argument so if you have multiple workspaces with different auth strategies, you
+can use the information in `workspaceConfig` to determine which form to render.
+
+Here's some pseudocode to give you an idea:
+
+```jsx
+export function AuthForm({
+  workspaceConfig,
 }) {
-  const { environment, routeConfig, setHeader } = context;
-  if (!(route && route.name)) {
-    return null;
-  }
-  const routeConfigVars = routeConfig[route.name];
-  const bearerAuth = get(routeConfigVars, "headers.Authorization");
-  const [success, setSuccess] = useState("");
-  const envVars = omitBy(environment, (value, key) => !key.includes("Access"));
-
   return (
     <div>
-      <Params paramType={ParamType.urlParams} reFetch={reFetch} route={route} />
-      <Params paramType={ParamType.body} reFetch={reFetch} route={route} />
-      <Params paramType={ParamType.qsParams} reFetch={reFetch} route={route} />
-      <Select
-        value={bearerAuth ? bearerAuth.replace("Bearer ", "") : ""}
-        style={{ marginRight: "4px" }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            reFetch();
-          }
-        }}
-        onChange={(e) => {
-          if (e.currentTarget.value) {
-            setHeader({
-              route,
-              key: "Authorization",
-              value: `Bearer ${e.currentTarget.value}`,
-            });
-            setSuccess("Authorization header set");
-          } else {
-            setHeader({
-              route,
-              key: "Authorization",
-              value: "",
-            });
-            setSuccess("");
-          }
-        }}
-      >
-        <option value="">Select Authorization</option>
-        {map(envVars, (value, key) => (
-          <option key={key} value={value}>
-            {key.replace("Access - ", "")}
-          </option>
-        ))}
-      </Select>
-      <Success>{success}</Success>
-      <Button disabled={loading} onClick={reFetch}>
-        {loading ? "Loading..." : "Try"}
-      </Button>
+      <TextInput name="email" />
+      <TextInput name="password" />
+      <Button onClick={() => {
+        // axios request to login user, fetch access token, and store access token in state or local storage
+        // then in the `applyAxiosInterceptors`, the `getAccessToken()` function can fetch the token from state or 
+        // local storage
+      }}>
+    </div>
+  );
+};
+```
+
+Usage:
+
+```jsx
+<BadMagic
+  AuthForm={AuthForm}
+  applyAxiosInterceptors={applyAxiosInterceptors}
+  workspaces={workspaces}
+/>
+```
+
+### Prepending Request/Response To History
+
+`badmagic` can also use Axios Interceptors to intercept the response to append the request/response to local storage
+so that you can see prior API requests you made.
+
+Here's an example:
+
+```jsx
+export const applyAxiosInterceptors = ({ axios, storeHistoricResponse }) => {
+  axios.interceptors.response.use(
+    (response: AxiosResponse) => {
+      storeHistoricResponse({
+        metadata: getMetadata() // Metadata can store any data you want like which access token was used, etc.
+        response,
+        error: null,
+      }); // Adds success response to BadMagic's `History` tab
+      return response;
+    },
+    (error: AxiosError) => {
+      storeHistoricResponse({
+        metadata: getMetadata() // Metadata can store any data you want like which access token was used, etc.
+        response: null,
+        error,
+      }); // Adds error response to BadMagic's `History` tab
+      return Promise.reject(error);
+    }
+  );
+
+  return axios;
+};
+```
+
+Usage:
+
+```jsx
+<BadMagic
+  applyAxiosInterceptors={applyAxiosInterceptors}
+  workspaces={workspaces}
+/>
+```
+
+#### Displaying Metadata
+
+`badmagic` allows rendering a custom subsection in the `History` section for each historic API request where you can
+take the `metadata` you stored using the axios intercepter and display it in any custom way you'd like.
+
+Note: By default, `insertedAt` is stored on `metadata`.
+
+Example:
+
+```jsx
+export function HistoryMetadata({
+  metadata,
+}: {
+  metadata: Record<string, any>;
+}) {
+  if (!metadata?.accessToken) {
+    return null;
+  }
+
+  return (
+    <div className="flex justify-between">
+      <div>Access Token: {metadata.accessToken}</div>
+      <div>{new Date(metadata.insertedAt).toLocaleString()}</div>
     </div>
   );
 }
@@ -209,78 +263,12 @@ export default function BearerAuthorization({
 
 Usage:
 
-```javascript
-const superheroes = {
-    id: "superheroes",
-    name: "Superheroes",
-    config: {
-      baseUrl: `${window.location.origin}/api`,
-    },
-    plugins: [
-    {
-      Component: BearerAuthorization,
-      inject: Inject.asRequest,
-    },
-  ],,
-
-    routes: [
-      {
-        name: "Search Superheroes",
-        path: "/v1/superheroes",
-      },
-
-      {
-        name: "Fetch Superhero",
-        path: "/v1/superheroes/:superhero_id",
-      },
-
-      {
-        name: "Create Superhero",
-        path: "/v1/superheroes",
-        method: Method.POST,
-        body: [
-          { name: "first_name", required: true },
-          { name: "last_name" },
-          { name: "phone", placeholder: "Some digits to reach this superhero" },
-          { name: "superpowers", type: "textarea" },
-          {
-            name: "age",
-            options: [
-              { label: "6", value: 6 },
-              { label: "18", value: 18 },
-              { label: "60", value: 60 },
-            ],
-          },
-        ],
-      },
-
-      {
-        name: "Update Superhero",
-        path: "/v1/superheroes/:superhero_id",
-        method: Method.PATCH,
-        body: [
-          { name: "first_name", required: true },
-          { name: "last_name" },
-          { name: "phone", placeholder: "Some digits to reach this superhero" },
-          { name: "superpowers", type: "textarea" },
-          {
-            name: "age",
-            options: [
-              { label: "6", value: 6 },
-              { label: "18", value: 18 },
-              { label: "60", value: 60 },
-            ],
-          },
-        ],
-      },
-
-      {
-        name: "Delete Superhero",
-        path: "/v1/superheroes/:superhero_id",
-        method: Method.DELETE,
-      },
-    ],
-  };
+```jsx
+<BadMagic
+  HistoryMetadata={HistoryMetadata}
+  applyAxiosInterceptors={applyAxiosInterceptors}
+  workspaces={workspaces}
+/>
 ```
 
 ## Route Documentation
@@ -299,36 +287,20 @@ const superheroes = {
 
 Usage:
 
-```javascript
+```jsx
+import SuperHero Documentation from "./docs/superheroes.md";
+
 const superheroes = {
   id: "superheroes",
   name: "Superheroes",
   config: {
     baseUrl: `${window.location.origin}/api`,
   },
-  plugins: [
-    {
-      Component: BearerAuthorization,
-      inject: Inject.asRequest,
-    },
-  ],
   routes: [
     {
       name: "Search Superheroes",
       path: "/v1/superheroes",
-      documentation: `
-      # Fetches list of all super heros
-      ## Reponse
-      \`\`\`json
-      [
-        {
-          "name": "Spiderman",
-          "age": "29",
-          "location": "Forest Hills"
-        }
-      ]
-      \`\`\`
-      `,
+      documentation: SuperHeroDocumentation,
     },
     {
       name: "Fetch Superhero",

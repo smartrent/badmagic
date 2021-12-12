@@ -1,17 +1,17 @@
-import React, { useEffect } from "react";
-import { map, startCase } from "lodash-es";
+import React from "react";
+import { startCase, get, set, unset } from "lodash-es";
 
-import Input from "../common/Input";
-import Label from "../common/Label";
-import Required from "../common/Required";
-import { ClearValueButton } from "../common/ClearValueButton";
-import { ApplyNullValueButton } from "../common/ApplyNullValueButton";
-import { AddArrayCell } from "../common/AddArrayCell";
-import { RemoveArrayCellButton } from "../common/RemoveArrayCellButton";
+import Input from "../Input";
+import Label from "../Label";
+import Required from "../Required";
+import { ClearValueButton } from "../ClearValueButton";
+import { ApplyNullValueButton } from "../ApplyNullValueButton";
+import { AddArrayCell } from "../AddArrayCell";
+import { RemoveArrayCellButton } from "../RemoveArrayCellButton";
 
-import Helpers from "../lib/helpers";
+import Helpers from "../../lib/helpers";
 
-import { useGlobalContext } from "../context/Context";
+import { useGlobalContext } from "../../context/GlobalContext";
 
 import {
   Route,
@@ -23,35 +23,18 @@ import {
   RenderInputByDataTypeProps,
   RenderObjectProps,
   RenderArrayOfInputsProps,
-} from "../types";
-import Tooltip from "../common/Tooltip";
+} from "../../types";
+import Tooltip from "../Tooltip";
 
 function RenderArrayOfInputs({
   onSubmit,
   pathToValue,
   param,
   label,
+  values,
+  setValues,
 }: RenderArrayOfInputsProps) {
-  const { setParam, getFromRouteConfig } = useGlobalContext();
-  const values = getFromRouteConfig({ pathToValue });
-
-  // Initialize value(s) for this input in local storage and state if they aren't already set
-  useEffect(() => {
-    if (!Array.isArray(values)) {
-      setParam({
-        value:
-          param?.defaultValue && Array.isArray(param?.defaultValue)
-            ? param?.defaultValue
-            : [],
-        pathToValue,
-      });
-    }
-  }, [pathToValue, values]);
-
-  // Wait for initialization before rendering further
-  if (!Array.isArray(values)) {
-    return null;
-  }
+  const arrayOfValues = get(values, pathToValue, param?.defaultValue || []);
 
   return (
     <>
@@ -61,11 +44,17 @@ function RenderArrayOfInputs({
         size="lg"
         marginBottomClass="mb-0"
       >
-        <AddArrayCell param={param} values={values} pathToValue={pathToValue} />
+        <AddArrayCell
+          param={param}
+          values={values}
+          setValues={setValues}
+          arrayOfValues={arrayOfValues}
+          pathToValue={pathToValue}
+        />
         <Tooltip description={param.description} />
       </InputLabelContainer>
 
-      {values.map((value: any, valueIdx: number) => {
+      {arrayOfValues.map((value: any, valueIdx: number) => {
         // We don't support arrays of arrays
         return (
           <InputContainer key={valueIdx} className="mb-1">
@@ -73,10 +62,18 @@ function RenderArrayOfInputs({
               pathToValue={`${pathToValue}[${valueIdx}]`}
               onSubmit={onSubmit}
               param={{ ...param, array: false }}
+              values={values}
+              setValues={setValues}
               onRemoveCell={() => {
-                let newValues = [...values];
-                newValues.splice(valueIdx, 1);
-                setParam({ param, pathToValue, value: newValues });
+                let newArrayValues = [...arrayOfValues];
+                newArrayValues.splice(valueIdx, 1);
+                if (newArrayValues.length) {
+                  setValues(set({ ...values }, pathToValue, newArrayValues));
+                } else {
+                  const newValues = { ...values };
+                  unset(newValues, pathToValue); //mutates
+                  setValues(newValues);
+                }
               }}
             />
           </InputContainer>
@@ -92,21 +89,10 @@ function RenderObject({
   onSubmit,
   onRemoveCell,
   label,
+  values,
+  setValues,
 }: RenderObjectProps) {
-  const { setParam, getFromRouteConfig, darkMode } = useGlobalContext();
-  const value = getFromRouteConfig({ pathToValue });
-
-  // Initialize value(s) for this input in local storage and state if they aren't already set
-  useEffect(() => {
-    if (!value) {
-      setParam({ param, value: param?.defaultValue || {}, pathToValue });
-    }
-  }, [pathToValue, param, value]);
-
-  // Initialize before rendering further
-  if (!value) {
-    return null;
-  }
+  const { darkMode } = useGlobalContext();
 
   // Make typescript happy
   if (param.properties === undefined) {
@@ -142,8 +128,10 @@ function RenderObject({
           <RenderInputs
             inputs={param.properties}
             onSubmit={onSubmit}
-            pathToValue={pathToValue}
+            pathToValue={pathToValue ? pathToValue : `[${param.name}]`}
             className="mb-4"
+            values={values}
+            setValues={setValues}
           />
         </div>
       </div>
@@ -193,8 +181,9 @@ function RenderInputByDataType({
   pathToValue,
   param,
   onRemoveCell,
+  values,
+  setValues,
 }: RenderInputByDataTypeProps) {
-  const { setParam, getFromRouteConfig, routeConfig } = useGlobalContext();
   const label = param.label || startCase(param.name);
 
   // Dev Note: Arrays of arrays are not supported
@@ -205,6 +194,8 @@ function RenderInputByDataType({
         pathToValue={pathToValue}
         param={param}
         label={label}
+        values={values}
+        setValues={setValues}
       />
     );
   } else if (param.properties) {
@@ -215,11 +206,13 @@ function RenderInputByDataType({
         param={param}
         label={label}
         onRemoveCell={onRemoveCell}
+        values={values}
+        setValues={setValues}
       />
     );
   }
 
-  const value = getFromRouteConfig({ pathToValue });
+  const value = get(values, pathToValue, param?.defaultValue);
 
   return (
     <InputContainer className="flex-col">
@@ -241,13 +234,18 @@ function RenderInputByDataType({
           type={param.type}
           placeholder={param.placeholder}
           required={param.required}
-          onChange={(newValue: any) =>
-            setParam({
-              param,
-              value: newValue,
-              pathToValue,
-            })
-          }
+          onChange={(newValue: any) => {
+            let parsedValue = newValue;
+            if (param.json) {
+              try {
+                parsedValue = JSON.parse(newValue);
+              } catch (err) {
+                //
+              }
+            }
+
+            return setValues(set({ ...values }, pathToValue, parsedValue));
+          }}
           onSubmit={onSubmit}
         />
         <ClearValueButton
@@ -258,12 +256,16 @@ function RenderInputByDataType({
               ? true
               : value !== null || (!!value && param.nullable === false)
           }
+          values={values}
+          setValues={setValues}
         />
         {param.nullable !== false ? (
           <ApplyNullValueButton
             onRemoveCell={onRemoveCell}
             pathToValue={pathToValue}
             value={value}
+            values={values}
+            setValues={setValues}
           />
         ) : null}
         <RemoveArrayCellButton onRemoveCell={onRemoveCell} className="ml-1" />
@@ -277,17 +279,24 @@ function RenderInputs({
   onSubmit,
   pathToValue,
   className,
+  values,
+  setValues,
 }: RenderInputsProps) {
   return (
     <>
-      {map(inputs, (param: Param, idx: number) => {
+      {inputs.map((param: Param) => {
         return (
-          <div className={className} key={idx}>
+          <div className={className} key={param.name}>
             <RenderInputByDataType
               param={param}
-              key={idx}
               onSubmit={onSubmit}
-              pathToValue={`${pathToValue}[${param.name}]`}
+              pathToValue={
+                pathToValue
+                  ? `${pathToValue}[${param.name}]`
+                  : `[${param.name}]`
+              }
+              values={values}
+              setValues={setValues}
             />
           </div>
         );
@@ -296,42 +305,45 @@ function RenderInputs({
   );
 }
 
+function fetchInputsFromRouteDefinition(
+  route: Route,
+  paramType: ParamType
+): Param[] {
+  if (paramType === ParamType.body) {
+    return route.body || [];
+  } else if (paramType === ParamType.qsParams) {
+    return route.qsParams || [];
+  }
+
+  // URL params is the only other valid options
+  return Helpers.getUrlParamsFromPath(route.path);
+}
+
 export default function Params({
   route,
   reFetch,
   paramType,
+  values,
+  setValues,
 }: {
   route: Route;
   reFetch: OnSubmitFn;
   paramType: ParamType;
+  values: Record<string, any>;
+  setValues: (values: any) => void;
 }) {
-  const { getFromRouteConfig } = useGlobalContext();
+  const inputs = fetchInputsFromRouteDefinition(route, paramType);
 
-  // Checks if we have body params, url params, or QS params for this route.
+  // Checks if we have body params, url params, or QS params for this route (based on ParamType).
   // If we don't, we can cancel further rendering
-  let inputs: Param[] = [];
-  if (paramType === ParamType.body) {
-    inputs = route.body || [];
-  } else if (paramType === ParamType.qsParams) {
-    inputs = route.qsParams || [];
-  } else if (paramType === ParamType.urlParams) {
-    inputs = Helpers.getUrlParamsFromPath(route.path);
-  }
-
   if (!inputs?.length) {
     return null;
   }
 
-  // Fetches all kv pairs from qsParams, body, or urlParams that are stored in local storage (and state)
-  const pathToValue = `[${route?.name}][${paramType}]`;
-
-  // Log an error and cancel rendering if this doesn't exist.
-  // We expect that this was initialized already.
-  const inputValues = getFromRouteConfig({ pathToValue });
-  if (!inputValues) {
-    console.error("An error occurred while mapping inputs inside `Params`");
-    return null;
-  }
+  // `pathToValue` is used to track which value is being edited in a potentially deeply nested object with `_.get`
+  // This handles recursively refecting the deeply nested value
+  // Since this is the top level, we are starting at the top-level, we have no pathToValue yet, so we set ""
+  const pathToValue = "";
 
   return (
     <div className="mb-2">
@@ -340,6 +352,8 @@ export default function Params({
         onSubmit={reFetch}
         pathToValue={pathToValue}
         className="mb-4"
+        setValues={setValues}
+        values={values}
       />
     </div>
   );
