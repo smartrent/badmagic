@@ -33,7 +33,7 @@ const Helpers = {
   downloadOpenApiJson: ({
     workspace,
   }: {
-    workspace: undefined | Workspace;
+    workspace?: Workspace;
   }) => {
     if (!workspace) {
       return null;

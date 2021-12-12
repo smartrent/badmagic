@@ -25,10 +25,10 @@ export interface ApiResponse {
 }
 
 export interface ApiError {
-  code: string | undefined;
+  code?: string;
   isAxiosError: boolean;
   response: {
-    status: number | undefined;
+    status?: number;
     data: any;
     headers: Record<string, any>;
   };
@@ -77,7 +77,7 @@ export type Workspace = {
   externalDocs?: OpenApiExternalDocs;
 
   useAxiosMiddleware?: (requestBag: {
-    method: undefined | Method;
+    method?: Method;
     urlParams: Record<string, any>;
     qsParams: Record<string, any>;
     body: Record<string, any>;
