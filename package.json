@@ -8,7 +8,9 @@
     "clean": "rimraf dist",
     "test": "jest",
     "test:watch": "jest --watch",
-    "prepublishOnly": "npm run build",
+    "prepublish": "npm run build",
+    "format-check": "prettier -l 'src/**/*.{ts,tsx,js,json,md}'",
+    "prettier": "prettier --write 'src/**/*.{ts,tsx,js,json,md}'",
     "typecheck": "tsc --noEmit",
     "copy-css": "mkdir -p dist/css && cp ./src/css/*.min.css ./dist/css/"
   },
