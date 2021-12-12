@@ -15,7 +15,7 @@ export function HistoricRecord({
   HistoryMetadata,
 }: {
   historicResponse: HistoricResponse;
-  HistoryMetadata: undefined | HistoryMetadata;
+  HistoryMetadata?: HistoryMetadata;
 }) {
   const {
     route,
