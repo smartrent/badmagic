@@ -11,7 +11,7 @@ export function History({
   HistoryMetadata,
 }: {
   activeRoute?: Route;
-  HistoryMetadata: undefined | HistoryMetadata;
+  HistoryMetadata?: HistoryMetadata;
 }) {
   const { darkMode, historicResponses } = useGlobalContext();
 
