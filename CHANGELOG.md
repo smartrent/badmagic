@@ -1,6 +1,14 @@
 # Changelog
 
+## v0.0.30
+
+### Bugfixes
+
+- Upgrade `@smartrent/use-axios` to 2.0.0
+
 ## v0.0.29
+
+Note: v0.0.29 had a dependency bug with `@smartrent/use-axios`, please use v0.0.30
 
 v0.0.29 is a partial rewrite of `badmagic` with significant changes to the implementation. It's designed to be 
 easier to implement and reduced complexity with hooking into `axios` by using it's `interceptor`. See `README` for 
