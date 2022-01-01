@@ -40,7 +40,9 @@ export default function Input({
           try {
             value =
               typeof options !== "undefined" ? options[index - 1].value : null;
-          } catch (err) {}
+          } catch (err) {
+            // no-op
+          }
           onChange(value);
         }}
         // allow value of false for boolean options

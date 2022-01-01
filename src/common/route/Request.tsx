@@ -89,7 +89,7 @@ export function Request({
         values={qsParams}
         setValues={setQsParams}
       />
-      {!!validationErrors?.length ? (
+      {validationErrors?.length ? (
         <div className="my-2">
           {(validationErrors || []).map((validationError, idx) => (
             <Error key={idx}>{validationError}</Error>

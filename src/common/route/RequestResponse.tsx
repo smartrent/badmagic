@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect } from "react";
 import useAxios from "@smartrent/use-axios";
-import axios, { AxiosResponse, AxiosError } from "axios";
+import axios from "axios";
 
 import { useGlobalContext } from "../../context/GlobalContext";
 

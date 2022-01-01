@@ -39,6 +39,7 @@ export function TopBar({
           className="text-3xl leading-none mt-1"
           href="https://github.com/smartrent/badmagic"
           target="_blank"
+          rel="noopener noreferrer"
         >
           🔮
         </a>

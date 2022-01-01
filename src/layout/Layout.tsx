@@ -2,12 +2,12 @@ import React, { useMemo, useState, useEffect, useCallback } from "react";
 
 import { useGlobalContext } from "../context/GlobalContext";
 import Route from "../Route";
-import Storage from "../lib/storage";
+import * as Storage from "../lib/storage";
 import { SideBar } from "./SideBar";
 import { TopBar } from "./TopBar";
 import { History } from "../common/History";
 
-import { Route as RouteType, BadMagicProps, WorkspaceConfig } from "../types";
+import { Route as RouteType, BadMagicProps } from "../types";
 
 type RouteWithWorkspaceConfig = RouteType & {
   workspaceName: string;

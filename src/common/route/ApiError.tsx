@@ -2,11 +2,8 @@ import React, { useMemo } from "react";
 import { isObject } from "lodash-es";
 import ReactJson from "react-json-view";
 
-import Headers from "./Headers";
 import { useGlobalContext } from "../../context/GlobalContext";
-
 import Helpers from "../../lib/helpers";
-
 import { ApiError } from "../../types";
 
 export default function ApiError({ error }: { error: null | ApiError }) {
