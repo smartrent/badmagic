@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.0.31
+
+- Upgrade `react-markdown` to ^7
+
 ## v0.0.30
 
 ### Bugfixes
@@ -10,12 +14,13 @@
 
 Note: v0.0.29 had a dependency bug with `@smartrent/use-axios`, please use v0.0.30
 
-v0.0.29 is a partial rewrite of `badmagic` with significant changes to the implementation. It's designed to be 
-easier to implement and reduced complexity with hooking into `axios` by using it's `interceptor`. See `README` for 
+v0.0.29 is a partial rewrite of `badmagic` with significant changes to the implementation. It's designed to be
+easier to implement and reduced complexity with hooking into `axios` by using it's `interceptor`. See `README` for
 example usage.
 
 There's likely additional work that needs to be done in future versions with css styles and
 potentially bugfixes from the rewrite.
+
 ### Features
 
 - Adds new `History` section to see previous api requests and responses
