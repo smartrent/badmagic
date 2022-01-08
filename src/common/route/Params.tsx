@@ -65,7 +65,7 @@ function RenderArrayOfInputs({
               values={values}
               setValues={setValues}
               onRemoveCell={() => {
-                let newArrayValues = [...arrayOfValues];
+                const newArrayValues = [...arrayOfValues];
                 newArrayValues.splice(valueIdx, 1);
                 if (newArrayValues.length) {
                   setValues(set({ ...values }, pathToValue, newArrayValues));

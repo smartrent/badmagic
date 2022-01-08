@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { findIndex, flatMap } from "lodash-es";
+import { findIndex } from "lodash-es";
 
 import { useGlobalContext } from "../context/GlobalContext";
 import Helpers from "../lib/helpers";

@@ -3,16 +3,17 @@
   "version": "0.0.30",
   "description": "Swagger UI alternative written in React",
   "scripts": {
-    "build": "npm run clean && npm run copy-css && tsc -p ./",
-    "start": "npm run clean && npm run copy-css && tsc --watch",
+    "build": "yarn clean && yarn copy-css && tsc -p ./",
+    "start": "yarn clean && yarn copy-css && tsc --watch",
     "clean": "rimraf dist",
     "test": "jest",
     "test:watch": "jest --watch",
-    "prepublish": "npm run build",
+    "prepare": "yarn build",
     "format-check": "prettier -l 'src/**/*.{ts,tsx,js,json,md}'",
     "prettier": "prettier --write 'src/**/*.{ts,tsx,js,json,md}'",
     "typecheck": "tsc --noEmit",
-    "copy-css": "mkdir -p dist/css && cp ./src/css/*.min.css ./dist/css/"
+    "copy-css": "mkdir -p dist/css && cp ./src/css/*.min.css ./dist/css/",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx src test"
   },
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
@@ -29,14 +30,19 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@smartrent/use-axios": "^2.0.0",
     "@types/jest": "^26.0.15",
     "@types/lodash-es": "^4.17.3",
-    "@types/node": "^14.11.8",
+    "@types/node": "^16.0.0",
     "@types/openapi-v3": "^3.0.0",
-    "@types/react": "^16.9.2",
-    "@types/react-dom": "^16.9.0",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
     "@types/yup": "^0.29.11",
+    "@typescript-eslint/eslint-plugin": "^5.8.1",
+    "@typescript-eslint/parser": "^5.8.1",
+    "eslint": "^8.5.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
     "jest": "^26.6.1",
     "prettier": "^1.18.2",
     "react": "^17.0.1",
@@ -46,7 +52,6 @@
     "typescript": "^4.5.2"
   },
   "peerDependencies": {
-    "@smartrent/use-axios": "^2.0.0",
     "react": ">= 16.8.x",
     "react-dom": ">= 16.8.x"
   },
@@ -58,12 +63,13 @@
     "arrowParens": "always"
   },
   "dependencies": {
+    "@smartrent/use-axios": "^2.0.0",
     "axios": "^0.24.0",
     "lodash-es": "^4.17.15",
     "querystring": "^0.2.0",
     "rc-tooltip": "^5.1.0",
     "react-json-view": "^1.19.1",
-    "react-markdown": "^4.2.2",
+    "react-markdown": "^7.1.0",
     "react-native-svg": "^12.1.1",
     "svgs": "^4.2.0",
     "yup": "^0.32.9"

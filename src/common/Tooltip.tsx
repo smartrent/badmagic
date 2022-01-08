@@ -10,15 +10,16 @@ export default function BadmagicTooltip({
   description: null | undefined | string;
 }) {
   const { darkMode } = useGlobalContext();
-  if (!description) {
-    return null;
-  }
 
   const [visible, setVisible] = useState(false);
 
   const onVisibleChange = () => {
     setVisible(!visible);
   };
+
+  if (!description) {
+    return null;
+  }
 
   return (
     <div className="flex flex-grow justify-end">

@@ -1,8 +1,6 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 
-import { AxiosResponse, AxiosError } from "axios";
-
-import storage from "../lib/storage";
+import * as storage from "../lib/storage";
 
 const storageKeys = {
   darkMode: "darkMode",
@@ -13,10 +11,14 @@ import { HistoricResponse, StoreHistoricResponsePayload } from "../types";
 
 export const Context = React.createContext({
   darkMode: storage.get(storageKeys.darkMode),
-  setDarkMode: (darkMode: boolean) => {},
+  setDarkMode: (darkMode: boolean) => {
+    // noop
+  },
   historicResponses: (storage.get(storageKeys.historicResponses) ||
     []) as HistoricResponse[],
-  storeHistoricResponse: (historicResponse: StoreHistoricResponsePayload) => {},
+  storeHistoricResponse: (historicResponse: StoreHistoricResponsePayload) => {
+    // noop
+  },
 });
 
 export const useGlobalContext = () => useContext(Context);
