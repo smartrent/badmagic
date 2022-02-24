@@ -43,7 +43,8 @@ In the `example directory` run the follow commands:
 
 - `yarn` to install node modules in the example folder
 - `yarn link "badmagic"`
-- `yarn start` (to start the example that will be running on port 3000 by default)
+- `yarn dev` (to start the example that will be running on port 3005 and server on port 3333 by default)
+  > Use env vars PORT and SERVER_PORT to change the ports if needed.
 
 ## General Usage
 
@@ -116,9 +117,7 @@ export function BadMagicClient() {
     ],
   };
 
-  return (
-    <BadMagic workspaces={[superheroWorkspace]} />
-  );
+  return <BadMagic workspaces={[superheroWorkspace]} />;
 }
 ```
 
@@ -174,7 +173,7 @@ export function AuthForm({
       <TextInput name="password" />
       <Button onClick={() => {
         // axios request to login user, fetch access token, and store access token in state or local storage
-        // then in the `applyAxiosInterceptors`, the `getAccessToken()` function can fetch the token from state or 
+        // then in the `applyAxiosInterceptors`, the `getAccessToken()` function can fetch the token from state or
         // local storage
       }}>
     </div>
@@ -246,7 +245,7 @@ Example:
 export function HistoryMetadata({
   metadata,
 }: {
-  metadata: Record<string, any>;
+  metadata: Record<string, any>,
 }) {
   if (!metadata?.accessToken) {
     return null;
@@ -311,6 +310,7 @@ const superheroes = {
 ```
 
 ## Route Deprecation
+
 - Each route can specify its deprecation status by adding a `deprecated` key to the object.
 - `deprecated` accepts a boolean and will by default is set to `false`
 
@@ -324,13 +324,14 @@ const superheroes = {
     {
       name: "Fetch Superhero",
       path: "/v1/superheroes/:superhero_id",
-      deprecated: true
+      deprecated: true,
     },
   ],
 };
 ```
 
 ## Input Field Tooltip
+
 - Each input type can have a tooltip hover to describe what the input field is expecting if the name is ambiguous.
 - The existence of a `description` attribute will generate the on-hover icon and it will pull the text from the `description` as well
 
@@ -346,7 +347,7 @@ const superheroes = {
         path: "/v1/superheroes/:superhero_id",
         method: Method.PATCH,
         body: [
-          { 
+          {
             name: "first_name",
             required: true,
             description: "The first name of the hero you want to update to"
