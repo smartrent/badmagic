@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "badmagic": "latest",
-    "react-scripts": "^4.0.3"
+    "react-scripts": "^5.0.0"
   },
   "scripts": {
     "dev": "PORT=3005 yarn start & yarn server",
