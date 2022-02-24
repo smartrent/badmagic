@@ -1,4 +1,3 @@
-import { AxiosResponse, AxiosError } from "axios";
 import {
   OpenApiComponents,
   OpenApiResponses,

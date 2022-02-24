@@ -94,7 +94,7 @@ function generateParameter(
 
   const description = param.description ?? param.label; // Try description first then fallback to label
 
-  let schema: OpenApiSchema = deriveSchemaFromParam(param);
+  const schema: OpenApiSchema = deriveSchemaFromParam(param);
 
   return {
     name,
@@ -149,7 +149,7 @@ function deriveSchemaFromRoute(route: Route): OpenApiSchema {
 }
 
 function deriveSchemaFromParam(param: Param): OpenApiSchema {
-  let schema: OpenApiSchema = {
+  const schema: OpenApiSchema = {
     type: getParameterType(param),
   };
 
@@ -182,7 +182,7 @@ function deriveSchemaFromParam(param: Param): OpenApiSchema {
     schema.format = param.format;
   }
 
-  if (param?.hasOwnProperty("minLength")) {
+  if (typeof param?.minLength !== "undefined") {
     schema.minLength = param.minLength;
   }
 
@@ -194,7 +194,7 @@ function deriveSchemaFromParam(param: Param): OpenApiSchema {
     schema.pattern = param.pattern;
   }
 
-  if (param?.hasOwnProperty("nullable")) {
+  if (typeof param?.nullable !== "undefined") {
     schema.nullable = param.nullable;
   }
 

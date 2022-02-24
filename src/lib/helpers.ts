@@ -1,10 +1,9 @@
 import React from "react";
-import { get, set, reduce, compact, map, startCase } from "lodash-es";
+import { get, reduce, compact, map, startCase } from "lodash-es";
 import { stringify } from "querystring";
 
 import OpenApi from "./openapi";
-
-import { Route, Workspace, ParamType, Param } from "../types";
+import { Route, Workspace, Param } from "../types";
 
 // Given a Route, URL Params, and QSParams, returns a route's path with the QS params included
 function buildPathWithQS({
@@ -30,11 +29,7 @@ function buildPathWithQS({
 }
 
 const Helpers = {
-  downloadOpenApiJson: ({
-    workspace,
-  }: {
-    workspace?: Workspace;
-  }) => {
+  downloadOpenApiJson: ({ workspace }: { workspace?: Workspace }) => {
     if (!workspace) {
       return null;
     }
@@ -59,7 +54,7 @@ const Helpers = {
   },
 
   setArrayCellValue(values: any[], cell: number, newValue: any): any[] {
-    let newValues = [...values];
+    const newValues = [...values];
     newValues[cell] = newValue;
     return newValues;
   },

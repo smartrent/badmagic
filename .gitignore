@@ -50,7 +50,6 @@ log.android
 webpack-assets.json
 *report*
 dist
-yarn.lock
 .rts2_cache_*
 .env
 .vscode
