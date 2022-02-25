@@ -5,6 +5,7 @@ import Input from "../Input";
 import Label from "../Label";
 import Required from "../Required";
 import { ClearValueButton } from "../ClearValueButton";
+import { ApplyNowDateButton } from "../ApplyNowDateButton";
 import { ApplyNullValueButton } from "../ApplyNullValueButton";
 import { AddArrayCell } from "../AddArrayCell";
 import { RemoveArrayCellButton } from "../RemoveArrayCellButton";
@@ -248,6 +249,13 @@ function RenderInputByDataType({
           }}
           onSubmit={onSubmit}
         />
+        <ApplyNowDateButton
+          onRemoveCell={onRemoveCell}
+          pathToValue={pathToValue}
+          reference={param.placeholder}
+          values={values}
+          setValues={setValues}
+        />
         <ClearValueButton
           onRemoveCell={onRemoveCell}
           pathToValue={pathToValue}
@@ -268,6 +276,7 @@ function RenderInputByDataType({
             setValues={setValues}
           />
         ) : null}
+
         <RemoveArrayCellButton onRemoveCell={onRemoveCell} className="ml-1" />
       </InputContainer>
     </InputContainer>

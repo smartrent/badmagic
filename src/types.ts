@@ -186,6 +186,14 @@ export interface RenderArrayOfInputsProps {
   setValues: (values: any) => void;
 }
 
+export interface ApplyNowDateButtonProps {
+  reference?: string;
+  pathToValue: string;
+  onRemoveCell?: () => void;
+  values: Record<string, any>;
+  setValues: (values: any) => void;
+}
+
 export interface ApplyNullValueButtonProps {
   value: any;
   pathToValue: string;
