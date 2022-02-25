@@ -9,7 +9,7 @@ const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 const timeRegex = /^\d{2}:\d{2}:\d{2}$/;
 
 export function ApplyNowDateButton({
-  reference = "2022-02-25T00:00:00.000Z",
+  reference,
   pathToValue,
   onRemoveCell,
   values,
@@ -17,8 +17,8 @@ export function ApplyNowDateButton({
 }: ApplyNowDateButtonProps) {
   if (
     !reference ||
-    (!isNaN(Date.parse(reference)) &&
-      !isNaN(Date.parse(`1970-01-01T${reference}Z`)))
+    (isNaN(Date.parse(reference)) &&
+      isNaN(Date.parse(`1970-01-01T${reference}Z`)))
   ) {
     return null;
   }
