@@ -55,6 +55,15 @@ export const dogWorkspace = {
         },
       },
     },
+    {
+      name: "Redirecting HTML response",
+      path: "/views/redirect.html",
+      responses: {
+        "200": {
+          description: "Should stop the redirection from the html response",
+        },
+      },
+    },
 
     {
       name: "View Random Breed Image",

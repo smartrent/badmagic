@@ -107,7 +107,7 @@ export default function ApiResponse({
           >
             View Raw HTML
           </button>
-          <iframe style={{ width: "100%" }} srcDoc={response.data} />
+          <iframe style={{ width: "100%" }} srcDoc={response.data} sandbox="" />
         </div>
       )}
 
