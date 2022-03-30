@@ -56,7 +56,7 @@ export const dogWorkspace = {
       },
     },
     {
-      name: "Redirecting HTML response",
+      name: "Redirecting HTML Response",
       path: "/views/redirect.html",
       responses: {
         "200": {
