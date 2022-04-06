@@ -113,6 +113,23 @@ export const dogWorkspace = {
           description: "Color of the dog's coat",
         },
         {
+          name: "time_of_birth",
+          required: true,
+          placeholder: "2022-02-25T12:00:00.000Z",
+          description: "Dog's time of birth",
+        },
+        {
+          name: "adoption_day",
+          placeholder: "2022-02-25",
+          description: "Dog's date of adoption",
+        },
+        {
+          name: "walk_time",
+          required: true,
+          placeholder: "12:00:00",
+          description: "Dog's preferred time to walk",
+        },
+        {
           name: "measurements",
           properties: [
             {
