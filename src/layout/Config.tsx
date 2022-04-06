@@ -22,7 +22,12 @@ export default function Config({
   activeWorkspaceNames: string[];
   setActiveWorkspaceNames: (workspaceNames: string[]) => void;
 }) {
-  const { darkMode, setDarkMode } = useGlobalContext();
+  const {
+    darkMode,
+    setDarkMode,
+    hideDeprecatedRoutes,
+    setHideDeprecatedRoutes,
+  } = useGlobalContext();
   const [collapsed, setCollapsed] = useState(true);
 
   const iconColor = darkMode ? "#eee" : "#333";
@@ -98,6 +103,18 @@ export default function Config({
                 </div>
               );
             })}
+            <div className="flex mt-3 pt-2 border-t border-gray-400 text-gray-400">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={hideDeprecatedRoutes}
+                  onChange={() =>
+                    setHideDeprecatedRoutes(!hideDeprecatedRoutes)
+                  }
+                />{" "}
+                Hide Deprecated Routes
+              </label>
+            </div>
           </div>
           <div className="flex mt-3 py-3 border-t border-b border-gray-400">
             <button
