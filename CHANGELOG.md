@@ -1,5 +1,13 @@
 # Changelog
 
+
+## v0.0.32
+
+### Features 
+
+- If your param's placeholder is an ISO timestamp, a date or a time, a `NOW` button shows up to the right of the input and populates the input with the current UTC value when clicked
+- Under the config menu there is a new `Hide Deprecated Routes` option to filter out routes that are deprecated when applied
+
 ## v0.0.31
 
 - Upgrade `react-markdown` to ^7
