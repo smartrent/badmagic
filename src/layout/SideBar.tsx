@@ -16,17 +16,21 @@ export function SideBar({
   ) => void;
   workspaces: Workspace[];
 }) {
-  const { darkMode } = useGlobalContext();
+  const { darkMode, hideDeprecatedRoutes } = useGlobalContext();
   const [keywords, setKeywords] = useState("");
 
+  // If the user searches for a specific route, this filters to those keywords
+  // If the user has Deprecated routes hidden, this filters out deprecated routes
   const filteredRoutes = useMemo(() => {
     return flatMap(workspaces, ({ routes, name, config }) => {
       return routes
         .filter(
-          ({ name, path }) =>
-            !keywords ||
-            name.toLowerCase().includes(keywords.toLowerCase()) ||
-            path.toLowerCase().includes(keywords.toLowerCase())
+          ({ name, path, deprecated }) =>
+            (!keywords ||
+              name.toLowerCase().includes(keywords.toLowerCase()) ||
+              path.toLowerCase().includes(keywords.toLowerCase())) &&
+            ((hideDeprecatedRoutes && deprecated !== true) ||
+              !hideDeprecatedRoutes)
         )
         .map((route) => {
           return {
@@ -36,7 +40,7 @@ export function SideBar({
           };
         });
     });
-  }, [keywords, workspaces]);
+  }, [keywords, workspaces, hideDeprecatedRoutes]);
 
   const styles = useMemo(() => {
     return {

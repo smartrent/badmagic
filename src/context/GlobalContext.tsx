@@ -4,6 +4,7 @@ import * as storage from "../lib/storage";
 
 const storageKeys = {
   darkMode: "darkMode",
+  hideDeprecatedRoutes: "hideDeprecatedRoutes",
   historicResponses: "historic-responses",
 };
 
@@ -12,6 +13,10 @@ import { HistoricResponse, StoreHistoricResponsePayload } from "../types";
 export const Context = React.createContext({
   darkMode: storage.get(storageKeys.darkMode),
   setDarkMode: (darkMode: boolean) => {
+    // noop
+  },
+  hideDeprecatedRoutes: storage.get(storageKeys.hideDeprecatedRoutes),
+  setHideDeprecatedRoutes: (hideDeprecatedRoutes: boolean) => {
     // noop
   },
   historicResponses: (storage.get(storageKeys.historicResponses) ||
@@ -32,6 +37,18 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
     storage.set(storageKeys.darkMode, darkMode);
     setDarkModeInState(darkMode);
   }, []);
+
+  const [hideDeprecatedRoutes, setHideDeprecatedRoutesInState] = useState<
+    boolean
+  >(storage.get(storageKeys.hideDeprecatedRoutes));
+
+  const setHideDeprecatedRoutes = useCallback(
+    (hideDeprecatedRoutes: boolean) => {
+      storage.set(storageKeys.hideDeprecatedRoutes, hideDeprecatedRoutes);
+      setHideDeprecatedRoutesInState(hideDeprecatedRoutes);
+    },
+    []
+  );
 
   const [historicResponses, setHistoricResponseInState] = useState<
     HistoricResponse[]
@@ -106,6 +123,8 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
       value={{
         darkMode,
         setDarkMode,
+        hideDeprecatedRoutes,
+        setHideDeprecatedRoutes,
         historicResponses,
         storeHistoricResponse,
       }}
