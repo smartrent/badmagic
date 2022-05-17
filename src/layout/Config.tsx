@@ -36,6 +36,18 @@ export default function Config({
     return workspaces.map(({ name }) => name);
   }, [workspaces]);
 
+  const areAllWorkspacesSelected = useMemo(() => {
+    return workspaceNames.length === activeWorkspaceNames.length;
+  }, [workspaceNames, activeWorkspaceNames]);
+
+  const toggleAllWorkspaces = useCallback(() => {
+    if (areAllWorkspacesSelected) {
+      setActiveWorkspaceNames([]);
+    } else {
+      setActiveWorkspaceNames(workspaceNames);
+    }
+  }, [areAllWorkspacesSelected, setActiveWorkspaceNames, workspaceNames]);
+
   const toggleCollapsed = useCallback(() => setCollapsed(!collapsed), [
     collapsed,
   ]);
@@ -67,7 +79,15 @@ export default function Config({
             </button>
           </div>
           <div className={`px-2 ${styles.textColor}`}>
-            <div className="text-md mb-2">Workspaces:</div>
+            <div className="flex justify-between items-center my-2">
+              <div className="text-md">Workspaces:</div>
+              <button
+                className="text-xs text-gray-500"
+                onClick={toggleAllWorkspaces}
+              >
+                {areAllWorkspacesSelected ? "Deselect All" : "Select All"}
+              </button>
+            </div>
             {workspaceNames.map((workspaceName) => {
               return (
                 <div key={workspaceName}>
