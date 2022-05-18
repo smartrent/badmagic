@@ -1,6 +1,12 @@
 # Changelog
 
 
+## v0.0.33
+
+### Features 
+
+- Toggle added to Select All / Deselect All workspaces
+
 ## v0.0.32
 
 ### Features 
