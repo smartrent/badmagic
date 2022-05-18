@@ -49,7 +49,7 @@ export default function ApiResponse({
 
       {response.data && isJSON && (
         <ReactJson
-          enableClipboard={false}
+          enableClipboard={true}
           displayObjectSize={false}
           displayDataTypes={false}
           src={response.data}
