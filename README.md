@@ -377,6 +377,10 @@ Running the `example` in your browser:
 - In one terminal window run in the `badmagic` root folder, run `yarn` then `yarn link` then `yarn start`
 - In another terminal window in the `example` folder, run `yarn`, then `yarn link badmagic` then `yarn start`
 
+## Publishing A New Version
+
+- Run `yarn publish`
+
 ## Resources
 
 [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md)
