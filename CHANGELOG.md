@@ -1,6 +1,12 @@
 # Changelog
 
 
+## v0.0.34
+
+### Features 
+
+- Adds ability to copy API Response to clipboard
+
 ## v0.0.33
 
 ### Features 
