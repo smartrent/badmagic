@@ -27,7 +27,7 @@ export default function BodyPreview({ body }: BodyPreviewProps) {
         Request Body
       </div>
       <ReactJson
-        enableClipboard={false}
+        enableClipboard={true}
         displayObjectSize={false}
         displayDataTypes={false}
         src={{ ...body }}
