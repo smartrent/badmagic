@@ -48,7 +48,7 @@ export default function ApiError({ error }: { error: null | ApiError }) {
 
       {error.response.data && isJSON && (
         <ReactJson
-          enableClipboard={false}
+          enableClipboard={true}
           displayObjectSize={false}
           displayDataTypes={false}
           src={error.response.data}
