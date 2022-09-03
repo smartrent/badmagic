@@ -13,6 +13,7 @@ import { RemoveArrayCellButton } from "../RemoveArrayCellButton";
 import Helpers from "../../lib/helpers";
 
 import { useGlobalContext } from "../../context/GlobalContext";
+import Tooltip from "../Tooltip";
 
 import {
   Route,
@@ -25,7 +26,6 @@ import {
   RenderObjectProps,
   RenderArrayOfInputsProps,
 } from "../../types";
-import Tooltip from "../Tooltip";
 
 function RenderArrayOfInputs({
   onSubmit,
@@ -318,9 +318,9 @@ function fetchInputsFromRouteDefinition(
   route: Route,
   paramType: ParamType
 ): Param[] {
-  if (paramType === ParamType.body) {
+  if (paramType === "body") {
     return route.body || [];
-  } else if (paramType === ParamType.qsParams) {
+  } else if (paramType === "qsParams") {
     return route.qsParams || [];
   }
 

@@ -72,7 +72,7 @@ export function BadMagicClient() {
       {
         name: "Create Superhero",
         path: "/v1/superheroes",
-        method: Method.POST,
+        method: "POST",
         body: [
           { name: "first_name", required: true },
           { name: "last_name" },
@@ -91,7 +91,7 @@ export function BadMagicClient() {
       {
         name: "Update Superhero",
         path: "/v1/superheroes/:superhero_id",
-        method: Method.PATCH,
+        method: "PATCH",
         body: [
           { name: "first_name", required: true },
           { name: "last_name" },
@@ -111,7 +111,7 @@ export function BadMagicClient() {
       {
         name: "Delete Superhero",
         path: "/v1/superheroes/:superhero_id",
-        method: Method.DELETE,
+        method: "DELETE",
       },
     ],
   };
@@ -344,7 +344,7 @@ const superheroes = {
     {
         name: "Update Superhero",
         path: "/v1/superheroes/:superhero_id",
-        method: Method.PATCH,
+        method: "PATCH",
         body: [
           { 
             name: "first_name",

@@ -7,31 +7,28 @@ import Error from "../Error";
 import Button from "../Button";
 
 import Helpers from "../../lib/helpers";
-import { Route, ParamType } from "../../types";
+import { Route, HistoricResponse } from "../../types";
 
 export function Request({
   reFetch,
   route,
-  urlParams,
-  body,
-  qsParams,
+  requestResponse,
   setUrlParams,
   setBody,
   setQsParams,
   resetAllParams,
   loading,
 }: {
+  requestResponse: HistoricResponse;
   reFetch: () => void;
   route: Route;
-  urlParams: Record<string, any>;
-  body: Record<string, any>;
-  qsParams: Record<string, any>;
   setUrlParams: (urlParams: Record<string, any>) => void;
   setBody: (urlParams: Record<string, any>) => void;
   setQsParams: (urlParams: Record<string, any>) => void;
   resetAllParams: () => void;
   loading: boolean;
 }) {
+  const { urlParams, body, qsParams } = requestResponse;
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   // Before submitting a network request, validate that the request is valid
@@ -69,21 +66,21 @@ export function Request({
   return (
     <div className="flex flex-col flex-grow mr-4">
       <Params
-        paramType={ParamType.urlParams}
+        paramType="urlParams"
         reFetch={reFetchWithValidation}
         route={route}
         values={urlParams}
         setValues={setUrlParams}
       />
       <Params
-        paramType={ParamType.body}
+        paramType="body"
         reFetch={reFetchWithValidation}
         route={route}
         values={body}
         setValues={setBody}
       />
       <Params
-        paramType={ParamType.qsParams}
+        paramType="qsParams"
         reFetch={reFetchWithValidation}
         route={route}
         values={qsParams}

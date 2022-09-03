@@ -2,11 +2,15 @@ import React, { useCallback, useState, useMemo } from "react";
 
 import ApiResponse from "./route/ApiResponse";
 import ApiError from "./route/ApiError";
+import { ApiResponseStatus } from "./route/ApiResponseStatus";
 import BodyPreview from "./route/BodyPreview";
 import { TopBar } from "./route/TopBar";
+
 import Headers from "./route/Headers";
 import Label from "./Label";
+
 import { useGlobalContext } from "../context/GlobalContext";
+import Button from "../common/Button";
 
 import { HistoricResponse, HistoryMetadata } from "../types";
 
@@ -36,7 +40,17 @@ export function HistoricRecord({
     setResponseExpanded(!responseExpanded);
   }, [responseExpanded]);
 
-  const { darkMode } = useGlobalContext();
+  const {
+    darkMode,
+    setPartialRequestResponse,
+    setActiveRoute,
+  } = useGlobalContext();
+
+  const onLoadRequest = useCallback(() => {
+    setActiveRoute(historicResponse.route);
+    setPartialRequestResponse(historicResponse);
+  }, [historicResponse]);
+
   const styles = useMemo(() => {
     return {
       container: darkMode
@@ -48,7 +62,14 @@ export function HistoricRecord({
 
   return (
     <div className={`my-4 border rounded pt-4 px-4 pb-2 ${styles.container}`}>
-      <TopBar route={route} qsParams={qsParams} urlParams={urlParams} />
+      <div className="flex justify-start items-center mb-4">
+        <TopBar route={route} qsParams={qsParams} urlParams={urlParams} />
+        <div className="px-1 self-start">
+          <ApiResponseStatus
+            status={response?.status || error?.response?.status}
+          />
+        </div>
+      </div>
       {Object.keys(body)?.length ? (
         <>
           <div onClick={toggleBodyExpanded} className="cursor-pointer my-2">
@@ -58,9 +79,11 @@ export function HistoricRecord({
         </>
       ) : null}
 
-      <div onClick={toggleResponseExpanded} className="cursor-pointer my-2">
-        <Label>Show Response {responseExpanded ? "-" : "+"}</Label>
-      </div>
+      {response ? (
+        <div onClick={toggleResponseExpanded} className="cursor-pointer my-2">
+          <Label>Show Response {responseExpanded ? "-" : "+"}</Label>
+        </div>
+      ) : null}
       {responseExpanded ? (
         <>
           <ApiResponse response={response} />
@@ -78,6 +101,10 @@ export function HistoricRecord({
           <HistoryMetadata metadata={metadata} />
         </div>
       ) : null}
+
+      <Button className="mt-2" onClick={onLoadRequest}>
+        Load Request
+      </Button>
     </div>
   );
 }
