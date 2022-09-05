@@ -36,7 +36,7 @@ export default function Route({
       ? historicResponses
       : historicResponses.filter(
           (historicResponse: HistoricResponse) =>
-            historicResponse?.route?.name === route.name
+            historicResponse?.route?.path === route.path
         );
   }, [historicResponses, route]);
 

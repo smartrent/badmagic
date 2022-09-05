@@ -38,8 +38,8 @@ export function RequestResponse({
     // Prefers in-memory state changes that already began since the session started
     // Falls back to loading the last HistoricResponse from history if set
     // Falls back to a new partial HistoricRepsonse if the first two conditions aren't met.
-    if (partialRequestResponses[route.name]) {
-      return partialRequestResponses[route.name];
+    if (partialRequestResponses[route.path]) {
+      return partialRequestResponses[route.path];
     } else if (filteredHistory.length) {
       return cloneDeep(first(filteredHistory)) as HistoricResponse;
     }

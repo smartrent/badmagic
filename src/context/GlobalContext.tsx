@@ -55,7 +55,7 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
     (partialRequestResponse: HistoricResponse) => {
       setPartialRequestResponses({
         ...partialRequestResponses,
-        [partialRequestResponse.route.name]: partialRequestResponse,
+        [partialRequestResponse.route.path]: partialRequestResponse,
       });
     },
     [partialRequestResponses]

@@ -1,6 +1,12 @@
 # Changelog
 
 
+## v0.0.37
+
+### Bugfix
+
+- Since HistoricResponses can now be preloaded in v0.0.36, the active workspace isn't determined when a route is clicked anymore, but inferred by matching on the Route name. Since Route name isn't guaranteed to be unique, this commit changes to the Route's url path which is less likely to have collisions.  
+
 ## v0.0.36
 
 ### Features 

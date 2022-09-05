@@ -55,7 +55,7 @@ export function Layout({
     }
 
     const activeWorkspace = workspaces.find(({ routes }) =>
-      routes.find((route) => route.name === activeRoute.name)
+      routes.find((route) => route.path === activeRoute.path)
     );
 
     return activeWorkspace ? activeWorkspace.config : null;
