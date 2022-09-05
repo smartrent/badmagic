@@ -1,6 +1,24 @@
 # Changelog
 
 
+## v0.0.36
+
+### Features 
+
+- When a route is active, it will now preload the last Request/Response (HistoricResponse) into the form fields
+- When a route is active and you change the form fields, when you leave the route and come back, the changes persist until the page is closed/refreshed.
+- Ability to Load a previous request/response to replay it
+
+### Breaking Changes
+
+- Instead of needing to `import {Method} from "badmagic";` and specify `Method.POST`, changed types so that `"POST"` will work instead. This works for GET, POST, PATCH, PUT, and DELETE. Note: It currently won't display errors via TS if something invalid is specified (There is probably a better way to handle this).
+
+## v0.0.35
+
+### Features 
+
+- Adds ability to copy Request Body and API Error Response to clipboard
+
 ## v0.0.34
 
 ### Features 
