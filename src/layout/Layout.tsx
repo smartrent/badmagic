@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect, useCallback } from "react";
+import { orderBy } from "lodash-es";
 
 import { useGlobalContext } from "../context/GlobalContext";
 import Route from "../Route";
@@ -15,12 +16,7 @@ export function Layout({
   HistoryMetadata,
   applyAxiosInterceptors,
 }: BadMagicProps) {
-  const {
-    darkMode,
-    historicResponses,
-    activeRoute,
-    setActiveRoute,
-  } = useGlobalContext();
+  const { darkMode, historicResponses, activeRoute } = useGlobalContext();
   const [activeWorkspaceNames, setActiveWorkspaceNamesInState] = useState<
     string[]
   >([]);
@@ -45,7 +41,12 @@ export function Layout({
   }, []);
 
   const activeWorkspaces = useMemo(
-    () => workspaces.filter(({ name }) => activeWorkspaceNames.includes(name)),
+    () =>
+      orderBy(
+        workspaces.filter(({ name }) => activeWorkspaceNames.includes(name)),
+        ["name"],
+        ["asc"]
+      ),
     [activeWorkspaceNames]
   );
 
@@ -96,10 +97,7 @@ export function Layout({
       >
         {sidebarExpanded ? (
           <div className="col-span-1">
-            <SideBar
-              setActiveRoute={setActiveRoute}
-              workspaces={activeWorkspaces}
-            />
+            <SideBar workspaces={activeWorkspaces} />
           </div>
         ) : null}
         {activeRoute ? (

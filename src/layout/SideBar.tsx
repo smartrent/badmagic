@@ -1,44 +1,44 @@
 import React, { useMemo, useState, useCallback } from "react";
-import { flatMap, get } from "lodash-es";
 
 import { useGlobalContext } from "../context/GlobalContext";
 import TextInput from "../common/TextInput";
-import Helpers from "../lib/helpers";
 
-import { Route, Workspace } from "../types";
+import { SideBarWorkspace } from "./sidebar/SideBarWorkspace";
 
-export function SideBar({
-  setActiveRoute,
-  workspaces,
-}: {
-  setActiveRoute: (
-    route: Route & { workspaceName: string; baseUrl: string }
-  ) => void;
-  workspaces: Workspace[];
-}) {
-  const { darkMode, hideDeprecatedRoutes } = useGlobalContext();
-  const [keywords, setKeywords] = useState("");
+import { Workspace } from "../types";
+
+export function SideBar({ workspaces }: { workspaces: Workspace[] }) {
+  const {
+    darkMode,
+    hideDeprecatedRoutes,
+    keywords,
+    setKeywords,
+    setCollapsedWorkspaces,
+  } = useGlobalContext();
 
   // If the user searches for a specific route, this filters to those keywords
   // If the user has Deprecated routes hidden, this filters out deprecated routes
-  const filteredRoutes = useMemo(() => {
-    return flatMap(workspaces, ({ routes, name, config }) => {
-      return routes
-        .filter(
-          ({ name, path, deprecated }) =>
-            (!keywords ||
-              name.toLowerCase().includes(keywords.toLowerCase()) ||
-              path.toLowerCase().includes(keywords.toLowerCase())) &&
-            ((hideDeprecatedRoutes && deprecated !== true) ||
-              !hideDeprecatedRoutes)
-        )
-        .map((route) => {
-          return {
-            ...route,
-            baseUrl: config?.baseUrl || window.location.origin,
-            workspaceName: name,
-          };
-        });
+  const filteredWorkspaces = useMemo(() => {
+    return workspaces.map(({ routes, name, config }) => {
+      return {
+        name,
+        routes: routes
+          .filter(
+            ({ name, path, deprecated }) =>
+              (!keywords ||
+                name.toLowerCase().includes(keywords.toLowerCase()) ||
+                path.toLowerCase().includes(keywords.toLowerCase())) &&
+              ((hideDeprecatedRoutes && deprecated !== true) ||
+                !hideDeprecatedRoutes)
+          )
+          .map((route) => {
+            return {
+              ...route,
+              baseUrl: config?.baseUrl || window.location.origin,
+              workspaceName: name,
+            };
+          }),
+      };
     });
   }, [keywords, workspaces, hideDeprecatedRoutes]);
 
@@ -57,7 +57,24 @@ export function SideBar({
   );
 
   return (
-    <div className="text-sm p-4 overflow-x-hidden relative">
+    <div className="text-sm px-4 pb-4 pt-3 overflow-x-hidden relative">
+      <div className={`${styles.textColor} text-xs mb-2 flex justify-end`}>
+        <div
+          className="cursor-pointer pr-1"
+          onClick={() =>
+            setCollapsedWorkspaces(filteredWorkspaces.map(({ name }) => name))
+          }
+        >
+          Collapse All
+        </div>
+        <div className="px-1"> / </div>
+        <div
+          className="cursor-pointer pl-1"
+          onClick={() => setCollapsedWorkspaces([])}
+        >
+          Expand All
+        </div>
+      </div>
       <TextInput
         type="text"
         placeholder="Search"
@@ -67,34 +84,14 @@ export function SideBar({
       />
 
       <div className="overflow-y-scroll" style={{ height: "93vh" }}>
-        {!filteredRoutes.length ? (
+        {!filteredWorkspaces.length ? (
           <div className={`${styles.textColor} text-center mt-4`}>
-            No routes found. Please select one or more Workspaces from the
-            Config menu to load routes.
+            No workspaces selected. Please select one or more Workspaces from
+            the Config menu to load routes.
           </div>
         ) : null}
-        {filteredRoutes.map((route, idx) => (
-          <div
-            key={`${route.method || "GET"}-${route.path}-${idx}`}
-            className={`my-3 pb-2 cursor-pointer border-b border-gray-300 ${styles.sidebarRouteText}`}
-            onClick={() => setActiveRoute(route)}
-          >
-            <div className="flex">
-              <div
-                className={`text-xs w-12 flex flex-shrink items-center justify-center text-gray-700 font-semibold mr-1 p-0 border rounded ${styles.sidebarMethodBorder}`}
-                style={{
-                  backgroundColor: get(
-                    Helpers.colors.routes,
-                    route.method ? route.method.toLowerCase() : "get"
-                  ),
-                }}
-              >
-                {(route.method || "GET").toUpperCase()}
-              </div>
-              <div className="font-bold">{route.name}</div>
-            </div>
-            <div className="italic">{route.path}</div>
-          </div>
+        {filteredWorkspaces.map(({ name, routes }) => (
+          <SideBarWorkspace name={name} routes={routes} />
         ))}
       </div>
     </div>

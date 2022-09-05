@@ -33,13 +33,24 @@ export const Context = React.createContext({
   setActiveRoute: (activeRoute: Route) => {
     // noop
   },
+
+  keywords: "",
+  setKeywords: (keywords: string) => {
+    // noop
+  },
+
+  collapsedWorkspaces: [] as string[],
+  setCollapsedWorkspaces: (collapsedWorkspaces: string[]) => {
+    // noop
+  },
 });
 
 export const useGlobalContext = () => useContext(Context);
 
 export function ContextProvider({ children }: { children: React.ReactNode }) {
   const [activeRoute, setActiveRoute] = useState<null | Route>(null);
-
+  const [keywords, setKeywords] = useState("");
+  const [collapsedWorkspaces, setCollapsedWorkspaces] = useState<string[]>([]);
   const [darkMode, setDarkModeInState] = useState<boolean>(
     storage.get(storageKeys.darkMode)
   );
@@ -92,6 +103,13 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
       setHistoricResponseInState(historicResponsesFromStorage);
     }
   }, []);
+
+  // If a user is searching, they want to search against routes in collapsed workspaces
+  useEffect(() => {
+    if (keywords && collapsedWorkspaces?.length) {
+      setCollapsedWorkspaces([]);
+    }
+  }, [keywords, collapsedWorkspaces]);
 
   const storeHistoricResponse = useCallback(
     ({
@@ -161,6 +179,10 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
         setPartialRequestResponse,
         activeRoute,
         setActiveRoute,
+        keywords,
+        setKeywords,
+        collapsedWorkspaces,
+        setCollapsedWorkspaces,
       }}
     >
       {children}

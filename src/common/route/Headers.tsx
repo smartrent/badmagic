@@ -21,9 +21,9 @@ export default function Headers({
     };
   }, [darkMode]);
 
-  const toggleCollapsed = useCallback(() => {
-    setCollapsed(!collapsed);
-  }, [collapsed]);
+  const toggleCollapsed = useCallback(() => setCollapsed(!collapsed), [
+    collapsed,
+  ]);
 
   if (!headers) {
     return null;
