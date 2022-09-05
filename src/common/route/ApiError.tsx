@@ -2,8 +2,11 @@ import React, { useMemo } from "react";
 import { isObject } from "lodash-es";
 import ReactJson from "react-json-view";
 
+import { ApiResponseStatus } from "./ApiResponseStatus";
+
 import { useGlobalContext } from "../../context/GlobalContext";
 import Helpers from "../../lib/helpers";
+
 import { ApiError } from "../../types";
 
 export default function ApiError({ error }: { error: null | ApiError }) {
@@ -35,17 +38,6 @@ export default function ApiError({ error }: { error: null | ApiError }) {
 
   return (
     <div>
-      {error?.response?.status ? (
-        <div
-          className={`flex-shrink-0 inline-flex text-xs font-bold border rounded py-1 px-2 mb-1 ${styles.responseStatus}`}
-          style={{
-            color: responseColor,
-          }}
-        >
-          {error.response.status}
-        </div>
-      ) : null}
-
       {error.response.data && isJSON && (
         <ReactJson
           enableClipboard={true}
@@ -58,7 +50,7 @@ export default function ApiError({ error }: { error: null | ApiError }) {
 
       {error.response.data && !isJSON && (
         <div
-          className={`border border-gray-400 p-2 ${
+          className={`overflow-scroll text-clip border border-gray-400 p-2 ${
             darkMode ? "text-white" : ""
           }`}
         >

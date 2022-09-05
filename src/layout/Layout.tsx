@@ -7,12 +7,7 @@ import { SideBar } from "./SideBar";
 import { TopBar } from "./TopBar";
 import { History } from "../common/History";
 
-import { Route as RouteType, BadMagicProps } from "../types";
-
-type RouteWithWorkspaceConfig = RouteType & {
-  workspaceName: string;
-  baseUrl: string;
-};
+import { BadMagicProps } from "../types";
 
 export function Layout({
   workspaces,
@@ -20,11 +15,12 @@ export function Layout({
   HistoryMetadata,
   applyAxiosInterceptors,
 }: BadMagicProps) {
-  const { darkMode } = useGlobalContext();
-  const [
+  const {
+    darkMode,
+    historicResponses,
     activeRoute,
     setActiveRoute,
-  ] = useState<null | RouteWithWorkspaceConfig>(null);
+  } = useGlobalContext();
   const [activeWorkspaceNames, setActiveWorkspaceNamesInState] = useState<
     string[]
   >([]);
@@ -48,21 +44,22 @@ export function Layout({
     }
   }, []);
 
-  const activeWorkspaces = useMemo(() => {
-    return workspaces.filter(({ name }) => activeWorkspaceNames.includes(name));
-  }, [activeWorkspaceNames]);
+  const activeWorkspaces = useMemo(
+    () => workspaces.filter(({ name }) => activeWorkspaceNames.includes(name)),
+    [activeWorkspaceNames]
+  );
 
   const workspaceConfig = useMemo(() => {
     if (!activeRoute) {
       return null;
     }
 
-    const activeWorkspace = activeWorkspaces.find(
-      ({ name }) => name === activeRoute?.workspaceName
+    const activeWorkspace = workspaces.find(({ routes }) =>
+      routes.find((route) => route.name === activeRoute.name)
     );
 
     return activeWorkspace ? activeWorkspace.config : null;
-  }, [activeRoute, activeWorkspaces]);
+  }, [activeRoute, workspaces]);
 
   const styles = useMemo(() => {
     return {
@@ -74,13 +71,14 @@ export function Layout({
     };
   }, [darkMode, activeRoute, sidebarExpanded, historyActive]);
 
-  const toggleSidebar = useCallback(() => {
-    setSidebarExpanded(!sidebarExpanded);
-  }, [sidebarExpanded]);
+  const toggleSidebar = useCallback(
+    () => setSidebarExpanded(!sidebarExpanded),
+    [sidebarExpanded]
+  );
 
-  const toggleHistory = useCallback(() => {
-    setHistoryActive(!historyActive);
-  }, [historyActive]);
+  const toggleHistory = useCallback(() => setHistoryActive(!historyActive), [
+    historyActive,
+  ]);
 
   return (
     <div
@@ -110,7 +108,7 @@ export function Layout({
               onClick={toggleSidebar}
               className={`${styles.textColor} cursor-pointer mb-2 text-sm`}
             >
-              {sidebarExpanded ? "Hide Sidebar" : "Show Sidebar"}
+              {sidebarExpanded ? "Hide" : "Show"} Sidebar
             </div>
 
             {activeRoute && workspaceConfig ? (
@@ -126,7 +124,10 @@ export function Layout({
         ) : null}
         {historyActive ? (
           <div className="p-4 col-span-3 overflow-y-scroll">
-            <History HistoryMetadata={HistoryMetadata} />
+            <History
+              filteredHistory={historicResponses}
+              HistoryMetadata={HistoryMetadata}
+            />
           </div>
         ) : null}
       </div>

@@ -1,5 +1,3 @@
-import { Method } from "badmagic";
-
 export const catWorkspace = {
   id: "cats",
   name: "Cats",
@@ -72,7 +70,7 @@ export const catWorkspace = {
       description: "Create a new breed entry",
       summary: "A way to add new cat breeds",
       path: "/breeds",
-      method: Method.POST,
+      method: "POST",
       responses: {
         "200": {
           description: "successful operation",

@@ -119,7 +119,7 @@ function methodContainsBody(method?: Method) {
     return false;
   }
 
-  return [Method.POST, Method.PATCH, Method.PUT].includes(method);
+  return ["POST", "PATCH", "PUT"].includes(method);
 }
 
 function deriveSchemaFromRoute(route: Route): OpenApiSchema {
@@ -213,7 +213,7 @@ function deriveOpenApiSchemas({
   workspace: Workspace;
 }): OpenApiMap<OpenApiSchema> {
   const routesWithBodies = workspace.routes.filter(({ method }) =>
-    methodContainsBody(method)
+    methodContainsBody(method as Method)
   );
   return reduce(
     routesWithBodies,
@@ -278,7 +278,7 @@ function deriveOpenApiPaths({
           const openApiUrlParams = generateParameters(urlParams, "path");
 
           let requestBody;
-          if (!!body?.length && methodContainsBody(method)) {
+          if (!!body?.length && methodContainsBody(method as Method)) {
             requestBody = {
               content: {
                 "application/json": {
@@ -292,7 +292,7 @@ function deriveOpenApiPaths({
             };
           }
 
-          const sanitizedMethod = (method || Method.GET).toLowerCase();
+          const sanitizedMethod = (method || "GET").toLowerCase();
 
           memo[openApiPath][sanitizedMethod] = {
             callbacks: {},

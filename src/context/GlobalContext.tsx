@@ -8,7 +8,7 @@ const storageKeys = {
   historicResponses: "historic-responses",
 };
 
-import { HistoricResponse, StoreHistoricResponsePayload } from "../types";
+import { HistoricResponse, Route } from "../types";
 
 export const Context = React.createContext({
   darkMode: storage.get(storageKeys.darkMode),
@@ -21,7 +21,16 @@ export const Context = React.createContext({
   },
   historicResponses: (storage.get(storageKeys.historicResponses) ||
     []) as HistoricResponse[],
-  storeHistoricResponse: (historicResponse: StoreHistoricResponsePayload) => {
+  storeHistoricResponse: (historicResponse: HistoricResponse) => {
+    return historicResponse;
+  },
+  partialRequestResponses: {} as Record<string, HistoricResponse>,
+  setPartialRequestResponse: (historicResponse: HistoricResponse) => {
+    // noop
+  },
+
+  activeRoute: null as null | Route,
+  setActiveRoute: (activeRoute: Route) => {
     // noop
   },
 });
@@ -29,8 +38,27 @@ export const Context = React.createContext({
 export const useGlobalContext = () => useContext(Context);
 
 export function ContextProvider({ children }: { children: React.ReactNode }) {
+  const [activeRoute, setActiveRoute] = useState<null | Route>(null);
+
   const [darkMode, setDarkModeInState] = useState<boolean>(
     storage.get(storageKeys.darkMode)
+  );
+
+  // Used to track the state of a Request for a particular Route before it becomes a HistoricResponse
+  // after the Request is issued. This allows the user to flip back and forth between routes and still have
+  // Params stay loaded.
+  const [partialRequestResponses, setPartialRequestResponses] = useState<
+    Record<string, HistoricResponse>
+  >({});
+
+  const setPartialRequestResponse = useCallback(
+    (partialRequestResponse: HistoricResponse) => {
+      setPartialRequestResponses({
+        ...partialRequestResponses,
+        [partialRequestResponse.route.name]: partialRequestResponse,
+      });
+    },
+    [partialRequestResponses]
   );
 
   const setDarkMode = useCallback((darkMode: boolean) => {
@@ -74,7 +102,7 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
       qsParams,
       body,
       urlParams,
-    }: StoreHistoricResponsePayload) => {
+    }: HistoricResponse) => {
       const newResponse: HistoricResponse = {
         route,
         qsParams,
@@ -109,11 +137,13 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
 
       const newHistoricResponses = [newResponse, ...historicResponses].slice(
         0,
-        50
-      ); // prepend the new HistoricResponse, and ensure the array has a max of 50 cells
+        100
+      ); // prepend the new HistoricResponse, and ensure the array has a max of 100 cells
 
       storage.set(storageKeys.historicResponses, newHistoricResponses);
       setHistoricResponseInState(newHistoricResponses);
+
+      return newResponse;
     },
     [historicResponses]
   );
@@ -127,6 +157,10 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
         setHideDeprecatedRoutes,
         historicResponses,
         storeHistoricResponse,
+        partialRequestResponses,
+        setPartialRequestResponse,
+        activeRoute,
+        setActiveRoute,
       }}
     >
       {children}

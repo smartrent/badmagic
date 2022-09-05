@@ -185,7 +185,7 @@ refer to the `README` to see how usage guidelines and examples.
 {
   name: "Create User",
   path: "/v1/users",
-  method: Method.POST,
+  method: "POST",
   body: [
     {
       name: "user",

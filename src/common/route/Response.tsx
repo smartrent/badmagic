@@ -5,6 +5,7 @@ import BodyPreview from "./BodyPreview";
 import ApiError from "./ApiError";
 import Headers from "./Headers";
 import ApiResponse from "./ApiResponse";
+import { ApiResponseStatus } from "./ApiResponseStatus";
 
 import {
   ApiError as ApiErrorProp,
@@ -20,13 +21,18 @@ export function Response({
   body,
   error,
 }: {
-  response: null | AxiosResponse;
-  error: null | Error | AxiosError;
+  response: undefined | null | ApiResponseProp | AxiosResponse;
+  error: undefined | null | ApiErrorProp | Error | AxiosError;
   body: Record<string, any>;
 }) {
   return (
     <div style={{ flex: 3, overflow: "hidden" }}>
       <BodyPreview body={body} />
+      <div className="mb-1">
+        <ApiResponseStatus
+          status={response?.status || (error as AxiosError)?.response?.status}
+        />
+      </div>
       <ApiResponse response={response as null | ApiResponseProp} />
       <ApiError error={error as null | ApiErrorProp} />
       <Headers headers={response?.config?.headers} label="Request Headers" />
@@ -34,8 +40,7 @@ export function Response({
         label="Response Headers"
         headers={
           response?.headers ||
-          (isAxiosError(error) && error?.response?.headers) ||
-          {}
+          (isAxiosError(error) ? error?.response?.headers : null)
         }
       />
     </div>
