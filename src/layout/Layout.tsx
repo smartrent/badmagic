@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect, useCallback } from "react";
+import { orderBy } from "lodash-es";
 
 import { useGlobalContext } from "../context/GlobalContext";
 import Route from "../Route";
@@ -15,17 +16,18 @@ export function Layout({
   HistoryMetadata,
   applyAxiosInterceptors,
 }: BadMagicProps) {
-  const {
-    darkMode,
-    historicResponses,
-    activeRoute,
-    setActiveRoute,
-  } = useGlobalContext();
+  const { darkMode, historicResponses, activeRoute } = useGlobalContext();
   const [activeWorkspaceNames, setActiveWorkspaceNamesInState] = useState<
     string[]
   >([]);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [historyActive, setHistoryActive] = useState(false);
+
+  // Badmagic needs design help, but this gets rid of the annoying screen wiggle since we already have
+  // independent scrollbars for the sidenav, main area, and history section
+  useEffect(() => {
+    document.body.classList.add("overflow-hidden");
+  }, []);
 
   // Saves activeWorkspaces to local storage so on page refresh the user doesn't need to re-filter
   const setActiveWorkspaceNames = useCallback(
@@ -45,7 +47,12 @@ export function Layout({
   }, []);
 
   const activeWorkspaces = useMemo(
-    () => workspaces.filter(({ name }) => activeWorkspaceNames.includes(name)),
+    () =>
+      orderBy(
+        workspaces.filter(({ name }) => activeWorkspaceNames.includes(name)),
+        ["name"],
+        ["asc"]
+      ),
     [activeWorkspaceNames]
   );
 
@@ -92,14 +99,11 @@ export function Layout({
       />
       <div
         className={`w-full flex-grow grid divide-x ${styles.totalColumns}`}
-        style={{ height: "98vh" }}
+        style={{ height: "96vh" }}
       >
         {sidebarExpanded ? (
           <div className="col-span-1">
-            <SideBar
-              setActiveRoute={setActiveRoute}
-              workspaces={activeWorkspaces}
-            />
+            <SideBar workspaces={activeWorkspaces} />
           </div>
         ) : null}
         {activeRoute ? (

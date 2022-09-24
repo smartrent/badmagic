@@ -6,6 +6,7 @@ const storageKeys = {
   darkMode: "darkMode",
   hideDeprecatedRoutes: "hideDeprecatedRoutes",
   historicResponses: "historic-responses",
+  collapsedWorkspaces: "collapsed-workspaces",
 };
 
 import { HistoricResponse, Route } from "../types";
@@ -33,13 +34,26 @@ export const Context = React.createContext({
   setActiveRoute: (activeRoute: Route) => {
     // noop
   },
+
+  keywords: "",
+  setKeywords: (keywords: string) => {
+    // noop
+  },
+
+  collapsedWorkspaces: [] as string[],
+  setCollapsedWorkspaces: (collapsedWorkspaces: string[]) => {
+    // noop
+  },
 });
 
 export const useGlobalContext = () => useContext(Context);
 
 export function ContextProvider({ children }: { children: React.ReactNode }) {
   const [activeRoute, setActiveRoute] = useState<null | Route>(null);
-
+  const [keywords, setKeywords] = useState("");
+  const [collapsedWorkspaces, setCollapsedWorkspacesInState] = useState<
+    string[]
+  >(storage.get(storageKeys.collapsedWorkspaces) || []);
   const [darkMode, setDarkModeInState] = useState<boolean>(
     storage.get(storageKeys.darkMode)
   );
@@ -69,6 +83,14 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
   const [hideDeprecatedRoutes, setHideDeprecatedRoutesInState] = useState<
     boolean
   >(storage.get(storageKeys.hideDeprecatedRoutes));
+
+  const setCollapsedWorkspaces = useCallback(
+    (collapsedWorkspaces: string[]) => {
+      storage.set(storageKeys.collapsedWorkspaces, collapsedWorkspaces);
+      setCollapsedWorkspacesInState(collapsedWorkspaces);
+    },
+    []
+  );
 
   const setHideDeprecatedRoutes = useCallback(
     (hideDeprecatedRoutes: boolean) => {
@@ -161,6 +183,10 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
         setPartialRequestResponse,
         activeRoute,
         setActiveRoute,
+        keywords,
+        setKeywords,
+        collapsedWorkspaces,
+        setCollapsedWorkspaces,
       }}
     >
       {children}
