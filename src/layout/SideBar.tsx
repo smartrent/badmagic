@@ -59,21 +59,30 @@ export function SideBar({ workspaces }: { workspaces: Workspace[] }) {
   return (
     <div className="text-sm px-4 pb-4 pt-3 overflow-x-hidden relative">
       <div className={`${styles.textColor} text-xs mb-2 flex justify-end`}>
-        <div
-          className="cursor-pointer pr-1"
-          onClick={() =>
-            setCollapsedWorkspaces(filteredWorkspaces.map(({ name }) => name))
-          }
-        >
-          Collapse All
-        </div>
-        <div className="px-1"> / </div>
-        <div
-          className="cursor-pointer pl-1"
-          onClick={() => setCollapsedWorkspaces([])}
-        >
-          Expand All
-        </div>
+        {keywords ? (
+          // keep height spacing so there isn't a height jump
+          <div>&nbsp;</div>
+        ) : (
+          <>
+            <div
+              className="cursor-pointer pr-1"
+              onClick={() =>
+                setCollapsedWorkspaces(
+                  filteredWorkspaces.map(({ name }) => name)
+                )
+              }
+            >
+              Collapse All
+            </div>
+            <div className="px-1"> / </div>
+            <div
+              className="cursor-pointer pl-1"
+              onClick={() => setCollapsedWorkspaces([])}
+            >
+              Expand All
+            </div>
+          </>
+        )}
       </div>
       <TextInput
         type="text"
