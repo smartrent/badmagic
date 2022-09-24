@@ -23,6 +23,12 @@ export function Layout({
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [historyActive, setHistoryActive] = useState(false);
 
+  // Badmagic needs design help, but this gets rid of the annoying screen wiggle since we already have
+  // independent scrollbars for the sidenav, main area, and history section
+  useEffect(() => {
+    document.body.classList.add("overflow-hidden");
+  }, []);
+
   // Saves activeWorkspaces to local storage so on page refresh the user doesn't need to re-filter
   const setActiveWorkspaceNames = useCallback(
     (workspaceNames: string[]) => {
@@ -93,7 +99,7 @@ export function Layout({
       />
       <div
         className={`w-full flex-grow grid divide-x ${styles.totalColumns}`}
-        style={{ height: "98vh" }}
+        style={{ height: "96vh" }}
       >
         {sidebarExpanded ? (
           <div className="col-span-1">

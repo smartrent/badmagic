@@ -115,13 +115,6 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // If a user is searching, they want to search against routes in collapsed workspaces
-  useEffect(() => {
-    if (keywords && collapsedWorkspaces?.length) {
-      setCollapsedWorkspaces([]);
-    }
-  }, [keywords, collapsedWorkspaces]);
-
   const storeHistoricResponse = useCallback(
     ({
       metadata,

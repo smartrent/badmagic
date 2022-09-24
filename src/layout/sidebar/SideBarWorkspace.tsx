@@ -10,9 +10,11 @@ import Helpers from "../../lib/helpers";
 export function SideBarWorkspace({
   name,
   routes,
+  displayExpandCollapseUI,
 }: {
   name: string;
   routes: Route[];
+  displayExpandCollapseUI: boolean;
 }) {
   const {
     darkMode,
@@ -32,24 +34,46 @@ export function SideBarWorkspace({
   }, [darkMode]);
 
   const toggleCollapseWorkspace = useCallback(() => {
+    // Noop on click if we don't need to show the Collapse/Expand UI
+    if (!displayExpandCollapseUI) {
+      return;
+    }
+
     if (collapsedWorkspaces.includes(name)) {
       setCollapsedWorkspaces(without(collapsedWorkspaces, name));
     } else {
       setCollapsedWorkspaces([...collapsedWorkspaces, name]);
     }
-  }, [name, collapsedWorkspaces]);
+  }, [name, collapsedWorkspaces, displayExpandCollapseUI]);
 
   const collapsed = useMemo(() => {
+    // If there is only one active workspace and it's __actually__ collapsed in localstorage, ignore that
+    // otherwise we get an empty Sidenav
+    if (!displayExpandCollapseUI) {
+      return false;
+    }
+
     return collapsedWorkspaces.includes(name);
-  }, [name, collapsedWorkspaces]);
+  }, [name, collapsedWorkspaces, displayExpandCollapseUI]);
 
   return (
     <div>
       <div
-        className={`mt-4 text-lg font-bold cursor-pointer ${styles.title}`}
+        className={`mt-4 text-lg font-bold flex justify-between items-end ${
+          displayExpandCollapseUI ? "cursor-pointer" : ""
+        } ${styles.title}`}
         onClick={toggleCollapseWorkspace}
       >
-        {name} {keywords ? null : collapsed ? "+" : "-"}
+        <div>
+          {name} {displayExpandCollapseUI ? (collapsed ? "+" : "-") : null}{" "}
+        </div>
+        {keywords ? (
+          <div className={`text-sm italic ${styles.sidebarRouteText}`}>
+            ({routes.length} match{routes.length === 1 ? "" : "es"})
+          </div>
+        ) : (
+          ""
+        )}
       </div>
       {!collapsed && !routes.length ? (
         <div className={`${styles.textColor} my-3 italic`}>No routes found</div>
@@ -58,20 +82,23 @@ export function SideBarWorkspace({
         routes.map((route, idx) => (
           <div
             key={`${route.method || "GET"}-${route.path}-${idx}`}
-            className={`mt-2 mb-3 pb-2 cursor-pointer border-b border-gray-300 ${styles.sidebarRouteText}`}
+            className={`mt-2 mb-2 pb-2 cursor-pointer border-b border-gray-300 ${styles.sidebarRouteText}`}
             onClick={() => setActiveRoute(route)}
           >
-            <div className="flex">
-              <div
-                className={`text-xs w-12 flex flex-shrink items-center justify-center text-gray-700 font-semibold mr-1 p-0 border rounded ${styles.sidebarMethodBorder}`}
-                style={{
-                  backgroundColor: get(
-                    Helpers.colors.routes,
-                    route.method ? route.method.toLowerCase() : "get"
-                  ),
-                }}
-              >
-                {(route.method || "GET").toUpperCase()}
+            <div className="flex items-baseline">
+              {/* The extra div prevents vertical expansion if the route text wraps */}
+              <div>
+                <div
+                  className={`text-xs w-12 flex flex-shrink items-center justify-center text-gray-700 font-semibold mr-1 p-0 border rounded ${styles.sidebarMethodBorder}`}
+                  style={{
+                    backgroundColor: get(
+                      Helpers.colors.routes,
+                      route.method ? route.method.toLowerCase() : "get"
+                    ),
+                  }}
+                >
+                  {(route.method || "GET").toUpperCase()}
+                </div>
               </div>
               <div className="font-bold">{route.name}</div>
             </div>

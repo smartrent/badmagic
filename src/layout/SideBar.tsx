@@ -50,6 +50,14 @@ export function SideBar({ workspaces }: { workspaces: Workspace[] }) {
     };
   }, [darkMode]);
 
+  // When there is only 1 active workspace don't show the Collapse / Expand UI.
+  // In this scenario, we auto-expand the single active workspace (even if it was previously collapsed when there
+  // were multiple active workspaces)
+  const displayExpandCollapseUI = useMemo(
+    () => filteredWorkspaces?.length > 1,
+    [filteredWorkspaces]
+  );
+
   const setKeywordsCallback = useCallback(
     (e: React.FormEvent<HTMLInputElement>) =>
       setKeywords(e.currentTarget.value),
@@ -59,10 +67,7 @@ export function SideBar({ workspaces }: { workspaces: Workspace[] }) {
   return (
     <div className="text-sm px-4 pb-4 pt-3 overflow-x-hidden relative">
       <div className={`${styles.textColor} text-xs mb-2 flex justify-end`}>
-        {keywords ? (
-          // keep height spacing so there isn't a height jump
-          <div>&nbsp;</div>
-        ) : (
+        {displayExpandCollapseUI ? (
           <>
             <div
               className="cursor-pointer pr-1"
@@ -82,6 +87,9 @@ export function SideBar({ workspaces }: { workspaces: Workspace[] }) {
               Expand All
             </div>
           </>
+        ) : (
+          // keep height spacing so there isn't a height jump
+          <div>&nbsp;</div>
         )}
       </div>
       <TextInput
@@ -92,7 +100,10 @@ export function SideBar({ workspaces }: { workspaces: Workspace[] }) {
         autoFocus={true}
       />
 
-      <div className="overflow-y-scroll" style={{ height: "93vh" }}>
+      <div
+        className="overflow-y-scroll overflow-x-hidden"
+        style={{ height: "86vh" }}
+      >
         {!filteredWorkspaces.length ? (
           <div className={`${styles.textColor} text-center mt-4`}>
             No workspaces selected. Please select one or more Workspaces from
@@ -100,7 +111,12 @@ export function SideBar({ workspaces }: { workspaces: Workspace[] }) {
           </div>
         ) : null}
         {filteredWorkspaces.map(({ name, routes }) => (
-          <SideBarWorkspace name={name} routes={routes} />
+          <SideBarWorkspace
+            key={name}
+            name={name}
+            routes={routes}
+            displayExpandCollapseUI={displayExpandCollapseUI}
+          />
         ))}
       </div>
     </div>
