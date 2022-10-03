@@ -41,6 +41,8 @@ export function useCopyCurrentRoute({
     };
   }, [activeRoute, filteredHistory, partialRequestResponses]);
 
+  // NOTE: rather than pretend we have a router, let's just add all this infomation as a hashed query param and then shorten it as much as possible (SHA-256?)
+
   const copy = useCallback(async () => {
     const url = `${window.location}${
       activeRoute?.workspaceName ? activeRoute.workspaceName : ""
@@ -48,9 +50,13 @@ export function useCopyCurrentRoute({
       route: activeResponse.route,
       urlParams: activeResponse.urlParams,
       qsParams: activeResponse.qsParams,
-    })}`;
+    })}${
+      Object.keys(activeResponse.body).length > 0
+        ? `,BADMAGIC_REQUEST_BODY=${JSON.stringify(activeResponse.body)}`
+        : ""
+    }`;
     return navigator.clipboard.writeText(url);
-  }, [activeResponse]);
+  }, [activeResponse, activeRoute?.workspaceName]);
 
   return { copy };
 }
