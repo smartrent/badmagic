@@ -84,6 +84,7 @@ export type Route = {
   documentation?: string;
   example?: Record<string, any>; // e.g. {first_name: "John", last_name: "Doe", ...}
   baseUrl?: string; // if not specified on the route but exists on workspace.config.baseUrl, it will default to that
+  workspaceName?: string;
 
   responses?: OpenApiResponses; // OpenApi Responses
   tags?: string[];

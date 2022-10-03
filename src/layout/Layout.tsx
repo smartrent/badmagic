@@ -9,6 +9,7 @@ import { TopBar } from "./TopBar";
 import { History } from "../common/History";
 
 import { BadMagicProps } from "../types";
+import { useCopyCurrentRoute } from "../lib/links";
 
 export function Layout({
   workspaces,
@@ -87,6 +88,8 @@ export function Layout({
     historyActive,
   ]);
 
+  const { copy } = useCopyCurrentRoute({ activeRoute });
+
   return (
     <div
       className={`overflow-y-hidden min-h-full flex flex-col ${styles.background}`}
@@ -113,6 +116,12 @@ export function Layout({
               className={`${styles.textColor} cursor-pointer mb-2 text-sm`}
             >
               {sidebarExpanded ? "Hide" : "Show"} Sidebar
+            </div>
+            <div
+              onClick={copy}
+              className={`${styles.textColor} cursor-pointer mb-2 text-sm`}
+            >
+              Copy link
             </div>
 
             {activeRoute && workspaceConfig ? (
