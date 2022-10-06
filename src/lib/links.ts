@@ -41,22 +41,27 @@ export function useCopyCurrentRoute({
     };
   }, [activeRoute, filteredHistory, partialRequestResponses]);
 
-  // NOTE: rather than pretend we have a router, let's just add all this infomation as a hashed query param and then shorten it as much as possible (SHA-256?)
-
   const copy = useCallback(async () => {
-    const url = `${window.location}${
-      activeRoute?.workspaceName ? activeRoute.workspaceName : ""
-    }${helpers.buildPathWithQS({
+    const data = {
+      workspaceName: activeRoute?.workspaceName,
       route: activeResponse.route,
       urlParams: activeResponse.urlParams,
       qsParams: activeResponse.qsParams,
-    })}${
-      Object.keys(activeResponse.body).length > 0
-        ? `,BADMAGIC_REQUEST_BODY=${JSON.stringify(activeResponse.body)}`
-        : ""
-    }`;
+      body: activeResponse.body,
+    };
+
+    const hash = await convertRecordToHexString(data);
+    const url = `${window.location}?request=${hash}`;
+
     return navigator.clipboard.writeText(url);
   }, [activeResponse, activeRoute?.workspaceName]);
 
   return { copy };
+}
+
+async function convertRecordToHexString(data: Record<string, unknown>) {
+  const buffer = Buffer.from(JSON.stringify(data));
+  const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
