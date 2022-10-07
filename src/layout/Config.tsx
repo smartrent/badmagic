@@ -22,7 +22,12 @@ export default function Config({
   activeWorkspaceNames: string[];
   setActiveWorkspaceNames: (workspaceNames: string[]) => void;
 }) {
-  const { darkMode, setDarkMode } = useGlobalContext();
+  const {
+    darkMode,
+    setDarkMode,
+    hideDeprecatedRoutes,
+    setHideDeprecatedRoutes,
+  } = useGlobalContext();
   const [collapsed, setCollapsed] = useState(true);
 
   const iconColor = darkMode ? "#eee" : "#333";
@@ -30,6 +35,18 @@ export default function Config({
   const workspaceNames = useMemo(() => {
     return workspaces.map(({ name }) => name);
   }, [workspaces]);
+
+  const areAllWorkspacesSelected = useMemo(() => {
+    return workspaceNames.length === activeWorkspaceNames.length;
+  }, [workspaceNames, activeWorkspaceNames]);
+
+  const toggleAllWorkspaces = useCallback(() => {
+    if (areAllWorkspacesSelected) {
+      setActiveWorkspaceNames([]);
+    } else {
+      setActiveWorkspaceNames(workspaceNames);
+    }
+  }, [areAllWorkspacesSelected, setActiveWorkspaceNames, workspaceNames]);
 
   const toggleCollapsed = useCallback(() => setCollapsed(!collapsed), [
     collapsed,
@@ -62,7 +79,15 @@ export default function Config({
             </button>
           </div>
           <div className={`px-2 ${styles.textColor}`}>
-            <div className="text-md mb-2">Workspaces:</div>
+            <div className="flex justify-between items-center my-2">
+              <div className="text-md">Workspaces:</div>
+              <button
+                className="text-xs text-gray-500"
+                onClick={toggleAllWorkspaces}
+              >
+                {areAllWorkspacesSelected ? "Deselect All" : "Select All"}
+              </button>
+            </div>
             {workspaceNames.map((workspaceName) => {
               return (
                 <div key={workspaceName}>
@@ -98,6 +123,18 @@ export default function Config({
                 </div>
               );
             })}
+            <div className="flex mt-3 pt-2 border-t border-gray-400 text-gray-400">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={hideDeprecatedRoutes}
+                  onChange={() =>
+                    setHideDeprecatedRoutes(!hideDeprecatedRoutes)
+                  }
+                />{" "}
+                Hide Deprecated Routes
+              </label>
+            </div>
           </div>
           <div className="flex mt-3 py-3 border-t border-b border-gray-400">
             <button

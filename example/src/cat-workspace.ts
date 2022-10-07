@@ -1,15 +1,15 @@
-export const dogWorkspace = {
-  id: "dogs",
-  name: "Dogs",
+export const catWorkspace = {
+  id: "cats",
+  name: "Cats",
   info: {
-    title: "Dogs",
-    description: "An OpenAPI workspace that's all about dogs!",
+    title: "Cats",
+    description: "An OpenAPI workspace that's all about cats!",
     version: "0.0.2",
   },
   tags: [
     {
-      name: "dogs",
-      description: "API Endpoints to interact with dog data",
+      name: "cats",
+      description: "API Endpoints to interact with cat data",
     },
   ],
   config: {
@@ -32,33 +32,9 @@ export const dogWorkspace = {
           // schema: {
           //   type: "array",
           //   items: {
-          //     $ref: "#/definitions/Dog",
+          //     $ref: "#/definitions/Cat",
           //   },
           // },
-        },
-      },
-    },
-    {
-      name: "HTML response",
-      path: "/views/breeds.html",
-      responses: {
-        "200": {
-          description: "successful operation",
-          // schema: {
-          //   type: "array",
-          //   items: {
-          //     $ref: "#/definitions/Dog",
-          //   },
-          // },
-        },
-      },
-    },
-    {
-      name: "Redirecting HTML Response",
-      path: "/views/redirect.html",
-      responses: {
-        "200": {
-          description: "Should stop the redirection from the html response",
         },
       },
     },
@@ -92,7 +68,7 @@ export const dogWorkspace = {
     {
       name: "Add New Breed",
       description: "Create a new breed entry",
-      summary: "A way to add new dog breeds",
+      summary: "A way to add new cat breeds",
       path: "/breeds",
       method: "POST",
       responses: {
@@ -101,7 +77,7 @@ export const dogWorkspace = {
           // schema: {
           //   type: "array",
           //   items: {
-          //     $ref: "#/definitions/Dog",
+          //     $ref: "#/definitions/Cat",
           //   },
           // },
         },
@@ -110,8 +86,8 @@ export const dogWorkspace = {
         {
           name: "name",
           required: true,
-          placeholder: "German Shepherd",
-          description: "Name of the dog breed",
+          placeholder: "Tabby",
+          description: "Name of the cat breed",
           minLength: 3,
           maxLength: 100,
           nullable: false,
@@ -132,24 +108,24 @@ export const dogWorkspace = {
           required: true,
 
           placeholder: "Coat color",
-          description: "Color of the dog's coat",
+          description: "Color of the cat's coat",
         },
         {
           name: "time_of_birth",
           required: true,
           placeholder: "2022-02-25T12:00:00.000Z",
-          description: "Dog's time of birth",
+          description: "Cat's time of birth",
         },
         {
           name: "adoption_day",
           placeholder: "2022-02-25",
-          description: "Dog's date of adoption",
+          description: "Cat's date of adoption",
         },
         {
-          name: "walk_time",
+          name: "nap_time",
           required: true,
           placeholder: "12:00:00",
-          description: "Dog's preferred time to walk",
+          description: "Cat's preferred time to nap",
         },
         {
           name: "measurements",
@@ -196,7 +172,7 @@ export const dogWorkspace = {
               properties: [{ name: "cash_only" }, { name: "warranty" }],
             },
           ],
-          description: "Prominent locations where the dog is bred",
+          description: "Prominent locations where the cat is bred",
         },
         {
           name: "info",
@@ -204,9 +180,9 @@ export const dogWorkspace = {
         },
       ],
       example: {
-        name: "German Shepherd",
+        name: "Tabby",
       },
-      tags: ["dogs"],
+      tags: ["cats"],
     },
 
     {

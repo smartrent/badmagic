@@ -1,5 +1,49 @@
 # Changelog
 
+
+## v0.0.37
+
+### Bugfix
+
+- Since HistoricResponses can now be preloaded in v0.0.36, the active workspace isn't determined when a route is clicked anymore, but inferred by matching on the Route name. Since Route name isn't guaranteed to be unique, this commit changes to the Route's url path which is less likely to have collisions.  
+
+## v0.0.36
+
+### Features 
+
+- When a route is active, it will now preload the last Request/Response (HistoricResponse) into the form fields
+- When a route is active and you change the form fields, when you leave the route and come back, the changes persist until the page is closed/refreshed.
+- Ability to Load a previous request/response to replay it
+
+### Breaking Changes
+
+- Instead of needing to `import {Method} from "badmagic";` and specify `Method.POST`, changed types so that `"POST"` will work instead. This works for GET, POST, PATCH, PUT, and DELETE. Note: It currently won't display errors via TS if something invalid is specified (There is probably a better way to handle this).
+
+## v0.0.35
+
+### Features 
+
+- Adds ability to copy Request Body and API Error Response to clipboard
+
+## v0.0.34
+
+### Features 
+
+- Adds ability to copy API Response to clipboard
+
+## v0.0.33
+
+### Features 
+
+- Toggle added to Select All / Deselect All workspaces
+
+## v0.0.32
+
+### Features 
+
+- If your param's placeholder is an ISO timestamp, a date or a time, a `NOW` button shows up to the right of the input and populates the input with the current UTC value when clicked
+- Under the config menu there is a new `Hide Deprecated Routes` option to filter out routes that are deprecated when applied
+
 ## v0.0.31
 
 - Upgrade `react-markdown` to ^7
@@ -165,7 +209,7 @@ refer to the `README` to see how usage guidelines and examples.
 {
   name: "Create User",
   path: "/v1/users",
-  method: Method.POST,
+  method: "POST",
   body: [
     {
       name: "user",

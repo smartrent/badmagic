@@ -33,16 +33,6 @@ export interface ApiError {
   };
 }
 
-export interface StoreHistoricResponsePayload {
-  metadata: Record<string, any>;
-  response: null | ApiResponse;
-  error: null | ApiError;
-  route: Route;
-  urlParams: Record<string, any>;
-  qsParams: Record<string, any>;
-  body: Record<string, any>;
-}
-
 export interface HistoricResponse {
   response: null | ApiResponse;
   error: null | ApiError;
@@ -54,9 +44,7 @@ export interface HistoricResponse {
   body: Record<string, any>;
 }
 
-export type StoreHistoricResponse = (
-  payload: StoreHistoricResponsePayload
-) => void;
+export type StoreHistoricResponse = (payload: HistoricResponse) => void;
 
 export type Workspace = {
   id: string;
@@ -92,7 +80,7 @@ export type Route = {
   path: string;
   body?: Param[];
   qsParams?: Param[];
-  method?: Method;
+  method?: Method | string; // if we don't use `string` here, each instance where method is defined it needs to be cast
   documentation?: string;
   example?: Record<string, any>; // e.g. {first_name: "John", last_name: "Doe", ...}
   baseUrl?: string; // if not specified on the route but exists on workspace.config.baseUrl, it will default to that
@@ -107,11 +95,7 @@ export type Option = {
   value: any;
 };
 
-export enum ParamType {
-  qsParams = "qsParams",
-  body = "body",
-  urlParams = "urlParams",
-}
+export type ParamType = "qsParams" | "body" | "urlParams";
 
 export type Param = {
   name: string;
@@ -134,13 +118,16 @@ export type Param = {
   pattern?: string;
 };
 
-export enum Method {
-  POST = "POST",
-  PUT = "PUT",
-  PATCH = "PATCH",
-  GET = "GET",
-  DELETE = "DELETE",
+enum MethodEnum {
+  POST,
+  PUT,
+  PATCH,
+  GET,
+  DELETE,
 }
+
+export type Method = keyof typeof MethodEnum;
+
 export interface Icon {
   size?: number;
   color: string;
@@ -182,6 +169,14 @@ export interface RenderArrayOfInputsProps {
   param: Param;
   onSubmit: OnSubmitFn;
   label: string;
+  values: Record<string, any>;
+  setValues: (values: any) => void;
+}
+
+export interface ApplyNowDateButtonProps {
+  reference?: string;
+  pathToValue: string;
+  onRemoveCell?: () => void;
   values: Record<string, any>;
   setValues: (values: any) => void;
 }

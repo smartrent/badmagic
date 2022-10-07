@@ -8,7 +8,7 @@ export default function Headers({
   headers,
   label,
 }: {
-  headers?: undefined | Record<string, any>;
+  headers?: null | undefined | Record<string, any>;
   label: string;
 }) {
   const { darkMode } = useGlobalContext();
@@ -16,14 +16,14 @@ export default function Headers({
   const styles = useMemo(() => {
     return {
       headerContainer: darkMode
-        ? "text-gray-100 border-gray-700"
+        ? "text-gray-100 border-gray-700 bg-gray-800"
         : "text-gray-800 border-gray-300",
     };
   }, [darkMode]);
 
-  const toggleCollapsed = useCallback(() => {
-    setCollapsed(!collapsed);
-  }, [collapsed]);
+  const toggleCollapsed = useCallback(() => setCollapsed(!collapsed), [
+    collapsed,
+  ]);
 
   if (!headers) {
     return null;

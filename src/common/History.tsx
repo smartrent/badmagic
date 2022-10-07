@@ -9,29 +9,17 @@ import { Route, HistoricResponse, HistoryMetadata } from "../types";
 export function History({
   activeRoute,
   HistoryMetadata,
+  filteredHistory,
 }: {
   activeRoute?: Route;
   HistoryMetadata?: HistoryMetadata;
+  filteredHistory: HistoricResponse[];
 }) {
-  const { darkMode, historicResponses } = useGlobalContext();
+  const { darkMode } = useGlobalContext();
 
   // If user is on the History page, don't collapse
   // If user is on on a Route page, collapse by default to improve page performance
   const [collapsed, setCollapsed] = useState(activeRoute ? true : false);
-
-  // If `activeRoute` is specified, filter displayed History to records matching just that route
-  const filteredHistory = useMemo(() => {
-    if (!activeRoute) {
-      return historicResponses;
-    }
-
-    return historicResponses.filter((historicResponse: HistoricResponse) => {
-      if (!activeRoute) {
-        return historicResponse;
-      }
-      return historicResponse.route?.name === activeRoute.name;
-    });
-  }, [historicResponses, activeRoute]);
 
   const styles = useMemo(() => {
     return {

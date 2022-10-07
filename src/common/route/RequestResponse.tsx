@@ -1,6 +1,7 @@
-import React, { useState, useCallback, useMemo, useEffect } from "react";
+import React, { useCallback, useMemo } from "react";
 import useAxios from "@smartrent/use-axios";
 import axios from "axios";
+import { first, cloneDeep } from "lodash-es";
 
 import { useGlobalContext } from "../../context/GlobalContext";
 
@@ -9,56 +10,89 @@ import { Request } from "./Request";
 import { TopBar } from "./TopBar";
 
 import helpers from "../../lib/helpers";
+
 import {
   Route,
   Method,
   ApplyAxiosInterceptors,
-  StoreHistoricResponsePayload,
+  HistoricResponse,
 } from "../../types";
 
 export function RequestResponse({
   route,
   applyAxiosInterceptors,
+  filteredHistory,
 }: {
   route: Route;
   applyAxiosInterceptors?: ApplyAxiosInterceptors;
+  filteredHistory: HistoricResponse[];
 }) {
-  const { darkMode, storeHistoricResponse } = useGlobalContext();
-  const [urlParams, setUrlParams] = useState({});
-  const [qsParams, setQsParams] = useState({});
-  const [body, setBody] = useState({});
+  const {
+    darkMode,
+    storeHistoricResponse,
+    setPartialRequestResponse,
+    partialRequestResponses,
+  } = useGlobalContext();
 
-  const method: Method = useMemo(() => {
-    return route.method ? route.method : Method.GET;
-  }, [route]);
+  const requestResponse: HistoricResponse = useMemo(() => {
+    // Prefers in-memory state changes that already began since the session started
+    // Falls back to loading the last HistoricResponse from history if set
+    // Falls back to a new partial HistoricRepsonse if the first two conditions aren't met.
+    if (partialRequestResponses[route.path]) {
+      return partialRequestResponses[route.path];
+    } else if (filteredHistory.length) {
+      return cloneDeep(first(filteredHistory)) as HistoricResponse;
+    }
 
-  // When the route changes, reset params
-  useEffect(() => {
-    // Set default values in state, but this currently doesn't handle recursive default values like
-    // object properties or array default values
-    const defaultBodyParams = helpers.reduceDefaultParamValues(route?.body);
-    const defaultQsParams = helpers.reduceDefaultParamValues(route?.qsParams);
+    return {
+      metadata: {},
+      response: null,
+      error: null,
+      urlParams: {},
+      qsParams: helpers.reduceDefaultParamValues(route?.qsParams),
+      body: helpers.reduceDefaultParamValues(route?.body),
+      route,
+    };
+  }, [route, filteredHistory, partialRequestResponses]);
 
-    setUrlParams({});
-    setQsParams(defaultQsParams);
-    setBody(defaultBodyParams);
-  }, [route]);
+  const setUrlParams = useCallback(
+    (urlParams: Record<string, any>) => {
+      setPartialRequestResponse({ ...requestResponse, urlParams });
+    },
+    [requestResponse, setPartialRequestResponse]
+  );
+
+  const setQsParams = useCallback(
+    (qsParams: Record<string, any>) => {
+      setPartialRequestResponse({ ...requestResponse, qsParams });
+    },
+    [requestResponse, setPartialRequestResponse]
+  );
+
+  const setBody = useCallback(
+    (body: Record<string, any>) => {
+      setPartialRequestResponse({ ...requestResponse, body });
+    },
+    [requestResponse, setPartialRequestResponse]
+  );
+
+  // A useCallback function that includes `route` in the HistoricResponse
+  const storeHistoricResponseWithRoute = useCallback(
+    (payload: Omit<HistoricResponse, "route">) => {
+      return storeHistoricResponse({ ...requestResponse, ...payload, route });
+    },
+    [storeHistoricResponse, route, requestResponse]
+  );
+
+  const method: string | Method = useMemo(() => route.method || "GET", [route]);
 
   const url = useMemo(() => {
     return helpers.buildUrl({
       route,
-      urlParams,
-      qsParams: qsParams || {},
+      urlParams: (requestResponse as HistoricResponse).urlParams,
+      qsParams: (requestResponse as HistoricResponse).qsParams,
     });
-  }, [route, urlParams, qsParams]);
-
-  // A useCallback function that includes `route` in the HistoricResponse
-  const storeHistoricResponseWithRoute = useCallback(
-    (payload: Omit<StoreHistoricResponsePayload, "route">) => {
-      storeHistoricResponse({ ...payload, route, qsParams, body, urlParams });
-    },
-    [storeHistoricResponse, route, qsParams, body, urlParams]
-  );
+  }, [route, requestResponse]);
 
   // The end-user can optionally load Axios Interceptors at this point. https://axios-http.com/docs/interceptors
   const axiosInstance = useMemo(() => {
@@ -76,19 +110,24 @@ export function RequestResponse({
 
   const { response, loading, error, reFetch } = useAxios({
     axios: axiosInstance,
-    method,
+    method: method as Method,
     url,
     options: {
-      data: route.body ? body : null, // Don't send data if `body` is not specified by the `route` definition
+      data: route.body ? requestResponse.body : null, // Don't send data if `body` is not specified by the `route` definition
     },
   });
 
   // When a Reset button is clicked, it resets all Params
   const resetAllParams = useCallback(() => {
-    setQsParams({});
-    setBody({});
-    setUrlParams({});
-  }, [setUrlParams, setBody, setUrlParams]);
+    setPartialRequestResponse({
+      ...requestResponse,
+      qsParams: {},
+      urlParams: {},
+      body: {},
+      error: null,
+      response: null,
+    });
+  }, [requestResponse]);
 
   const styles = useMemo(() => {
     return {
@@ -100,22 +139,43 @@ export function RequestResponse({
 
   // When the route changes or the response changes, regenerate ResponseDOM
   const responseDOM = useMemo(() => {
-    return <Response response={response} body={body} error={error} />;
-  }, [response, body, error]);
+    // If we have a recent Axios request, display that instead of the historic data.
+    // Note: We want a visual indicator that something is happening when loading
+    if (loading || response || error || !requestResponse) {
+      return (
+        <Response
+          response={loading ? null : response}
+          body={requestResponse?.body}
+          error={loading ? null : error}
+        />
+      );
+    }
+
+    // fallback to the last historic record if the user is returning to this screen and hasn't made a request yet
+    return (
+      <Response
+        response={requestResponse?.response}
+        body={requestResponse?.body}
+        error={requestResponse?.error}
+      />
+    );
+  }, [response, error, requestResponse, loading]);
 
   return (
     <div
       className={`overflow-hidden p-4 border rounded overflow-x-hidden mb-4 ${styles.container}`}
     >
-      <TopBar route={route} qsParams={qsParams} urlParams={urlParams} />
+      <TopBar
+        route={route}
+        qsParams={requestResponse?.qsParams}
+        urlParams={requestResponse?.urlParams}
+      />
       <div className="flex py-2">
         <Request
           route={route}
           resetAllParams={resetAllParams}
           loading={loading}
-          qsParams={qsParams}
-          body={body}
-          urlParams={urlParams}
+          requestResponse={requestResponse}
           reFetch={reFetch}
           setUrlParams={setUrlParams}
           setBody={setBody}

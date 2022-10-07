@@ -5,6 +5,7 @@ import Input from "../Input";
 import Label from "../Label";
 import Required from "../Required";
 import { ClearValueButton } from "../ClearValueButton";
+import { ApplyNowDateButton } from "../ApplyNowDateButton";
 import { ApplyNullValueButton } from "../ApplyNullValueButton";
 import { AddArrayCell } from "../AddArrayCell";
 import { RemoveArrayCellButton } from "../RemoveArrayCellButton";
@@ -12,6 +13,7 @@ import { RemoveArrayCellButton } from "../RemoveArrayCellButton";
 import Helpers from "../../lib/helpers";
 
 import { useGlobalContext } from "../../context/GlobalContext";
+import Tooltip from "../Tooltip";
 
 import {
   Route,
@@ -24,7 +26,6 @@ import {
   RenderObjectProps,
   RenderArrayOfInputsProps,
 } from "../../types";
-import Tooltip from "../Tooltip";
 
 function RenderArrayOfInputs({
   onSubmit,
@@ -248,6 +249,13 @@ function RenderInputByDataType({
           }}
           onSubmit={onSubmit}
         />
+        <ApplyNowDateButton
+          onRemoveCell={onRemoveCell}
+          pathToValue={pathToValue}
+          reference={param.placeholder}
+          values={values}
+          setValues={setValues}
+        />
         <ClearValueButton
           onRemoveCell={onRemoveCell}
           pathToValue={pathToValue}
@@ -268,6 +276,7 @@ function RenderInputByDataType({
             setValues={setValues}
           />
         ) : null}
+
         <RemoveArrayCellButton onRemoveCell={onRemoveCell} className="ml-1" />
       </InputContainer>
     </InputContainer>
@@ -309,9 +318,9 @@ function fetchInputsFromRouteDefinition(
   route: Route,
   paramType: ParamType
 ): Param[] {
-  if (paramType === ParamType.body) {
+  if (paramType === "body") {
     return route.body || [];
-  } else if (paramType === ParamType.qsParams) {
+  } else if (paramType === "qsParams") {
     return route.qsParams || [];
   }
 

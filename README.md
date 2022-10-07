@@ -73,7 +73,7 @@ export function BadMagicClient() {
       {
         name: "Create Superhero",
         path: "/v1/superheroes",
-        method: Method.POST,
+        method: "POST",
         body: [
           { name: "first_name", required: true },
           { name: "last_name" },
@@ -92,7 +92,7 @@ export function BadMagicClient() {
       {
         name: "Update Superhero",
         path: "/v1/superheroes/:superhero_id",
-        method: Method.PATCH,
+        method: "PATCH",
         body: [
           { name: "first_name", required: true },
           { name: "last_name" },
@@ -112,7 +112,7 @@ export function BadMagicClient() {
       {
         name: "Delete Superhero",
         path: "/v1/superheroes/:superhero_id",
-        method: Method.DELETE,
+        method: "DELETE",
       },
     ],
   };
@@ -345,7 +345,7 @@ const superheroes = {
     {
         name: "Update Superhero",
         path: "/v1/superheroes/:superhero_id",
-        method: Method.PATCH,
+        method: "PATCH",
         body: [
           {
             name: "first_name",
@@ -377,6 +377,10 @@ Running the `example` in your browser:
 
 - In one terminal window run in the `badmagic` root folder, run `yarn` then `yarn link` then `yarn start`
 - In another terminal window in the `example` folder, run `yarn`, then `yarn link badmagic` then `yarn start`
+
+## Publishing A New Version
+
+- Run `yarn publish`
 
 ## Resources
 

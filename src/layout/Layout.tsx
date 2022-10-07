@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect, useCallback } from "react";
+import { orderBy } from "lodash-es";
 
 import { useGlobalContext } from "../context/GlobalContext";
 import Route from "../Route";
@@ -7,12 +8,7 @@ import { SideBar } from "./SideBar";
 import { TopBar } from "./TopBar";
 import { History } from "../common/History";
 
-import { Route as RouteType, BadMagicProps } from "../types";
-
-type RouteWithWorkspaceConfig = RouteType & {
-  workspaceName: string;
-  baseUrl: string;
-};
+import { BadMagicProps } from "../types";
 
 export function Layout({
   workspaces,
@@ -20,16 +16,18 @@ export function Layout({
   HistoryMetadata,
   applyAxiosInterceptors,
 }: BadMagicProps) {
-  const { darkMode } = useGlobalContext();
-  const [
-    activeRoute,
-    setActiveRoute,
-  ] = useState<null | RouteWithWorkspaceConfig>(null);
+  const { darkMode, historicResponses, activeRoute } = useGlobalContext();
   const [activeWorkspaceNames, setActiveWorkspaceNamesInState] = useState<
     string[]
   >([]);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [historyActive, setHistoryActive] = useState(false);
+
+  // Badmagic needs design help, but this gets rid of the annoying screen wiggle since we already have
+  // independent scrollbars for the sidenav, main area, and history section
+  useEffect(() => {
+    document.body.classList.add("overflow-hidden");
+  }, []);
 
   // Saves activeWorkspaces to local storage so on page refresh the user doesn't need to re-filter
   const setActiveWorkspaceNames = useCallback(
@@ -48,21 +46,27 @@ export function Layout({
     }
   }, []);
 
-  const activeWorkspaces = useMemo(() => {
-    return workspaces.filter(({ name }) => activeWorkspaceNames.includes(name));
-  }, [activeWorkspaceNames]);
+  const activeWorkspaces = useMemo(
+    () =>
+      orderBy(
+        workspaces.filter(({ name }) => activeWorkspaceNames.includes(name)),
+        ["name"],
+        ["asc"]
+      ),
+    [activeWorkspaceNames]
+  );
 
   const workspaceConfig = useMemo(() => {
     if (!activeRoute) {
       return null;
     }
 
-    const activeWorkspace = activeWorkspaces.find(
-      ({ name }) => name === activeRoute?.workspaceName
+    const activeWorkspace = workspaces.find(({ routes }) =>
+      routes.find((route) => route.path === activeRoute.path)
     );
 
     return activeWorkspace ? activeWorkspace.config : null;
-  }, [activeRoute, activeWorkspaces]);
+  }, [activeRoute, workspaces]);
 
   const styles = useMemo(() => {
     return {
@@ -74,13 +78,14 @@ export function Layout({
     };
   }, [darkMode, activeRoute, sidebarExpanded, historyActive]);
 
-  const toggleSidebar = useCallback(() => {
-    setSidebarExpanded(!sidebarExpanded);
-  }, [sidebarExpanded]);
+  const toggleSidebar = useCallback(
+    () => setSidebarExpanded(!sidebarExpanded),
+    [sidebarExpanded]
+  );
 
-  const toggleHistory = useCallback(() => {
-    setHistoryActive(!historyActive);
-  }, [historyActive]);
+  const toggleHistory = useCallback(() => setHistoryActive(!historyActive), [
+    historyActive,
+  ]);
 
   return (
     <div
@@ -94,14 +99,11 @@ export function Layout({
       />
       <div
         className={`w-full flex-grow grid divide-x ${styles.totalColumns}`}
-        style={{ height: "98vh" }}
+        style={{ height: "96vh" }}
       >
         {sidebarExpanded ? (
           <div className="col-span-1">
-            <SideBar
-              setActiveRoute={setActiveRoute}
-              workspaces={activeWorkspaces}
-            />
+            <SideBar workspaces={activeWorkspaces} />
           </div>
         ) : null}
         {activeRoute ? (
@@ -110,7 +112,7 @@ export function Layout({
               onClick={toggleSidebar}
               className={`${styles.textColor} cursor-pointer mb-2 text-sm`}
             >
-              {sidebarExpanded ? "Hide Sidebar" : "Show Sidebar"}
+              {sidebarExpanded ? "Hide" : "Show"} Sidebar
             </div>
 
             {activeRoute && workspaceConfig ? (
@@ -126,7 +128,10 @@ export function Layout({
         ) : null}
         {historyActive ? (
           <div className="p-4 col-span-3 overflow-y-scroll">
-            <History HistoryMetadata={HistoryMetadata} />
+            <History
+              filteredHistory={historicResponses}
+              HistoryMetadata={HistoryMetadata}
+            />
           </div>
         ) : null}
       </div>
