@@ -42,26 +42,15 @@ export function useCopyCurrentRoute({
   }, [activeRoute, filteredHistory, partialRequestResponses]);
 
   const copy = useCallback(async () => {
-    const data = {
-      workspaceName: activeRoute?.workspaceName,
+    const request = JSON.stringify({
       route: activeResponse.route,
-      urlParams: activeResponse.urlParams,
-      qsParams: activeResponse.qsParams,
-      body: activeResponse.body,
-    };
+      response: activeResponse,
+    });
 
-    const hash = await convertRecordToHexString(data);
-    const url = `${window.location}?request=${hash}`;
+    const url = `${window.location.origin}?request=${window.btoa(request)}`;
 
     return navigator.clipboard.writeText(url);
   }, [activeResponse, activeRoute?.workspaceName]);
 
   return { copy };
-}
-
-async function convertRecordToHexString(data: Record<string, unknown>) {
-  const buffer = Buffer.from(JSON.stringify(data));
-  const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }

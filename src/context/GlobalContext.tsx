@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
+// import { parseRequestedRoute } from "../lib/links";
 
 import * as storage from "../lib/storage";
 
@@ -106,11 +107,21 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
 
   // On initial mount, this will fetch HistoricResponse from local storage once
   useEffect(() => {
+    const linkedRequest = new URLSearchParams(window.location.search).get(
+      "request"
+    );
     const historicResponsesFromStorage: HistoricResponse[] = storage.get(
       storageKeys.historicResponses
     );
+    if (linkedRequest) {
+      const data = JSON.parse(window.atob(linkedRequest)) as {
+        route: Route;
+        response: HistoricResponse;
+      };
 
-    if (historicResponsesFromStorage?.length) {
+      setActiveRoute(data.route);
+      setHistoricResponseInState([data.response]);
+    } else if (historicResponsesFromStorage?.length) {
       setHistoricResponseInState(historicResponsesFromStorage);
     }
   }, []);
