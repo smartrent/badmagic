@@ -88,7 +88,17 @@ export function Layout({
     historyActive,
   ]);
 
-  const { copy } = useCopyCurrentRoute({ activeRoute });
+  const { copy, getUrl } = useCopyCurrentRoute({ activeRoute });
+  const [copied, setCopied] = useState(false);
+  const handleCopy = useCallback(async () => {
+    try {
+      await copy();
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1000);
+    } catch {
+      window.alert(getUrl());
+    }
+  }, [copy, getUrl]);
 
   return (
     <div
@@ -111,17 +121,21 @@ export function Layout({
         ) : null}
         {activeRoute ? (
           <div className="p-4 col-span-3 overflow-y-scroll">
-            <div
-              onClick={toggleSidebar}
-              className={`${styles.textColor} cursor-pointer mb-2 text-sm`}
-            >
-              {sidebarExpanded ? "Hide" : "Show"} Sidebar
-            </div>
-            <div
-              onClick={copy}
-              className={`${styles.textColor} cursor-pointer mb-2 text-sm`}
-            >
-              Copy link
+            <div className="flex gap-3">
+              <div
+                onClick={toggleSidebar}
+                className={`${styles.textColor} cursor-pointer mb-2 text-sm`}
+              >
+                {sidebarExpanded ? "Hide" : "Show"} Sidebar
+              </div>
+              <div
+                onClick={handleCopy}
+                className={`${
+                  copied ? "text-green-400" : styles.textColor
+                } cursor-pointer mb-2 text-sm`}
+              >
+                {copied ? "Copied!" : "Copy link"}
+              </div>
             </div>
 
             {activeRoute && workspaceConfig ? (

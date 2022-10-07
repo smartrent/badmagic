@@ -41,16 +41,18 @@ export function useCopyCurrentRoute({
     };
   }, [activeRoute, filteredHistory, partialRequestResponses]);
 
-  const copy = useCallback(async () => {
+  const getUrl = useCallback(() => {
     const request = JSON.stringify({
       route: activeResponse.route,
       response: activeResponse,
     });
 
-    const url = `${window.location.origin}?request=${window.btoa(request)}`;
+    return `${window.location.origin}?request=${window.btoa(request)}`;
+  }, [activeResponse]);
 
-    return navigator.clipboard.writeText(url);
-  }, [activeResponse, activeRoute?.workspaceName]);
+  const copy = useCallback(() => navigator.clipboard.writeText(getUrl()), [
+    getUrl,
+  ]);
 
-  return { copy };
+  return { copy, getUrl };
 }
