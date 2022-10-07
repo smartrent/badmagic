@@ -18,7 +18,7 @@ export function useCopyCurrentRoute({
       response: activeResponse,
     });
 
-    return `${window.location.origin}?request=${window.btoa(request)}`;
+    return `${window.location.href.split('?')[0]}?request=${window.btoa(request)}`;
   }, [activeResponse]);
 
   const copy = useCallback(() => navigator.clipboard.writeText(getUrl()), [
