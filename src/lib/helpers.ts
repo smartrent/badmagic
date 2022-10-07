@@ -3,7 +3,7 @@ import { get, reduce, compact, map, startCase } from "lodash-es";
 import { stringify } from "querystring";
 
 import OpenApi from "./openapi";
-import { Route, Workspace, Param } from "../types";
+import { Route, Workspace, Param, HistoricResponse } from "../types";
 
 // Given a Route, URL Params, and QSParams, returns a route's path with the QS params included
 function buildPathWithQS({
@@ -68,6 +68,16 @@ const Helpers = {
       }
       return memo;
     }, {} as Record<string, any>);
+  },
+
+  /** If `activeRoute` is specified, filter displayed History to records matching just that route */
+  filterHistory(historicResponses: HistoricResponse[], route?: Route | null) {
+    return !route
+      ? historicResponses
+      : historicResponses.filter(
+          (historicResponse: HistoricResponse) =>
+            historicResponse?.route?.path === route.path
+        );
   },
 
   buildUrl({

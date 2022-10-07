@@ -12,8 +12,8 @@ import {
   WorkspaceConfig,
   AuthForm,
   HistoryMetadata,
-  HistoricResponse,
 } from "./types";
+import Helpers from "./lib/helpers";
 
 export default function Route({
   route,
@@ -30,15 +30,10 @@ export default function Route({
 }) {
   const { historicResponses } = useGlobalContext();
 
-  // If `activeRoute` is specified, filter displayed History to records matching just that route
-  const filteredHistory = useMemo(() => {
-    return !route
-      ? historicResponses
-      : historicResponses.filter(
-          (historicResponse: HistoricResponse) =>
-            historicResponse?.route?.path === route.path
-        );
-  }, [historicResponses, route]);
+  const filteredHistory = useMemo(
+    () => Helpers.filterHistory(historicResponses, route),
+    [historicResponses, route]
+  );
 
   return (
     <>
@@ -46,7 +41,6 @@ export default function Route({
         <AuthForm workspaceConfig={workspaceConfig} />
       ) : null}
       <RequestResponse
-        filteredHistory={filteredHistory}
         route={route}
         applyAxiosInterceptors={applyAxiosInterceptors}
       />
