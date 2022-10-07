@@ -9,7 +9,6 @@ import { TopBar } from "./TopBar";
 import { History } from "../common/History";
 
 import { BadMagicProps } from "../types";
-import { useCopyCurrentRoute } from "../lib/links";
 
 export function Layout({
   workspaces,
@@ -88,18 +87,6 @@ export function Layout({
     historyActive,
   ]);
 
-  const { copy, getUrl } = useCopyCurrentRoute({ activeRoute });
-  const [copied, setCopied] = useState(false);
-  const handleCopy = useCallback(async () => {
-    try {
-      await copy();
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1000);
-    } catch {
-      window.alert(getUrl());
-    }
-  }, [copy, getUrl]);
-
   return (
     <div
       className={`overflow-y-hidden min-h-full flex flex-col ${styles.background}`}
@@ -121,21 +108,11 @@ export function Layout({
         ) : null}
         {activeRoute ? (
           <div className="p-4 col-span-3 overflow-y-scroll">
-            <div className="flex gap-3">
-              <div
-                onClick={toggleSidebar}
-                className={`${styles.textColor} cursor-pointer mb-2 text-sm`}
-              >
-                {sidebarExpanded ? "Hide" : "Show"} Sidebar
-              </div>
-              <div
-                onClick={handleCopy}
-                className={`${
-                  copied ? "text-green-400" : styles.textColor
-                } cursor-pointer mb-2 text-sm`}
-              >
-                {copied ? "Copied!" : "Copy link"}
-              </div>
+            <div
+              onClick={toggleSidebar}
+              className={`${styles.textColor} cursor-pointer mb-2 text-sm`}
+            >
+              {sidebarExpanded ? "Hide" : "Show"} Sidebar
             </div>
 
             {activeRoute && workspaceConfig ? (

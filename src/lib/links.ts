@@ -1,6 +1,6 @@
 import { useGlobalContext } from "../context/GlobalContext";
 import { HistoricResponse, Route } from "../types";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useActiveResponse } from "./activeResponse";
 
 export function useCopyCurrentRoute({
@@ -8,6 +8,7 @@ export function useCopyCurrentRoute({
 }: {
   activeRoute: Route | null;
 }) {
+  const [copied, setCopied] = useState(false);
   const activeResponse: HistoricResponse = useActiveResponse(
     activeRoute || { name: "", path: "" }
   );
@@ -18,12 +19,20 @@ export function useCopyCurrentRoute({
       response: activeResponse,
     });
 
-    return `${window.location.href.split('?')[0]}?request=${window.btoa(request)}`;
+    return `${window.location.href.split("?")[0]}?request=${window.btoa(
+      request
+    )}`;
   }, [activeResponse]);
 
-  const copy = useCallback(() => navigator.clipboard.writeText(getUrl()), [
-    getUrl,
-  ]);
+  const copy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(getUrl());
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1000);
+    } catch {
+      window.alert(getUrl());
+    }
+  }, [getUrl]);
 
-  return { copy, getUrl };
+  return { copy, copied };
 }
