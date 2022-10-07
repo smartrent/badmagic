@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
-// import { parseRequestedRoute } from "../lib/links";
 
 import * as storage from "../lib/storage";
 
