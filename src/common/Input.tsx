@@ -21,10 +21,10 @@ export default function Input({
   type?: string;
   required?: boolean;
   onChange: (value: any) => void;
-  onSubmit: () => void;
+  onSubmit?: () => void;
 }) {
   const onKeyDown = (e: any) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && onSubmit) {
       onSubmit();
     }
   };
