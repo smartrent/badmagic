@@ -9,7 +9,7 @@ const storageKeys = {
   collapsedWorkspaces: "collapsed-workspaces",
 };
 
-import { HistoricResponse, Route } from "../types";
+import { DeepLink, HistoricResponse, Route } from "../types";
 
 export const Context = React.createContext({
   darkMode: storage.get(storageKeys.darkMode),
@@ -104,7 +104,8 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
     HistoricResponse[]
   >([]);
 
-  // On initial mount, this will fetch HistoricResponse from local storage once
+  // On initial mount, this will fetch HistoricResponse from local storage
+  // or load a request that was deep linked
   useEffect(() => {
     const linkedRequest = new URLSearchParams(window.location.search).get(
       "request"
@@ -112,14 +113,23 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
     const historicResponsesFromStorage: HistoricResponse[] = storage.get(
       storageKeys.historicResponses
     );
-    if (linkedRequest) {
-      const data = JSON.parse(window.atob(linkedRequest)) as {
-        route: Route;
-        response: HistoricResponse;
-      };
 
-      setActiveRoute(data.route);
-      setHistoricResponseInState([data.response]);
+    if (linkedRequest) {
+      const { name, path, ...response } = JSON.parse(
+        window.atob(linkedRequest)
+      ) as DeepLink;
+      const route = { name, path };
+
+      setActiveRoute(route);
+      setHistoricResponseInState([
+        {
+          route,
+          response: null,
+          error: null,
+          metadata: {},
+          ...response,
+        },
+      ]);
     } else if (historicResponsesFromStorage?.length) {
       setHistoricResponseInState(historicResponsesFromStorage);
     }

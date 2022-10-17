@@ -44,6 +44,14 @@ export interface HistoricResponse {
   body: Record<string, any>;
 }
 
+export interface DeepLink {
+  name: Route["name"];
+  path: Route["path"];
+  urlParams: HistoricResponse["urlParams"];
+  qsParams: HistoricResponse["qsParams"];
+  body: HistoricResponse["body"];
+}
+
 export type StoreHistoricResponse = (payload: HistoricResponse) => void;
 
 export type Workspace = {
