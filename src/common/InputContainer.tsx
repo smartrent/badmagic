@@ -1,9 +1,9 @@
-import React from "react";
+import React, { PropsWithChildren } from "react";
 
 export function InputContainer({
   children,
   className,
-}: PropsWithChildren<{className?: string}>) {
+}: PropsWithChildren<{ className?: string }>) {
   return (
     <div className={`flex flex-grow ${className ? className : ""}`}>
       {children}
