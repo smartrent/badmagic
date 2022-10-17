@@ -3,7 +3,7 @@ import { get, without } from "lodash-es";
 
 import { useGlobalContext } from "../../context/GlobalContext";
 
-import { Route } from "../../types";
+import { Route, Guide } from "../../types";
 
 import Helpers from "../../lib/helpers";
 
@@ -11,10 +11,12 @@ export function SideBarWorkspace({
   name,
   routes,
   displayExpandCollapseUI,
+  guides,
 }: {
   name: string;
   routes: Route[];
   displayExpandCollapseUI: boolean;
+  guides: Guide[];
 }) {
   const {
     darkMode,
@@ -56,6 +58,8 @@ export function SideBarWorkspace({
     return collapsedWorkspaces.includes(name);
   }, [name, collapsedWorkspaces, displayExpandCollapseUI]);
 
+  console.log(guides);
+
   return (
     <div>
       <div
@@ -75,6 +79,11 @@ export function SideBarWorkspace({
           ""
         )}
       </div>
+      {guides?.length ? (
+        <div className={`${styles.textColor}`}>
+          Routes | Guides ({guides.length})
+        </div>
+      ) : null}
       {!collapsed && !routes.length ? (
         <div className={`${styles.textColor} my-3 italic`}>No routes found</div>
       ) : null}

@@ -46,9 +46,18 @@ export interface HistoricResponse {
 
 export type StoreHistoricResponse = (payload: HistoricResponse) => void;
 
+// Documentation for the workspace
+// This accepts markdown documentation, React components in case you want the documentation to be interactive
+// or a mix of the two.
+export type Guide = {
+  label: string;
+  documentation: (string | React.ReactNode)[];
+};
+
 export type Workspace = {
   id: string;
   version?: string; // semver
+  guides: Guide[];
   routes: Route[];
   name: string;
   config: WorkspaceConfig;
