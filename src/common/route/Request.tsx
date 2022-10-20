@@ -37,10 +37,7 @@ export function Request({
     // @todo: Use Yup to validate all nested, required fields, currently this only supports urlParams
     const requiredUrlParams = Helpers.getUrlParamsFromPath(route.path).reduce(
       (accumulator, { name }) => {
-        accumulator[name] = yup
-          .string()
-          .required()
-          .min(1);
+        accumulator[name] = yup.string().required().min(1);
 
         return accumulator;
       },

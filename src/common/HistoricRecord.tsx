@@ -21,15 +21,8 @@ export function HistoricRecord({
   historicResponse: HistoricResponse;
   HistoryMetadata?: HistoryMetadata;
 }) {
-  const {
-    route,
-    qsParams,
-    urlParams,
-    body,
-    response,
-    error,
-    metadata,
-  } = historicResponse;
+  const { route, qsParams, urlParams, body, response, error, metadata } =
+    historicResponse;
   const [bodyExpanded, setBodyExpanded] = useState(false);
   const [responseExpanded, setResponseExpanded] = useState(false);
 
@@ -40,11 +33,8 @@ export function HistoricRecord({
     setResponseExpanded(!responseExpanded);
   }, [responseExpanded]);
 
-  const {
-    darkMode,
-    setPartialRequestResponse,
-    setActiveRoute,
-  } = useGlobalContext();
+  const { darkMode, setPartialRequestResponse, setActiveRoute } =
+    useGlobalContext();
 
   const onLoadRequest = useCallback(() => {
     setActiveRoute(historicResponse.route);
