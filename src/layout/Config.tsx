@@ -48,9 +48,10 @@ export default function Config({
     }
   }, [areAllWorkspacesSelected, setActiveWorkspaceNames, workspaceNames]);
 
-  const toggleCollapsed = useCallback(() => setCollapsed(!collapsed), [
-    collapsed,
-  ]);
+  const toggleCollapsed = useCallback(
+    () => setCollapsed(!collapsed),
+    [collapsed]
+  );
 
   const toggleDarkMode = useCallback(() => setDarkMode(!darkMode), [darkMode]);
 

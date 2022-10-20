@@ -25,8 +25,9 @@ export default function Label({
   return (
     <div
       onClick={onClick}
-      className={`flex block uppercase tracking-wide text-gray-700 text-${size ||
-        "xs"} font-bold ${marginBottomClass ? marginBottomClass : "mb-1"}`}
+      className={`flex block uppercase tracking-wide text-gray-700 text-${
+        size || "xs"
+      } font-bold ${marginBottomClass ? marginBottomClass : "mb-1"}`}
       style={{ ...Helpers.getStyles(darkMode, "label"), ...(style || {}) }}
     >
       {children}
