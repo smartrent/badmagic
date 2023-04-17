@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { startCase, get, set, unset } from "lodash-es";
 
 import Input from "../Input";
-import Label from "../Label";
-import Required from "../Required";
 import { ClearValueButton } from "../ClearValueButton";
 import { ApplyNowDateButton } from "../ApplyNowDateButton";
 import { ApplyNullValueButton } from "../ApplyNullValueButton";
 import { AddArrayCell } from "../AddArrayCell";
 import { RemoveArrayCellButton } from "../RemoveArrayCellButton";
+
+import { InputContainer } from "../InputContainer";
+import { InputLabelContainer } from "../InputLabelContainer";
+import { AddCustomParam } from "./AddCustomParam";
 
 import Helpers from "../../lib/helpers";
 
@@ -25,6 +27,7 @@ import {
   RenderInputByDataTypeProps,
   RenderObjectProps,
   RenderArrayOfInputsProps,
+  Option,
 } from "../../types";
 
 function RenderArrayOfInputs({
@@ -136,43 +139,6 @@ function RenderObject({
           />
         </div>
       </div>
-    </div>
-  );
-}
-
-function InputContainer({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={`flex flex-grow ${className ? className : ""}`}>
-      {children}
-    </div>
-  );
-}
-
-function InputLabelContainer({
-  label,
-  children,
-  required,
-  size,
-  marginBottomClass,
-}: {
-  label: string;
-  children?: React.ReactNode;
-  required?: boolean;
-  size: Size;
-  marginBottomClass?: string;
-}) {
-  return (
-    <div className="flex items-center">
-      <Label size={size || "lg"} marginBottomClass={marginBottomClass}>
-        {label} {required && <Required />}
-      </Label>
-      {children}
     </div>
   );
 }
@@ -316,16 +282,19 @@ function RenderInputs({
 
 function fetchInputsFromRouteDefinition(
   route: Route,
-  paramType: ParamType
+  paramType: ParamType,
+  customParams: Param[]
 ): Param[] {
+  let routeDefinitionParams = [];
   if (paramType === "body") {
-    return route.body || [];
+    routeDefinitionParams = route.body || [];
   } else if (paramType === "qsParams") {
-    return route.qsParams || [];
+    routeDefinitionParams = route.qsParams || [];
+  } else {
+    routeDefinitionParams = Helpers.getUrlParamsFromPath(route.path);
   }
 
-  // URL params is the only other valid options
-  return Helpers.getUrlParamsFromPath(route.path);
+  return [...routeDefinitionParams, ...customParams];
 }
 
 export default function Params({
@@ -341,7 +310,13 @@ export default function Params({
   values: Record<string, any>;
   setValues: (values: any) => void;
 }) {
-  const inputs = fetchInputsFromRouteDefinition(route, paramType);
+  const [customParams, setCustomParams] = useState<Param[]>([]);
+  let inputs = fetchInputsFromRouteDefinition(route, paramType, customParams);
+
+  // As the user switches between routes, ensure the custom params created on the previous route don't persist
+  useEffect(() => {
+    setCustomParams([]);
+  }, [route.name]);
 
   // Checks if we have body params, url params, or QS params for this route (based on ParamType).
   // If we don't, we can cancel further rendering
@@ -364,6 +339,13 @@ export default function Params({
         setValues={setValues}
         values={values}
       />
+      {["body", "qsParams"].includes(paramType) ? (
+        <AddCustomParam
+          customParams={customParams}
+          setCustomParams={setCustomParams}
+          paramType={paramType}
+        />
+      ) : null}
     </div>
   );
 }

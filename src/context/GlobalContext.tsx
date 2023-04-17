@@ -80,9 +80,8 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
     setDarkModeInState(darkMode);
   }, []);
 
-  const [hideDeprecatedRoutes, setHideDeprecatedRoutesInState] = useState<
-    boolean
-  >(storage.get(storageKeys.hideDeprecatedRoutes));
+  const [hideDeprecatedRoutes, setHideDeprecatedRoutesInState] =
+    useState<boolean>(storage.get(storageKeys.hideDeprecatedRoutes));
 
   const setCollapsedWorkspaces = useCallback(
     (collapsedWorkspaces: string[]) => {

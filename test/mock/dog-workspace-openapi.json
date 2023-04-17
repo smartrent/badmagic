@@ -27,6 +27,18 @@
             },
             "description": "Color of the dog's coat"
           },
+          "time_of_birth": {
+            "type": "string",
+            "description": "Dog's time of birth"
+          },
+          "adoption_day": {
+            "type": "string",
+            "description": "Dog's date of adoption"
+          },
+          "walk_time": {
+            "type": "string",
+            "description": "Dog's preferred time to walk"
+          },
           "measurements": {
             "type": "object",
             "properties": {
@@ -68,9 +80,13 @@
               "description": "Prominent locations where the dog is bred"
             },
             "description": "Prominent locations where the dog is bred"
+          },
+          "info": {
+            "type": "string",
+            "description": "Here is some info about this field"
           }
         },
-        "required": ["name", "colors"],
+        "required": ["name", "colors", "time_of_birth", "walk_time"],
         "title": "AddNewBreedPayload"
       }
     }
@@ -86,11 +102,11 @@
     "/breeds/list/all": {
       "get": {
         "callbacks": {},
-        "deprecated": false,
+        "deprecated": true,
         "description": "",
-        "operationId": "Search Breeds",
+        "operationId": "Breeds (old)",
         "parameters": [],
-        "summary": "Search Breeds",
+        "summary": "Breeds (old)",
         "tags": [],
         "responses": { "200": { "description": "successful operation" } }
       }
@@ -117,7 +133,11 @@
             "name": "breed",
             "description": "Breed",
             "required": true,
-            "schema": { "type": "string", "description": "Breed" },
+            "schema": {
+              "type": "string",
+              "description": "Breed",
+              "nullable": false
+            },
             "in": "path"
           }
         ],

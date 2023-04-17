@@ -72,9 +72,11 @@ export function Layout({
     return {
       background: darkMode ? "bg-gray-800" : "bg-gray-200",
       textColor: darkMode ? "text-white" : "",
-      totalColumns: `grid-cols-${(sidebarExpanded ? 1 : 0) +
+      totalColumns: `grid-cols-${
+        (sidebarExpanded ? 1 : 0) +
         (activeRoute ? 3 : 0) +
-        (historyActive ? 3 : 0)}`,
+        (historyActive ? 3 : 0)
+      }`,
     };
   }, [darkMode, activeRoute, sidebarExpanded, historyActive]);
 
@@ -83,9 +85,10 @@ export function Layout({
     [sidebarExpanded]
   );
 
-  const toggleHistory = useCallback(() => setHistoryActive(!historyActive), [
-    historyActive,
-  ]);
+  const toggleHistory = useCallback(
+    () => setHistoryActive(!historyActive),
+    [historyActive]
+  );
 
   return (
     <div
