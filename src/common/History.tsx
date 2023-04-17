@@ -1,21 +1,21 @@
 import React, { useMemo, useState } from "react";
 
 import { useGlobalContext } from "../context/GlobalContext";
+import { useActiveRoute } from "../lib/hooks/useActiveRoute";
+import { useFilteredHistory } from "../lib/hooks/useFilteredHistory";
 import Button from "./Button";
 import { HistoricRecord } from "./HistoricRecord";
 
 import { Route, HistoricResponse, HistoryMetadata } from "../types";
 
 export function History({
-  activeRoute,
   HistoryMetadata,
-  filteredHistory,
 }: {
-  activeRoute?: Route;
   HistoryMetadata?: HistoryMetadata;
-  filteredHistory: HistoricResponse[];
 }) {
   const { darkMode } = useGlobalContext();
+  const activeRoute = useActiveRoute();
+  const filteredHistory = useFilteredHistory();
 
   // If user is on the History page, don't collapse
   // If user is on on a Route page, collapse by default to improve page performance

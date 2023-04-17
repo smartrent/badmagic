@@ -14,11 +14,9 @@ import Close from "../common/icons/Close";
 import { Workspace } from "../types";
 
 export default function Config({
-  workspaces,
   activeWorkspaceNames,
   setActiveWorkspaceNames,
 }: {
-  workspaces: Workspace[];
   activeWorkspaceNames: string[];
   setActiveWorkspaceNames: (workspaceNames: string[]) => void;
 }) {
@@ -27,18 +25,21 @@ export default function Config({
     setDarkMode,
     hideDeprecatedRoutes,
     setHideDeprecatedRoutes,
+    workspaces,
   } = useGlobalContext();
   const [collapsed, setCollapsed] = useState(true);
 
   const iconColor = darkMode ? "#eee" : "#333";
 
-  const workspaceNames = useMemo(() => {
-    return workspaces.map(({ name }) => name);
-  }, [workspaces]);
+  const workspaceNames = useMemo(
+    () => workspaces.map(({ name }) => name),
+    [workspaces]
+  );
 
-  const areAllWorkspacesSelected = useMemo(() => {
-    return workspaceNames.length === activeWorkspaceNames.length;
-  }, [workspaceNames, activeWorkspaceNames]);
+  const areAllWorkspacesSelected = useMemo(
+    () => workspaceNames.length === activeWorkspaceNames.length,
+    [workspaceNames, activeWorkspaceNames]
+  );
 
   const toggleAllWorkspaces = useCallback(() => {
     if (areAllWorkspacesSelected) {

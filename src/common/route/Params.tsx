@@ -314,9 +314,7 @@ export default function Params({
   let inputs = fetchInputsFromRouteDefinition(route, paramType, customParams);
 
   // As the user switches between routes, ensure the custom params created on the previous route don't persist
-  useEffect(() => {
-    setCustomParams([]);
-  }, [route.name]);
+  useEffect(() => setCustomParams([]), [route.name]);
 
   // Checks if we have body params, url params, or QS params for this route (based on ParamType).
   // If we don't, we can cancel further rendering

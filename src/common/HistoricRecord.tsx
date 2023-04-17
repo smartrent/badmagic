@@ -1,4 +1,5 @@
 import React, { useCallback, useState, useMemo } from "react";
+import { useHistory, useRouteMatch } from "react-router-dom";
 
 import ApiResponse from "./route/ApiResponse";
 import ApiError from "./route/ApiError";
@@ -8,6 +9,8 @@ import { TopBar } from "./route/TopBar";
 
 import Headers from "./route/Headers";
 import Label from "./Label";
+
+import Helpers from "../lib/helpers";
 
 import { useGlobalContext } from "../context/GlobalContext";
 import Button from "../common/Button";
@@ -21,6 +24,8 @@ export function HistoricRecord({
   historicResponse: HistoricResponse;
   HistoryMetadata?: HistoryMetadata;
 }) {
+  const { path } = useRouteMatch();
+  const history = useHistory();
   const { route, qsParams, urlParams, body, response, error, metadata } =
     historicResponse;
   const [bodyExpanded, setBodyExpanded] = useState(false);
@@ -33,13 +38,20 @@ export function HistoricRecord({
     setResponseExpanded(!responseExpanded);
   }, [responseExpanded]);
 
-  const { darkMode, setPartialRequestResponse, setActiveRoute } =
-    useGlobalContext();
+  const { darkMode, setPartialRequestResponse } = useGlobalContext();
+
+  console.log(route);
 
   const onLoadRequest = useCallback(() => {
-    setActiveRoute(historicResponse.route);
+    history.push(
+      Helpers.linkToRoute({
+        path,
+        workspaceName: historicResponse.route.workspaceName as string,
+        route,
+      })
+    );
     setPartialRequestResponse(historicResponse);
-  }, [historicResponse]);
+  }, [historicResponse, path]);
 
   const styles = useMemo(() => {
     return {

@@ -2,15 +2,17 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 
 import { useGlobalContext } from "../../context/GlobalContext";
+import { useActiveRoute } from "../../lib/hooks/useActiveRoute";
 
 export interface DocumentationProps {
   documentation?: string;
 }
 
-export function Documentation({ documentation }: DocumentationProps) {
+export function Documentation() {
   const { darkMode } = useGlobalContext();
+  const activeRoute = useActiveRoute();
 
-  if (!documentation) {
+  if (!activeRoute?.documentation) {
     return null;
   }
 
@@ -21,7 +23,7 @@ export function Documentation({ documentation }: DocumentationProps) {
       }`}
     >
       <ReactMarkdown className={`badmagic-markdown ${darkMode ? "dark" : ""}`}>
-        {documentation}
+        {activeRoute?.documentation}
       </ReactMarkdown>
     </div>
   );

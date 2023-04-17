@@ -88,6 +88,8 @@ export type Route = {
   responses?: OpenApiResponses; // OpenApi Responses
   tags?: string[];
   deprecated?: boolean;
+
+  workspaceName?: string; // this gets added dynamically to make lookups easier
 };
 
 export type Option = {

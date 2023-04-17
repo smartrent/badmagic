@@ -9,9 +9,10 @@ const storageKeys = {
   collapsedWorkspaces: "collapsed-workspaces",
 };
 
-import { HistoricResponse, Route } from "../types";
+import { HistoricResponse, Route, Workspace } from "../types";
 
 export const Context = React.createContext({
+  workspaces: [] as Workspace[],
   darkMode: storage.get(storageKeys.darkMode),
   setDarkMode: (darkMode: boolean) => {
     // noop
@@ -30,11 +31,6 @@ export const Context = React.createContext({
     // noop
   },
 
-  activeRoute: null as null | Route,
-  setActiveRoute: (activeRoute: Route) => {
-    // noop
-  },
-
   keywords: "",
   setKeywords: (keywords: string) => {
     // noop
@@ -48,8 +44,13 @@ export const Context = React.createContext({
 
 export const useGlobalContext = () => useContext(Context);
 
-export function ContextProvider({ children }: { children: React.ReactNode }) {
-  const [activeRoute, setActiveRoute] = useState<null | Route>(null);
+export function ContextProvider({
+  workspaces,
+  children,
+}: {
+  children: React.ReactNode;
+  workspaces: Workspace[];
+}) {
   const [keywords, setKeywords] = useState("");
   const [collapsedWorkspaces, setCollapsedWorkspacesInState] = useState<
     string[]
@@ -172,6 +173,7 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
   return (
     <Context.Provider
       value={{
+        workspaces,
         darkMode,
         setDarkMode,
         hideDeprecatedRoutes,
@@ -180,8 +182,6 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
         storeHistoricResponse,
         partialRequestResponses,
         setPartialRequestResponse,
-        activeRoute,
-        setActiveRoute,
         keywords,
         setKeywords,
         collapsedWorkspaces,

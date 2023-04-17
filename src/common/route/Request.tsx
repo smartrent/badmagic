@@ -5,13 +5,13 @@ import Params from "./Params";
 
 import Error from "../Error";
 import Button from "../Button";
+import { useActiveRoute } from "../../lib/hooks/useActiveRoute";
 
 import Helpers from "../../lib/helpers";
-import { Route, HistoricResponse } from "../../types";
+import { HistoricResponse } from "../../types";
 
 export function Request({
   reFetch,
-  route,
   requestResponse,
   setUrlParams,
   setBody,
@@ -21,19 +21,23 @@ export function Request({
 }: {
   requestResponse: HistoricResponse;
   reFetch: () => void;
-  route: Route;
   setUrlParams: (urlParams: Record<string, any>) => void;
   setBody: (urlParams: Record<string, any>) => void;
   setQsParams: (urlParams: Record<string, any>) => void;
   resetAllParams: () => void;
   loading: boolean;
 }) {
+  const route = useActiveRoute();
   const { urlParams, body, qsParams } = requestResponse;
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   // Before submitting a network request, validate that the request is valid
   // Note: Currently only supports URL Param validation
   const reFetchWithValidation = useCallback(() => {
+    if (!route) {
+      return () => {};
+    }
+
     // @todo: Use Yup to validate all nested, required fields, currently this only supports urlParams
     const requiredUrlParams = Helpers.getUrlParamsFromPath(route.path).reduce(
       (accumulator, { name }) => {
@@ -59,6 +63,10 @@ export function Request({
     }
     return reFetch();
   }, [urlParams, route]);
+
+  if (!route) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col flex-grow mr-4">

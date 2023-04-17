@@ -5,15 +5,11 @@ import { useGlobalContext } from "../context/GlobalContext";
 
 import { Clock } from "../common/icons/Clock";
 
-import { Workspace } from "../types";
-
 export function TopBar({
-  workspaces,
   activeWorkspaceNames,
   setActiveWorkspaceNames,
   toggleHistory,
 }: {
-  workspaces: Workspace[];
   activeWorkspaceNames: string[];
   setActiveWorkspaceNames: (activeWorkspaceNames: string[]) => void;
   toggleHistory: () => void;
@@ -54,7 +50,6 @@ export function TopBar({
         </button>
         <div className="flex items-center ml-2">
           <Config
-            workspaces={workspaces}
             activeWorkspaceNames={activeWorkspaceNames}
             setActiveWorkspaceNames={setActiveWorkspaceNames}
           />

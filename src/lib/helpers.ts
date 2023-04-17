@@ -1,5 +1,5 @@
 import React from "react";
-import { get, reduce, compact, map, startCase } from "lodash-es";
+import { get, reduce, compact, map, startCase, kebabCase } from "lodash-es";
 import { stringify } from "querystring";
 
 import OpenApi from "./openapi";
@@ -83,6 +83,28 @@ const Helpers = {
   },
 
   buildPathWithQS,
+
+  // `path` comes directly from useRouteMatch() from react-router-dom
+  // @todo needs to take qsParams, body, and urlParams
+  linkToRoute({
+    path,
+    workspaceName,
+    route,
+    urlParams,
+    qsParams,
+    body,
+  }: {
+    path: string;
+    workspaceName: string;
+    route: Route;
+    urlParams?: Record<string, any>;
+    body?: Record<string, any>;
+    qsParams?: Record<string, any>;
+  }) {
+    return `${path}/workspaces/${kebabCase(workspaceName)}/routes?method=${
+      route.method || "GET"
+    }&path=${encodeURIComponent(route.path)}`;
+  },
 
   getUrlParamsFromPath(
     path: string

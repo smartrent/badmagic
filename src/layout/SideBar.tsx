@@ -113,7 +113,7 @@ export function SideBar({ workspaces }: { workspaces: Workspace[] }) {
         {filteredWorkspaces.map(({ name, routes }) => (
           <SideBarWorkspace
             key={name}
-            name={name}
+            workspaceName={name}
             routes={routes}
             displayExpandCollapseUI={displayExpandCollapseUI}
           />

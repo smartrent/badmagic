@@ -3,7 +3,9 @@ import useAxios from "@smartrent/use-axios";
 import axios from "axios";
 import { first, cloneDeep } from "lodash-es";
 
+import { useActiveRoute } from "../../lib/hooks/useActiveRoute";
 import { useGlobalContext } from "../../context/GlobalContext";
+import { useFilteredHistory } from "../../lib/hooks/useFilteredHistory";
 
 import { Response } from "./Response";
 import { Request } from "./Request";
@@ -11,21 +13,12 @@ import { TopBar } from "./TopBar";
 
 import helpers from "../../lib/helpers";
 
-import {
-  Route,
-  Method,
-  ApplyAxiosInterceptors,
-  HistoricResponse,
-} from "../../types";
+import { Method, ApplyAxiosInterceptors, HistoricResponse } from "../../types";
 
 export function RequestResponse({
-  route,
   applyAxiosInterceptors,
-  filteredHistory,
 }: {
-  route: Route;
   applyAxiosInterceptors?: ApplyAxiosInterceptors;
-  filteredHistory: HistoricResponse[];
 }) {
   const {
     darkMode,
@@ -33,12 +26,14 @@ export function RequestResponse({
     setPartialRequestResponse,
     partialRequestResponses,
   } = useGlobalContext();
+  const filteredHistory = useFilteredHistory();
+  const route = useActiveRoute();
 
   const requestResponse: HistoricResponse = useMemo(() => {
     // Prefers in-memory state changes that already began since the session started
     // Falls back to loading the last HistoricResponse from history if set
     // Falls back to a new partial HistoricRepsonse if the first two conditions aren't met.
-    if (partialRequestResponses[route.path]) {
+    if (route && partialRequestResponses[route.path]) {
       return partialRequestResponses[route.path];
     } else if (filteredHistory.length) {
       return cloneDeep(first(filteredHistory)) as HistoricResponse;
@@ -52,7 +47,7 @@ export function RequestResponse({
       qsParams: helpers.reduceDefaultParamValues(route?.qsParams),
       body: helpers.reduceDefaultParamValues(route?.body),
       route,
-    };
+    } as HistoricResponse;
   }, [route, filteredHistory, partialRequestResponses]);
 
   const setUrlParams = useCallback(
@@ -79,14 +74,22 @@ export function RequestResponse({
   // A useCallback function that includes `route` in the HistoricResponse
   const storeHistoricResponseWithRoute = useCallback(
     (payload: Omit<HistoricResponse, "route">) => {
-      return storeHistoricResponse({ ...requestResponse, ...payload, route });
+      return route
+        ? storeHistoricResponse({ ...requestResponse, ...payload, route })
+        : null;
     },
     [storeHistoricResponse, route, requestResponse]
   );
 
-  const method: string | Method = useMemo(() => route.method || "GET", [route]);
+  const method: string | Method = useMemo(
+    () => route?.method || "GET",
+    [route]
+  );
 
   const url = useMemo(() => {
+    if (!route) {
+      return "";
+    }
     return helpers.buildUrl({
       route,
       urlParams: (requestResponse as HistoricResponse).urlParams,
@@ -113,7 +116,7 @@ export function RequestResponse({
     method: method as Method,
     url,
     options: {
-      data: route.body ? requestResponse.body : null, // Don't send data if `body` is not specified by the `route` definition
+      data: route?.body ? requestResponse.body : null, // Don't send data if `body` is not specified by the `route` definition
     },
   });
 
@@ -161,6 +164,10 @@ export function RequestResponse({
     );
   }, [response, error, requestResponse, loading]);
 
+  if (!route) {
+    return null;
+  }
+
   return (
     <div
       className={`overflow-hidden p-4 border rounded overflow-x-hidden mb-4 ${styles.container}`}
@@ -172,7 +179,6 @@ export function RequestResponse({
       />
       <div className="flex py-2">
         <Request
-          route={route}
           resetAllParams={resetAllParams}
           loading={loading}
           requestResponse={requestResponse}

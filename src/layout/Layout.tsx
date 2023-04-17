@@ -1,8 +1,13 @@
-import React, { useMemo, useState, useEffect, useCallback } from "react";
+import React, {
+  useMemo,
+  useState,
+  useEffect,
+  useCallback,
+  PropsWithChildren,
+} from "react";
 import { orderBy } from "lodash-es";
 
 import { useGlobalContext } from "../context/GlobalContext";
-import Route from "../Route";
 import * as Storage from "../lib/storage";
 import { SideBar } from "./SideBar";
 import { TopBar } from "./TopBar";
@@ -11,15 +16,14 @@ import { History } from "../common/History";
 import { BadMagicProps } from "../types";
 
 export function Layout({
-  workspaces,
-  AuthForm,
   HistoryMetadata,
-  applyAxiosInterceptors,
-}: BadMagicProps) {
-  const { darkMode, historicResponses, activeRoute } = useGlobalContext();
+  children,
+}: PropsWithChildren<BadMagicProps>) {
+  const { darkMode, workspaces } = useGlobalContext();
   const [activeWorkspaceNames, setActiveWorkspaceNamesInState] = useState<
     string[]
   >([]);
+
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [historyActive, setHistoryActive] = useState(false);
 
@@ -56,29 +60,16 @@ export function Layout({
     [activeWorkspaceNames]
   );
 
-  const workspaceConfig = useMemo(() => {
-    if (!activeRoute) {
-      return null;
-    }
-
-    const activeWorkspace = workspaces.find(({ routes }) =>
-      routes.find((route) => route.path === activeRoute.path)
-    );
-
-    return activeWorkspace ? activeWorkspace.config : null;
-  }, [activeRoute, workspaces]);
-
+  // @todo change from children to something more efficient
   const styles = useMemo(() => {
     return {
       background: darkMode ? "bg-gray-800" : "bg-gray-200",
       textColor: darkMode ? "text-white" : "",
       totalColumns: `grid-cols-${
-        (sidebarExpanded ? 1 : 0) +
-        (activeRoute ? 3 : 0) +
-        (historyActive ? 3 : 0)
+        (sidebarExpanded ? 1 : 0) + (children ? 3 : 0) + (historyActive ? 3 : 0)
       }`,
     };
-  }, [darkMode, activeRoute, sidebarExpanded, historyActive]);
+  }, [darkMode, children, sidebarExpanded, historyActive]);
 
   const toggleSidebar = useCallback(
     () => setSidebarExpanded(!sidebarExpanded),
@@ -95,7 +86,6 @@ export function Layout({
       className={`overflow-y-hidden min-h-full flex flex-col ${styles.background}`}
     >
       <TopBar
-        workspaces={workspaces}
         activeWorkspaceNames={activeWorkspaceNames}
         setActiveWorkspaceNames={setActiveWorkspaceNames}
         toggleHistory={toggleHistory}
@@ -109,7 +99,7 @@ export function Layout({
             <SideBar workspaces={activeWorkspaces} />
           </div>
         ) : null}
-        {activeRoute ? (
+        {children ? (
           <div className="p-4 col-span-3 overflow-y-scroll">
             <div
               onClick={toggleSidebar}
@@ -118,23 +108,12 @@ export function Layout({
               {sidebarExpanded ? "Hide" : "Show"} Sidebar
             </div>
 
-            {activeRoute && workspaceConfig ? (
-              <Route
-                route={activeRoute}
-                AuthForm={AuthForm}
-                workspaceConfig={workspaceConfig}
-                applyAxiosInterceptors={applyAxiosInterceptors}
-                HistoryMetadata={HistoryMetadata}
-              />
-            ) : null}
+            {children}
           </div>
         ) : null}
         {historyActive ? (
           <div className="p-4 col-span-3 overflow-y-scroll">
-            <History
-              filteredHistory={historicResponses}
-              HistoryMetadata={HistoryMetadata}
-            />
+            <History HistoryMetadata={HistoryMetadata} />
           </div>
         ) : null}
       </div>

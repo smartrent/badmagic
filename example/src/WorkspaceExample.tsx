@@ -1,5 +1,3 @@
-import React from "react";
-
 import { BadMagic } from "badmagic";
 
 import { catWorkspace } from "./cat-workspace";
