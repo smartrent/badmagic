@@ -64,7 +64,6 @@
     "arrowParens": "always"
   },
   "dependencies": {
-    "@smartrent/use-axios": "^2.0.0",
     "axios": "^0.24.0",
     "lodash-es": "^4.17.15",
     "querystring": "^0.2.0",

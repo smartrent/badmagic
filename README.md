@@ -364,6 +364,8 @@ Right before a production deploy, I was contemplating an easy to implement API i
 
 ## Local Testing
 
+### Using wml
+
 The below assumes you have `wml` installed:
 
 - `yarn` to get dependencies for `badmagic`
@@ -376,6 +378,22 @@ Running the `example` in your browser:
 
 - In one terminal window run in the `badmagic` root folder, run `yarn` then `yarn link` then `yarn start`
 - In another terminal window in the `example` folder, run `yarn`, then `yarn link badmagic` then `yarn start`
+
+### Using relativeDependencies
+
+1. Int his project run `run` then `yarn start`
+2. In your main project add the following to `package.json`:
+
+```json
+"relativeDependencies": {
+  "badmagic": "path/to/badmagic"
+},
+```
+
+3. Install [Relative Deps](https://github.com/mweststrate/relative-deps) in your main project
+4. In your main project ensure that if you are using webpack that you have `cache: false` set
+5. In your main project run `yarn relative-deps watch`
+6. In this project run `yarn` then `yarn start`
 
 ## Publishing A New Version
 

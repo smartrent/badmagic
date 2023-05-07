@@ -92,7 +92,6 @@ export type Route = {
   documentation?: string;
   example?: Record<string, any>; // e.g. {first_name: "John", last_name: "Doe", ...}
   baseUrl?: string; // if not specified on the route but exists on workspace.config.baseUrl, it will default to that
-  workspaceName?: string;
 
   responses?: OpenApiResponses; // OpenApi Responses
   tags?: string[];
@@ -240,11 +239,11 @@ export type HistoryMetadata = ({
   metadata: Record<string, any>;
 }) => React.ReactElement;
 
-export interface BadMagicProps {
-  workspaces: Workspace[];
-
+export interface LayoutProps {
   applyAxiosInterceptors?: ApplyAxiosInterceptors;
 
   AuthForm?: AuthForm; // a form you can render to have the user specify their auth credentials
   HistoryMetadata?: HistoryMetadata; // a React component that can be rendered to display additional metadata
 }
+
+export type BadMagicProps = LayoutProps & { workspaces: Workspace[] };

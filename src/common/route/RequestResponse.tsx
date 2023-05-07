@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo } from "react";
-import useAxios from "@smartrent/use-axios";
 import axios from "axios";
 
 import { useGlobalContext } from "../../context/GlobalContext";
@@ -18,6 +17,8 @@ import {
 } from "../../types";
 import { useActiveResponse } from "../../lib/activeResponse";
 
+import { useApi } from "../../hooks/api";
+
 export function RequestResponse({
   route,
   applyAxiosInterceptors,
@@ -29,6 +30,7 @@ export function RequestResponse({
     darkMode,
     storeHistoricResponse,
     setPartialRequestResponse,
+    workspaces,
   } = useGlobalContext();
 
   const requestResponse: HistoricResponse = useActiveResponse(route);
@@ -64,18 +66,28 @@ export function RequestResponse({
 
   const method: string | Method = useMemo(() => route.method || "GET", [route]);
 
-  const url = useMemo(() => {
+  const workspace = useMemo(() => {
+    return workspaces.find((w) =>
+      w.routes.find((r) => r.path === route.path && r.name === route.name)
+    );
+  }, [workspaces, route]);
+  const baseUrl = workspace?.config?.baseUrl || window.location.origin;
+
+  const fullUrl = useMemo(() => {
     return helpers.buildUrl({
-      route,
+      route: {
+        ...route,
+        baseUrl,
+      },
       urlParams: (requestResponse as HistoricResponse).urlParams,
       qsParams: (requestResponse as HistoricResponse).qsParams,
     });
-  }, [route, requestResponse]);
+  }, [baseUrl, route, requestResponse]);
 
   // The end-user can optionally load Axios Interceptors at this point. https://axios-http.com/docs/interceptors
   const axiosInstance = useMemo(() => {
     const axiosInstance = axios.create({
-      baseURL: route?.baseUrl,
+      baseURL: baseUrl,
       headers: {}, // by default no headers are set. If you need to pass headers, use `useAxiosMiddleware`
     });
     return applyAxiosInterceptors
@@ -84,16 +96,19 @@ export function RequestResponse({
           storeHistoricResponse: storeHistoricResponseWithRoute,
         })
       : axiosInstance;
-  }, [route, storeHistoricResponseWithRoute]);
+  }, [workspace, storeHistoricResponseWithRoute, baseUrl, route]);
 
-  const { response, loading, error, reFetch } = useAxios({
-    axios: axiosInstance,
-    method: method as Method,
-    url,
-    options: {
-      data: route.body ? requestResponse.body : null, // Don't send data if `body` is not specified by the `route` definition
+  const { response, loading, error, reFetch } = useApi(
+    {
+      method: method as Method,
+      url: fullUrl,
+      options: {
+        data: route.body ? requestResponse.body : null, // Don't send data if `body` is not specified by the `route` definition
+      },
+      autoFetch: false,
     },
-  });
+    axiosInstance
+  );
 
   // When a Reset button is clicked, it resets all Params
   const resetAllParams = useCallback(() => {

@@ -8,15 +8,15 @@ import { SideBar } from "./SideBar";
 import { TopBar } from "./TopBar";
 import { History } from "../common/History";
 
-import { BadMagicProps } from "../types";
+import { LayoutProps } from "../types";
 
 export function Layout({
-  workspaces,
   AuthForm,
   HistoryMetadata,
   applyAxiosInterceptors,
-}: BadMagicProps) {
-  const { darkMode, historicResponses, activeRoute } = useGlobalContext();
+}: LayoutProps) {
+  const { darkMode, historicResponses, activeRoute, workspaces } =
+    useGlobalContext();
   const [activeWorkspaceNames, setActiveWorkspaceNamesInState] = useState<
     string[]
   >([]);

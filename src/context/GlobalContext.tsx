@@ -9,9 +9,10 @@ const storageKeys = {
   collapsedWorkspaces: "collapsed-workspaces",
 };
 
-import { DeepLink, HistoricResponse, Route } from "../types";
+import { DeepLink, HistoricResponse, Route, Workspace } from "../types";
 
 export const Context = React.createContext({
+  workspaces: [] as Workspace[],
   darkMode: storage.get(storageKeys.darkMode),
   setDarkMode: (darkMode: boolean) => {
     // noop
@@ -48,7 +49,14 @@ export const Context = React.createContext({
 
 export const useGlobalContext = () => useContext(Context);
 
-export function ContextProvider({ children }: { children: React.ReactNode }) {
+export function ContextProvider({
+  workspaces: originalWorkspaces,
+  children,
+}: {
+  workspaces: Workspace[];
+  children: React.ReactNode;
+}) {
+  const [workspaces, setWorkspaces] = useState(originalWorkspaces);
   const [activeRoute, setActiveRoute] = useState<null | Route>(null);
   const [keywords, setKeywords] = useState("");
   const [collapsedWorkspaces, setCollapsedWorkspacesInState] = useState<
@@ -117,22 +125,37 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
       const { name, path, ...response } = JSON.parse(
         window.atob(linkedRequest)
       ) as DeepLink;
-      const route = { name, path };
+      const route = workspaces.reduce(
+        (accumulator: null | Route, workspace: Workspace) => {
+          if (accumulator) {
+            return accumulator;
+          }
+          const foundRoute = workspace.routes.find(
+            (r) => r.name === name && r.path === path
+          );
 
-      setActiveRoute(route);
-      setHistoricResponseInState([
-        {
-          route,
-          response: null,
-          error: null,
-          metadata: {},
-          ...response,
+          return foundRoute || null;
         },
-      ]);
+        null
+      );
+
+      if (route) {
+        setActiveRoute(route);
+        setHistoricResponseInState([
+          {
+            route,
+            response: null,
+            error: null,
+            metadata: {},
+            ...response,
+          },
+          ...historicResponsesFromStorage,
+        ]);
+      }
     } else if (historicResponsesFromStorage?.length) {
       setHistoricResponseInState(historicResponsesFromStorage);
     }
-  }, []);
+  }, [workspaces]);
 
   const storeHistoricResponse = useCallback(
     ({
@@ -192,6 +215,7 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
   return (
     <Context.Provider
       value={{
+        workspaces,
         darkMode,
         setDarkMode,
         hideDeprecatedRoutes,

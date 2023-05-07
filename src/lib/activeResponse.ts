@@ -4,32 +4,34 @@ import { Helpers } from "..";
 import { useGlobalContext } from "../context/GlobalContext";
 import { HistoricResponse, Route } from "../types";
 
-export function useActiveResponse(activeRoute: Route): HistoricResponse {
+export function useActiveResponse(route: Route): HistoricResponse {
   const { historicResponses, partialRequestResponses } = useGlobalContext();
 
   const filteredHistory = useMemo(
-    () => Helpers.filterHistory(historicResponses, activeRoute),
-    [historicResponses, activeRoute]
+    () => Helpers.filterHistory(historicResponses, route),
+    [historicResponses, route]
   );
 
   return useMemo(() => {
     // Prefers in-memory state changes that already began since the session started
     // Falls back to loading the last HistoricResponse from history if set
-    // Falls back to a new partial HistoricRepsonse if the first two conditions aren't met.
-    if (partialRequestResponses[activeRoute.path]) {
-      return partialRequestResponses[activeRoute.path];
+    // Falls back to a new partial HistoricResponse if the first two conditions aren't met.
+    if (partialRequestResponses[route.path]) {
+      return partialRequestResponses[route.path];
     } else if (filteredHistory.length) {
       return cloneDeep(first(filteredHistory)) as HistoricResponse;
     }
 
     return {
-      metadata: {},
+      metadata: {
+        insertedAt: new Date(),
+      },
       response: null,
       error: null,
       urlParams: {},
-      qsParams: Helpers.reduceDefaultParamValues(activeRoute?.qsParams),
-      body: Helpers.reduceDefaultParamValues(activeRoute?.body),
-      route: activeRoute,
+      qsParams: Helpers.reduceDefaultParamValues(route?.qsParams),
+      body: Helpers.reduceDefaultParamValues(route?.body),
+      route: route,
     };
-  }, [activeRoute, filteredHistory, partialRequestResponses]);
+  }, [route, filteredHistory, partialRequestResponses]);
 }

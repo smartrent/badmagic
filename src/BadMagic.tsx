@@ -7,8 +7,12 @@ import { BadMagicProps } from "./types";
 
 export function BadMagic(props: BadMagicProps) {
   return (
-    <ContextProvider>
-      <Layout {...props} />
+    <ContextProvider workspaces={props.workspaces}>
+      <Layout
+        applyAxiosInterceptors={props.applyAxiosInterceptors}
+        AuthForm={props.AuthForm}
+        HistoryMetadata={props.HistoryMetadata}
+      />
     </ContextProvider>
   );
 }
