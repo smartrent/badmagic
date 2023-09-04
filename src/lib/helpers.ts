@@ -89,7 +89,11 @@ const Helpers = {
     urlParams: Record<string, any>;
     qsParams?: Record<string, any>;
   }) {
-    return `${route.baseUrl}${buildPathWithQS({ route, urlParams, qsParams })}`;
+    return `${route.baseUrl || window.location.origin}${buildPathWithQS({
+      route,
+      urlParams,
+      qsParams,
+    })}`;
   },
 
   buildPathWithQS,

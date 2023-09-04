@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
+import { getLinkedRouteFromUrl } from "../lib/links";
 
 import * as storage from "../lib/storage";
 
@@ -9,7 +10,7 @@ const storageKeys = {
   collapsedWorkspaces: "collapsed-workspaces",
 };
 
-import { DeepLink, HistoricResponse, Route, Workspace } from "../types";
+import { HistoricResponse, Route, Workspace } from "../types";
 
 export const Context = React.createContext({
   darkMode: storage.get(storageKeys.darkMode),
@@ -110,46 +111,6 @@ export function ContextProvider({
     HistoricResponse[]
   >([]);
 
-  // On initial mount, this will fetch HistoricResponse from local storage
-  // or load a request that was deep linked
-  useEffect(() => {
-    const linkedRequest = new URLSearchParams(window.location.search).get(
-      "request"
-    );
-    const historicResponsesFromStorage: HistoricResponse[] = storage.get(
-      storageKeys.historicResponses
-    );
-
-    if (linkedRequest) {
-      const { name, path, ...response } = JSON.parse(
-        window.atob(linkedRequest)
-      ) as DeepLink;
-      let route: Route | null = null;
-      for (const workspace of workspaces) {
-        for (const candidateRoute of workspace.routes) {
-          if (candidateRoute.name === name && candidateRoute.path === path) {
-            route = candidateRoute;
-          }
-        }
-      }
-
-      if (route) {
-        setActiveRoute(route);
-        setHistoricResponseInState([
-          {
-            route,
-            response: null,
-            error: null,
-            metadata: {},
-            ...response,
-          },
-        ]);
-      }
-    } else if (historicResponsesFromStorage?.length) {
-      setHistoricResponseInState(historicResponsesFromStorage);
-    }
-  }, [workspaces]);
-
   const storeHistoricResponse = useCallback(
     ({
       metadata,
@@ -192,18 +153,37 @@ export function ContextProvider({
         },
       };
 
-      const newHistoricResponses = [newResponse, ...historicResponses].slice(
-        0,
-        100
-      ); // prepend the new HistoricResponse, and ensure the array has a max of 100 cells
+      setHistoricResponseInState((responses) => {
+        // prepend the new HistoricResponse, and ensure the array has a max of 100 cells
+        const newHistoricResponses = [newResponse, ...responses].slice(0, 100);
 
-      storage.set(storageKeys.historicResponses, newHistoricResponses);
-      setHistoricResponseInState(newHistoricResponses);
+        storage.set(storageKeys.historicResponses, newHistoricResponses);
+
+        return newHistoricResponses;
+      });
 
       return newResponse;
     },
-    [historicResponses]
+    []
   );
+
+  // On initial mount, this will fetch HistoricResponse from local storage
+  // and load any request that was deep linked
+  useEffect(() => {
+    const historicResponsesFromStorage: HistoricResponse[] = storage.get(
+      storageKeys.historicResponses
+    );
+    if (historicResponsesFromStorage?.length) {
+      setHistoricResponseInState(historicResponsesFromStorage);
+    }
+
+    const { route, historicResponse } = getLinkedRouteFromUrl({ workspaces });
+
+    if (route && historicResponse) {
+      setActiveRoute(route);
+      storeHistoricResponse(historicResponse);
+    }
+  }, [storeHistoricResponse, workspaces]);
 
   return (
     <Context.Provider
