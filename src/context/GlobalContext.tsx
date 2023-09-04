@@ -9,7 +9,7 @@ const storageKeys = {
   collapsedWorkspaces: "collapsed-workspaces",
 };
 
-import { DeepLink, HistoricResponse, Route } from "../types";
+import { DeepLink, HistoricResponse, Route, Workspace } from "../types";
 
 export const Context = React.createContext({
   darkMode: storage.get(storageKeys.darkMode),
@@ -48,7 +48,13 @@ export const Context = React.createContext({
 
 export const useGlobalContext = () => useContext(Context);
 
-export function ContextProvider({ children }: { children: React.ReactNode }) {
+export function ContextProvider({
+  children,
+  workspaces,
+}: {
+  children: React.ReactNode;
+  workspaces: Workspace[];
+}) {
   const [activeRoute, setActiveRoute] = useState<null | Route>(null);
   const [keywords, setKeywords] = useState("");
   const [collapsedWorkspaces, setCollapsedWorkspacesInState] = useState<
@@ -118,22 +124,31 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
       const { name, path, ...response } = JSON.parse(
         window.atob(linkedRequest)
       ) as DeepLink;
-      const route = { name, path };
+      let route: Route | null = null;
+      for (const workspace of workspaces) {
+        for (const candidateRoute of workspace.routes) {
+          if (candidateRoute.name === name && candidateRoute.path === path) {
+            route = candidateRoute;
+          }
+        }
+      }
 
-      setActiveRoute(route);
-      setHistoricResponseInState([
-        {
-          route,
-          response: null,
-          error: null,
-          metadata: {},
-          ...response,
-        },
-      ]);
+      if (route) {
+        setActiveRoute(route);
+        setHistoricResponseInState([
+          {
+            route,
+            response: null,
+            error: null,
+            metadata: {},
+            ...response,
+          },
+        ]);
+      }
     } else if (historicResponsesFromStorage?.length) {
       setHistoricResponseInState(historicResponsesFromStorage);
     }
-  }, []);
+  }, [workspaces]);
 
   const storeHistoricResponse = useCallback(
     ({

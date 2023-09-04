@@ -7,7 +7,7 @@ import { BadMagicProps } from "./types";
 
 export function BadMagic(props: BadMagicProps) {
   return (
-    <ContextProvider>
+    <ContextProvider workspaces={props.workspaces}>
       <Layout {...props} />
     </ContextProvider>
   );
