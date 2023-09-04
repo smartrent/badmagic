@@ -11,12 +11,16 @@ import { History } from "../common/History";
 import { BadMagicProps } from "../types";
 
 export function Layout({
-  workspaces,
   AuthForm,
   HistoryMetadata,
   applyAxiosInterceptors,
 }: BadMagicProps) {
-  const { darkMode, historicResponses, activeRoute } = useGlobalContext();
+  const {
+    darkMode,
+    historicResponses,
+    activeRoute,
+    workspaces,
+  } = useGlobalContext();
   const [activeWorkspaceNames, setActiveWorkspaceNamesInState] = useState<
     string[]
   >([]);

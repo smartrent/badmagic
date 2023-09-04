@@ -35,15 +35,12 @@ export function getLinkedRouteFromUrl({
   let route: Route | null = null;
   let historicResponse: HistoricResponse | null = null;
 
-  const linkedRequest = new URLSearchParams(window.location.search).get(
-    "request"
+  const linkedRequest = safeParseUrl(
+    new URLSearchParams(window.location.search).get("request") || ""
   );
 
   if (linkedRequest) {
-    const { name, path, ...response } = JSON.parse(
-      window.atob(linkedRequest)
-    ) as DeepLink;
-
+    const { name, path, ...response } = linkedRequest;
     for (const workspace of workspaces) {
       if (route) break;
       for (const candidateRoute of workspace.routes) {
@@ -80,4 +77,17 @@ function buildCurrentRouteUrl(activeResponse: HistoricResponse): string {
   return `${window.location.href.split("?")[0]}?request=${window.btoa(
     JSON.stringify(request)
   )}`;
+}
+
+function safeParseUrl(request: string): DeepLink | null {
+  try {
+    const result = JSON.parse(window.atob(request));
+
+    if (result.name && result.path) {
+      return result;
+    }
+  } catch {
+    //
+  }
+  return null;
 }

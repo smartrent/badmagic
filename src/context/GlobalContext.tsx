@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useContext, useEffect } from "react";
+import React, {
+  useState,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from "react";
 import { getLinkedRouteFromUrl } from "../lib/links";
 
 import * as storage from "../lib/storage";
@@ -13,6 +19,7 @@ const storageKeys = {
 import { HistoricResponse, Route, Workspace } from "../types";
 
 export const Context = React.createContext({
+  workspaces: [] as Workspace[],
   darkMode: storage.get(storageKeys.darkMode),
   setDarkMode: (darkMode: boolean) => {
     // noop
@@ -167,6 +174,19 @@ export function ContextProvider({
     []
   );
 
+  const workspacesWithDefaults = useMemo(
+    () =>
+      workspaces.map((workspace) => ({
+        ...workspace,
+        routes: workspace.routes.map((route) => ({
+          ...route,
+          baseUrl: workspace.config.baseUrl || window.location.origin,
+          workspaceName: workspace.name,
+        })),
+      })),
+    [workspaces]
+  );
+
   // On initial mount, this will fetch HistoricResponse from local storage
   // and load any request that was deep linked
   useEffect(() => {
@@ -177,13 +197,15 @@ export function ContextProvider({
       setHistoricResponseInState(historicResponsesFromStorage);
     }
 
-    const { route, historicResponse } = getLinkedRouteFromUrl({ workspaces });
+    const { route, historicResponse } = getLinkedRouteFromUrl({
+      workspaces: workspacesWithDefaults,
+    });
 
     if (route && historicResponse) {
       setActiveRoute(route);
       storeHistoricResponse(historicResponse);
     }
-  }, [storeHistoricResponse, workspaces]);
+  }, [storeHistoricResponse, workspacesWithDefaults]);
 
   return (
     <Context.Provider
@@ -202,6 +224,7 @@ export function ContextProvider({
         setKeywords,
         collapsedWorkspaces,
         setCollapsedWorkspaces,
+        workspaces: workspacesWithDefaults,
       }}
     >
       {children}

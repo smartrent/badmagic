@@ -22,22 +22,14 @@ export function SideBar({ workspaces }: { workspaces: Workspace[] }) {
     return workspaces.map(({ routes, name, config }) => {
       return {
         name,
-        routes: routes
-          .filter(
-            ({ name, path, deprecated }) =>
-              (!keywords ||
-                name.toLowerCase().includes(keywords.toLowerCase()) ||
-                path.toLowerCase().includes(keywords.toLowerCase())) &&
-              ((hideDeprecatedRoutes && deprecated !== true) ||
-                !hideDeprecatedRoutes)
-          )
-          .map((route) => {
-            return {
-              ...route,
-              baseUrl: config?.baseUrl || window.location.origin,
-              workspaceName: name,
-            };
-          }),
+        routes: routes.filter(
+          ({ name, path, deprecated }) =>
+            (!keywords ||
+              name.toLowerCase().includes(keywords.toLowerCase()) ||
+              path.toLowerCase().includes(keywords.toLowerCase())) &&
+            ((hideDeprecatedRoutes && deprecated !== true) ||
+              !hideDeprecatedRoutes)
+        ),
       };
     });
   }, [keywords, workspaces, hideDeprecatedRoutes]);
