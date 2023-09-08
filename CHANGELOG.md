@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.0.39
+
+### Feature
+
+- Routes now support deep linking by clicking on the Route's URL path to copy the route and hashed url and query params to clipboard.
+- Custom Body / Querystring params can be added that aren't specified by the Route Definition.
+
+## v0.0.38
+
+### Feature
+
+- When multiple Workspaces are active, routes are grouped by Workspace on the sidebar and sidebar workspaces can be collapsed.
+
+
 
 ## v0.0.37
 
