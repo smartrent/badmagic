@@ -18,7 +18,7 @@ module.exports = {
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
   ],
-  ignorePatterns: [/dist/],
+  ignorePatterns: ["dist/**/*"],
   rules: {
     "@typescript-eslint/no-explicit-any": ["off"],
     "@typescript-eslint/no-inferrable-types": ["off"],
