@@ -1,6 +1,6 @@
 {
   "name": "badmagic",
-  "version": "0.0.38",
+  "version": "0.0.39",
   "description": "Swagger UI alternative written in React",
   "scripts": {
     "build": "yarn clean && yarn copy-css && tsc -p ./",
