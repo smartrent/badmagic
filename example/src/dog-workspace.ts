@@ -38,6 +38,30 @@ export const dogWorkspace = {
         },
       },
     },
+    {
+      name: "HTML response",
+      path: "/views/breeds.html",
+      responses: {
+        "200": {
+          description: "successful operation",
+          // schema: {
+          //   type: "array",
+          //   items: {
+          //     $ref: "#/definitions/Dog",
+          //   },
+          // },
+        },
+      },
+    },
+    {
+      name: "Redirecting HTML Response",
+      path: "/views/redirect.html",
+      responses: {
+        "200": {
+          description: "Should stop the redirection from the html response",
+        },
+      },
+    },
 
     {
       name: "View Random Breed Image",

@@ -13,6 +13,7 @@ export default function ApiResponse({
 }: {
   response: null | ApiResponse;
 }) {
+  const [shouldRenderHTML, setShouldRenderHTML] = React.useState(false);
   const { darkMode } = useGlobalContext();
   const styles = useMemo(() => {
     return {
@@ -25,9 +26,12 @@ export default function ApiResponse({
   }
 
   const isJSON = response.data && isObject(response.data);
+  const isHTML = !isJSON && response.data && response.data.startsWith("<");
 
   return (
     <div>
+      <ApiResponseStatus status={response.status} />
+
       {response.data && isJSON && (
         <ReactJson
           enableClipboard={true}
@@ -60,7 +64,37 @@ export default function ApiResponse({
         />
       )}
 
-      {response.data && !isJSON && (
+      {isHTML && !shouldRenderHTML && (
+        <div
+          className={`border border-gray-400 p-2 relative ${styles.textColor}`}
+        >
+          <button
+            className="bg-red-600 text-xs text-white rounded p-1 absolute"
+            style={{ top: "0.25rem", right: "0.25rem" }}
+            onClick={() => setShouldRenderHTML(true)}
+          >
+            ⚠ Render HTML
+          </button>
+          {response.data}
+        </div>
+      )}
+
+      {isHTML && shouldRenderHTML && (
+        <div
+          className={`border border-gray-400 p-2 relative ${styles.textColor}`}
+        >
+          <button
+            className="bg-blue-600 text-xs text-white rounded p-1 absolute"
+            style={{ top: "0.25rem", right: "0.25rem" }}
+            onClick={() => setShouldRenderHTML(false)}
+          >
+            View Raw HTML
+          </button>
+          <iframe style={{ width: "100%" }} srcDoc={response.data} sandbox="" />
+        </div>
+      )}
+
+      {response.data && !isHTML && !isJSON && (
         <div className={`border border-gray-400 p-2 ${styles.textColor}`}>
           {response.data}
         </div>
