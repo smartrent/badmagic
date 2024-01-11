@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import useAxios from "@smartrent/use-axios";
+import { makeUseAxios } from "axios-hooks";
 import axios from "axios";
 
 import { useGlobalContext } from "../../context/GlobalContext";
@@ -86,13 +86,15 @@ export function RequestResponse({
       : axiosInstance;
   }, [route, storeHistoricResponseWithRoute]);
 
-  const { response, loading, error, reFetch } = useAxios({
+  const useAxios = makeUseAxios({
     axios: axiosInstance,
+  })
+  const [{ response, loading, error }, reFetch] = useAxios({
     method: method as Method,
     url,
-    options: {
-      data: route.body ? requestResponse.body : null, // Don't send data if `body` is not specified by the `route` definition
-    },
+    data: route.body ? requestResponse.body : null, // Don't send data if `body` is not specified by the `route` definition
+  }, {
+    manual: true // call fetch manually
   });
 
   // When a Reset button is clicked, it resets all Params
