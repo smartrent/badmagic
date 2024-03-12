@@ -78,8 +78,6 @@
     "rc-tooltip": "^5.2.2",
     "react-json-view": "^1.19.1",
     "react-markdown": "^8.0.3",
-    "react-native-svg": "^13.4.0",
-    "svgs": "^4.2.0",
     "yup": "^0.32.11"
   }
 }
