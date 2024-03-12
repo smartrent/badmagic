@@ -1,9 +1,9 @@
 {
   "name": "badmagic",
-  "version": "0.0.39",
+  "version": "0.0.40",
   "description": "Swagger UI alternative written in React",
   "scripts": {
-    "build": "yarn clean && yarn copy-css && tsc -p ./",
+    "build": "yarn clean && yarn copy-css && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && ./fixup",
     "start": "yarn clean && yarn copy-css && tsc --watch",
     "clean": "rimraf dist",
     "test": "jest",
@@ -15,8 +15,15 @@
     "copy-css": "mkdir -p dist/css && cp ./src/css/*.min.css ./dist/css/",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src test"
   },
-  "main": "./dist/index.js",
-  "typings": "./dist/index.d.ts",
+  "main": "dist/cjs/index.js",
+  "module": "dist/mjs/index.js",
+  "typings": "./dist/mjs/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/mjs/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
   "files": [
     "dist"
   ],
@@ -34,8 +41,8 @@
     "@types/lodash-es": "^4.17.3",
     "@types/node": "^16.0.0",
     "@types/openapi-v3": "^3.0.0",
-    "@types/react": "^18.0.21",
-    "@types/react-dom": "^18.0.6",
+    "@types/react": "^18.2.47",
+    "@types/react-dom": "^18.2.18",
     "@types/yup": "^0.29.14",
     "@typescript-eslint/eslint-plugin": "^5.40.1",
     "@typescript-eslint/parser": "^5.40.1",
@@ -64,8 +71,8 @@
     "arrowParens": "always"
   },
   "dependencies": {
-    "@smartrent/use-axios": "^2.0.0",
     "axios": "^1.6.7",
+    "axios-hooks": "^5.0.2",
     "lodash-es": "^4.17.15",
     "querystring": "^0.2.0",
     "rc-tooltip": "^5.2.2",
