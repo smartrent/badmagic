@@ -5,7 +5,7 @@ export interface ButtonProps
   outline?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({ className, outline, ...rest }) => {
+const Button: React.FunctionComponent<React.PropsWithChildren<ButtonProps>> = ({ className, outline, ...rest }) => {
   return (
     <button
       className={

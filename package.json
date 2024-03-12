@@ -53,8 +53,8 @@
     "typescript": "^4.5.2"
   },
   "peerDependencies": {
-    "react": ">= 16.8.x",
-    "react-dom": ">= 16.8.x"
+    "axios": ">=1.0.0",
+    "react": "^16.8.0-0 || ^17.0.0 || ^18.0.0"
   },
   "prettier": {
     "printWidth": 80,
@@ -65,7 +65,7 @@
   },
   "dependencies": {
     "@smartrent/use-axios": "^2.0.0",
-    "axios": "^0.24.0",
+    "axios": "^1.6.7",
     "lodash-es": "^4.17.15",
     "querystring": "^0.2.0",
     "rc-tooltip": "^5.2.2",

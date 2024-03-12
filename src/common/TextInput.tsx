@@ -1,6 +1,6 @@
 import React from "react";
 
-const TextInput: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({
+const TextInput: React.FunctionComponent<React.InputHTMLAttributes<HTMLInputElement>> = ({
   className,
   ...rest
 }) => {

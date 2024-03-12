@@ -1,6 +1,6 @@
 import React from "react";
 
-const Select: React.FC<React.SelectHTMLAttributes<HTMLSelectElement>> = ({
+const Select: React.FunctionComponent<React.SelectHTMLAttributes<HTMLSelectElement>> = ({
   className,
   ...rest
 }) => {
