@@ -9,26 +9,19 @@ import { getLinkedRouteFromUrl } from "../lib/links";
 
 import * as storage from "../lib/storage";
 
-const storageKeys = {
-  darkMode: "darkMode",
-  hideDeprecatedRoutes: "hideDeprecatedRoutes",
-  historicResponses: "historic-responses",
-  collapsedWorkspaces: "collapsed-workspaces",
-};
-
 import { HistoricResponse, Route, Workspace } from "../types";
 
 export const Context = React.createContext({
   workspaces: [] as Workspace[],
-  darkMode: storage.get(storageKeys.darkMode),
+  darkMode: storage.get(storage.keys.darkMode) || false,
   setDarkMode: (darkMode: boolean) => {
     // noop
   },
-  hideDeprecatedRoutes: storage.get(storageKeys.hideDeprecatedRoutes),
+  hideDeprecatedRoutes: storage.get(storage.keys.hideDeprecatedRoutes) || false,
   setHideDeprecatedRoutes: (hideDeprecatedRoutes: boolean) => {
     // noop
   },
-  historicResponses: (storage.get(storageKeys.historicResponses) ||
+  historicResponses: (storage.get(storage.keys.historicResponses) ||
     []) as HistoricResponse[],
   storeHistoricResponse: (historicResponse: HistoricResponse) => {
     return historicResponse;
@@ -67,9 +60,9 @@ export function ContextProvider({
   const [keywords, setKeywords] = useState("");
   const [collapsedWorkspaces, setCollapsedWorkspacesInState] = useState<
     string[]
-  >(storage.get(storageKeys.collapsedWorkspaces) || []);
+  >(storage.get(storage.keys.collapsedWorkspaces) || []);
   const [darkMode, setDarkModeInState] = useState<boolean>(
-    storage.get(storageKeys.darkMode)
+    storage.get(storage.keys.darkMode) || false
   );
 
   // Used to track the state of a Request for a particular Route before it becomes a HistoricResponse
@@ -90,16 +83,16 @@ export function ContextProvider({
   );
 
   const setDarkMode = useCallback((darkMode: boolean) => {
-    storage.set(storageKeys.darkMode, darkMode);
+    storage.set(storage.keys.darkMode, darkMode);
     setDarkModeInState(darkMode);
   }, []);
 
   const [hideDeprecatedRoutes, setHideDeprecatedRoutesInState] =
-    useState<boolean>(storage.get(storageKeys.hideDeprecatedRoutes));
+    useState<boolean>(storage.get(storage.keys.hideDeprecatedRoutes) || false);
 
   const setCollapsedWorkspaces = useCallback(
     (collapsedWorkspaces: string[]) => {
-      storage.set(storageKeys.collapsedWorkspaces, collapsedWorkspaces);
+      storage.set(storage.keys.collapsedWorkspaces, collapsedWorkspaces);
       setCollapsedWorkspacesInState(collapsedWorkspaces);
     },
     []
@@ -107,7 +100,7 @@ export function ContextProvider({
 
   const setHideDeprecatedRoutes = useCallback(
     (hideDeprecatedRoutes: boolean) => {
-      storage.set(storageKeys.hideDeprecatedRoutes, hideDeprecatedRoutes);
+      storage.set(storage.keys.hideDeprecatedRoutes, hideDeprecatedRoutes);
       setHideDeprecatedRoutesInState(hideDeprecatedRoutes);
     },
     []
@@ -163,7 +156,7 @@ export function ContextProvider({
         // prepend the new HistoricResponse, and ensure the array has a max of 100 cells
         const newHistoricResponses = [newResponse, ...responses].slice(0, 100);
 
-        storage.set(storageKeys.historicResponses, newHistoricResponses);
+        storage.set(storage.keys.historicResponses, newHistoricResponses);
 
         return newHistoricResponses;
       });
@@ -189,9 +182,8 @@ export function ContextProvider({
   // On initial mount, this will fetch HistoricResponse from local storage
   // and load any request that was deep linked
   useEffect(() => {
-    const historicResponsesFromStorage: HistoricResponse[] = storage.get(
-      storageKeys.historicResponses
-    );
+    const historicResponsesFromStorage: HistoricResponse[] =
+      storage.get(storage.keys.historicResponses) || [];
     if (historicResponsesFromStorage?.length) {
       setHistoricResponseInState(historicResponsesFromStorage);
     }
@@ -206,27 +198,40 @@ export function ContextProvider({
     }
   }, [storeHistoricResponse, workspacesWithDefaults]);
 
-  return (
-    <Context.Provider
-      value={{
-        darkMode,
-        setDarkMode,
-        hideDeprecatedRoutes,
-        setHideDeprecatedRoutes,
-        historicResponses,
-        storeHistoricResponse,
-        partialRequestResponses,
-        setPartialRequestResponse,
-        activeRoute,
-        setActiveRoute,
-        keywords,
-        setKeywords,
-        collapsedWorkspaces,
-        setCollapsedWorkspaces,
-        workspaces: workspacesWithDefaults,
-      }}
-    >
-      {children}
-    </Context.Provider>
+  const context = useMemo(
+    () => ({
+      darkMode,
+      setDarkMode,
+      hideDeprecatedRoutes,
+      setHideDeprecatedRoutes,
+      historicResponses,
+      storeHistoricResponse,
+      partialRequestResponses,
+      setPartialRequestResponse,
+      activeRoute,
+      setActiveRoute,
+      keywords,
+      setKeywords,
+      collapsedWorkspaces,
+      setCollapsedWorkspaces,
+      workspaces: workspacesWithDefaults,
+    }),
+    [
+      activeRoute,
+      collapsedWorkspaces,
+      darkMode,
+      hideDeprecatedRoutes,
+      historicResponses,
+      keywords,
+      partialRequestResponses,
+      setCollapsedWorkspaces,
+      setDarkMode,
+      setHideDeprecatedRoutes,
+      setPartialRequestResponse,
+      storeHistoricResponse,
+      workspacesWithDefaults,
+    ]
   );
+
+  return <Context.Provider value={context}>{children}</Context.Provider>;
 }

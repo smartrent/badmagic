@@ -15,12 +15,8 @@ export function Layout({
   HistoryMetadata,
   applyAxiosInterceptors,
 }: BadMagicProps) {
-  const {
-    darkMode,
-    historicResponses,
-    activeRoute,
-    workspaces,
-  } = useGlobalContext();
+  const { darkMode, historicResponses, activeRoute, workspaces } =
+    useGlobalContext();
   const [activeWorkspaceNames, setActiveWorkspaceNamesInState] = useState<
     string[]
   >([]);
@@ -37,18 +33,20 @@ export function Layout({
   const setActiveWorkspaceNames = useCallback(
     (workspaceNames: string[]) => {
       setActiveWorkspaceNamesInState(workspaceNames);
-      Storage.set("activeWorkspaces", workspaceNames);
+      Storage.set(Storage.keys.activeWorkspaces, workspaceNames);
     },
     [setActiveWorkspaceNamesInState]
   );
 
   // On mount, fetch active workspaces from local storage
   useEffect(() => {
-    const activeWorkspacesFromStorage = Storage.get("activeWorkspaces");
+    const activeWorkspacesFromStorage = Storage.get(
+      Storage.keys.activeWorkspaces
+    );
     if (activeWorkspacesFromStorage) {
       setActiveWorkspaceNames(activeWorkspacesFromStorage);
     }
-  }, []);
+  }, [setActiveWorkspaceNames]);
 
   const activeWorkspaces = useMemo(
     () =>
@@ -57,7 +55,7 @@ export function Layout({
         ["name"],
         ["asc"]
       ),
-    [activeWorkspaceNames]
+    [activeWorkspaceNames, workspaces]
   );
 
   const workspaceConfig = useMemo(() => {

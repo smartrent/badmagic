@@ -49,7 +49,7 @@ export function AddCustomParam({
       setParam(paramType === "qsParams" ? { name: "", type: "text" } : null);
       setIsVisible(false);
     }
-  }, [customParams, param, paramType]);
+  }, [customParams, param, paramType, setCustomParams]);
 
   if (!isVisible) {
     return (
@@ -70,7 +70,7 @@ export function AddCustomParam({
           value=""
           label="Select Param Type"
           onChange={(type: string) => {
-            let newParam: Param = { name: "" };
+            const newParam: Param = { name: "" };
             if (type == "datetime") {
               // Using this placeholder will trigger the `Now` assist button to popup
               newParam.placeholder = new Date().toISOString();

@@ -15,8 +15,21 @@ export function ApplyNowDateButton({
   values,
   setValues,
 }: ApplyNowDateButtonProps) {
+  const timeType = React.useMemo(() => {
+    if (!reference) {
+      return null;
+    } else if (dateRegex.test(reference)) {
+      return "date";
+    } else if (timeRegex.test(reference)) {
+      return "time";
+    } else {
+      return "dateTime";
+    }
+  }, [reference]);
+
   if (
     !reference ||
+    !timeType ||
     (isNaN(Date.parse(reference)) &&
       isNaN(Date.parse(`1970-01-01T${reference}Z`)))
   ) {
@@ -26,16 +39,6 @@ export function ApplyNowDateButton({
   if (onRemoveCell) {
     return null;
   }
-
-  const timeType = React.useMemo(() => {
-    if (dateRegex.test(reference)) {
-      return "date";
-    } else if (timeRegex.test(reference)) {
-      return "time";
-    } else {
-      return "dateTime";
-    }
-  }, [reference]);
 
   return (
     <Button
@@ -49,7 +52,7 @@ export function ApplyNowDateButton({
 }
 
 function now(timeType: "date" | "time" | "dateTime") {
-  let now = new Date().toISOString();
+  const now = new Date().toISOString();
   switch (timeType) {
     case "date":
       return now.split("T")[0];

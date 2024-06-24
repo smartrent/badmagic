@@ -53,7 +53,10 @@ export default function Config({
     [collapsed]
   );
 
-  const toggleDarkMode = useCallback(() => setDarkMode(!darkMode), [darkMode]);
+  const toggleDarkMode = useCallback(
+    () => setDarkMode(!darkMode),
+    [darkMode, setDarkMode]
+  );
 
   const styles = useMemo(() => {
     return {

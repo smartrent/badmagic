@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo, useCallback } from "react";
 
 import { useGlobalContext } from "../context/GlobalContext";
 import TextInput from "../common/TextInput";

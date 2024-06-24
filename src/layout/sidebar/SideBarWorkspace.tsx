@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback, useEffect } from "react";
+import React, { useMemo, useCallback } from "react";
 import { get, without } from "lodash-es";
 
 import { useGlobalContext } from "../../context/GlobalContext";
@@ -44,7 +44,12 @@ export function SideBarWorkspace({
     } else {
       setCollapsedWorkspaces([...collapsedWorkspaces, name]);
     }
-  }, [name, collapsedWorkspaces, displayExpandCollapseUI]);
+  }, [
+    name,
+    collapsedWorkspaces,
+    displayExpandCollapseUI,
+    setCollapsedWorkspaces,
+  ]);
 
   const collapsed = useMemo(() => {
     // If there is only one active workspace and it's __actually__ collapsed in localstorage, ignore that

@@ -4,7 +4,6 @@ import ReactJson from "react-json-view";
 
 import { useGlobalContext } from "../../context/GlobalContext";
 import Helpers from "../../lib/helpers";
-import { ApiResponseStatus } from "./ApiResponseStatus";
 
 import { ApiResponse } from "../../types";
 

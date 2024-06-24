@@ -39,7 +39,7 @@ export function HistoricRecord({
   const onLoadRequest = useCallback(() => {
     setActiveRoute(historicResponse.route);
     setPartialRequestResponse(historicResponse);
-  }, [historicResponse]);
+  }, [historicResponse, setActiveRoute, setPartialRequestResponse]);
 
   const styles = useMemo(() => {
     return {
