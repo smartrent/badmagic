@@ -4,6 +4,7 @@ import { stringify } from "querystring";
 
 import OpenApi from "./openapi";
 import { Route, Workspace, Param, HistoricResponse } from "../types";
+import { routeLookupFactory } from "./routing";
 
 // Given a Route, URL Params, and QSParams, returns a route's path with the QS params included
 function buildPathWithQS({
@@ -71,13 +72,40 @@ const Helpers = {
   },
 
   /** If `activeRoute` is specified, filter displayed History to records matching just that route */
-  filterHistory(historicResponses: HistoricResponse[], route?: Route | null) {
-    return !route
-      ? historicResponses
-      : historicResponses.filter(
-          (historicResponse: HistoricResponse) =>
-            historicResponse?.route?.path === route.path
-        );
+  filterHistory(
+    historicResponses: HistoricResponse[],
+    workspaces: Workspace[],
+    route?: Route | null,
+    includeIncomplete = false
+  ) {
+    if (route) {
+      return historicResponses.filter(
+        (historicResponse: HistoricResponse) =>
+          historicResponse?.route?.path === route.path &&
+          historicResponse?.route?.method === route.method &&
+          (!historicResponse?.route?.workspaceId ||
+            historicResponse.route.workspaceId === route.workspaceId) &&
+          (includeIncomplete ||
+            historicResponse.response ||
+            historicResponse.error)
+      );
+    } else {
+      const lookupRoute = routeLookupFactory(workspaces);
+
+      return historicResponses.filter(
+        (historicResponse) =>
+          historicResponse?.route?.workspaceId !== undefined &&
+          (includeIncomplete ||
+            historicResponse.response ||
+            historicResponse.error) &&
+          lookupRoute(
+            historicResponse.route.workspaceId,
+            historicResponse.route.method,
+            historicResponse.route.path,
+            historicResponse.route.name
+          ) !== undefined
+      );
+    }
   },
 
   buildUrl({

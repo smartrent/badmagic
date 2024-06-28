@@ -41,6 +41,7 @@ export default function ApiError({ error }: { error: null | ApiError }) {
           enableClipboard={true}
           displayObjectSize={false}
           displayDataTypes={false}
+          sortKeys
           src={error.response.data}
           theme={Helpers.reactJsonViewTheme(darkMode)}
         />

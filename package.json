@@ -13,6 +13,7 @@
     "prettier": "prettier --write 'src/**/*.{ts,tsx,js,json,md}'",
     "typecheck": "tsc --noEmit",
     "copy-css": "mkdir -p dist/css && cp ./src/css/*.min.css ./dist/css/",
+    "copy-css-to-example": "cp ./src/css/*.min.css ./example/public",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src test"
   },
   "main": "./dist/index.js",
@@ -36,6 +37,7 @@
     "@types/openapi-v3": "^3.0.0",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "@types/yup": "^0.29.14",
     "@typescript-eslint/eslint-plugin": "^5.40.1",
     "@typescript-eslint/parser": "^5.40.1",
@@ -72,7 +74,10 @@
     "react-json-view": "^1.19.1",
     "react-markdown": "^8.0.3",
     "react-native-svg": "^13.4.0",
+    "react-router-dom": "^6.24.0",
+    "react-syntax-highlighter": "^15.5.0",
     "svgs": "^4.2.0",
     "yup": "^0.32.11"
-  }
+  },
+  "packageManager": "yarn@1.22.1"
 }

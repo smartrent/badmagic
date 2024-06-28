@@ -6,23 +6,22 @@ import { useGlobalContext } from "../../context/GlobalContext";
 import { Route } from "../../types";
 
 import Helpers from "../../lib/helpers";
+import { NavLink } from "react-router-dom";
+import { routeHref } from "../../lib/routing";
 
 export function SideBarWorkspace({
   name,
   routes,
   displayExpandCollapseUI,
+  workspaceId,
 }: {
   name: string;
   routes: Route[];
   displayExpandCollapseUI: boolean;
+  workspaceId: string;
 }) {
-  const {
-    darkMode,
-    setActiveRoute,
-    collapsedWorkspaces,
-    setCollapsedWorkspaces,
-    keywords,
-  } = useGlobalContext();
+  const { darkMode, collapsedWorkspaces, setCollapsedWorkspaces, keywords } =
+    useGlobalContext();
 
   const styles = useMemo(() => {
     return {
@@ -85,10 +84,19 @@ export function SideBarWorkspace({
       ) : null}
       {!collapsed &&
         routes.map((route, idx) => (
-          <div
+          <NavLink
             key={`${route.method || "GET"}-${route.path}-${idx}`}
-            className={`mt-2 mb-2 pb-2 cursor-pointer border-b border-gray-300 ${styles.sidebarRouteText}`}
-            onClick={() => setActiveRoute(route)}
+            className={({ isActive }) =>
+              `block p-2 cursor-pointer border-b border-gray-300 ${
+                styles.sidebarRouteText
+              }${
+                isActive
+                  ? ` ${darkMode ? "bg-purple-700" : "bg-purple-300"}`
+                  : ""
+              }`
+            }
+            end
+            to={routeHref(workspaceId, route.method, route.path, route.name)}
           >
             <div className="flex items-baseline">
               {/* The extra div prevents vertical expansion if the route text wraps */}
@@ -106,9 +114,17 @@ export function SideBarWorkspace({
                 </div>
               </div>
               <div className="font-bold">{route.name}</div>
+              {route.deprecated ? (
+                <>
+                  <div className="flex-grow" />
+                  <div className="flex flex-shrink-0 items-center justify-center text-xs text-white font-semibold p-1 mr-2 bg-red-700 rounded">
+                    DEPRECATED
+                  </div>
+                </>
+              ) : null}
             </div>
             <div className="italic">{route.path}</div>
-          </div>
+          </NavLink>
         ))}
     </div>
   );

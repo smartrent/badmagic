@@ -32,6 +32,7 @@ export default function ApiResponse({
           enableClipboard={true}
           displayObjectSize={false}
           displayDataTypes={false}
+          sortKeys
           src={response.data}
           theme={Helpers.reactJsonViewTheme(darkMode)}
           shouldCollapse={({ type, src, namespace, name }) => {

@@ -7,14 +7,14 @@ import * as Storage from "../lib/storage";
 import { SideBar } from "./SideBar";
 import { TopBar } from "./TopBar";
 import { History } from "../common/History";
+import Helpers from "../lib/helpers";
 
-import { BadMagicProps } from "../types";
+import { useConfigContext } from "../context/ConfigContext";
 
-export function Layout({
-  AuthForm,
-  HistoryMetadata,
-  applyAxiosInterceptors,
-}: BadMagicProps) {
+export function Layout() {
+  const { AuthForm, HistoryMetadata, applyAxiosInterceptors } =
+    useConfigContext();
+
   const { darkMode, historicResponses, activeRoute, workspaces } =
     useGlobalContext();
   const [activeWorkspaceNames, setActiveWorkspaceNamesInState] = useState<
@@ -64,7 +64,10 @@ export function Layout({
     }
 
     const activeWorkspace = workspaces.find(({ routes }) =>
-      routes.find((route) => route.path === activeRoute.path)
+      routes.find(
+        (route) =>
+          route.path === activeRoute.path && route.method === activeRoute.method
+      )
     );
 
     return activeWorkspace ? activeWorkspace.config : null;
@@ -90,6 +93,11 @@ export function Layout({
   const toggleHistory = useCallback(
     () => setHistoryActive(!historyActive),
     [historyActive]
+  );
+
+  const filteredHistory = useMemo(
+    () => Helpers.filterHistory(historicResponses, workspaces),
+    [historicResponses, workspaces]
   );
 
   return (
@@ -134,7 +142,7 @@ export function Layout({
         {historyActive ? (
           <div className="p-4 col-span-3 overflow-y-scroll">
             <History
-              filteredHistory={historicResponses}
+              filteredHistory={filteredHistory}
               HistoryMetadata={HistoryMetadata}
             />
           </div>

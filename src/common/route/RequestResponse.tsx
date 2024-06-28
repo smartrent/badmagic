@@ -28,7 +28,7 @@ export function RequestResponse({
   const { darkMode, storeHistoricResponse, setPartialRequestResponse } =
     useGlobalContext();
 
-  const requestResponse: HistoricResponse = useActiveResponse(route);
+  const requestResponse: HistoricResponse = useActiveResponse(route, true);
 
   const setUrlParams = useCallback(
     (urlParams: Record<string, any>) => {

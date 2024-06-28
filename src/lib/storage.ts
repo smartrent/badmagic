@@ -6,6 +6,7 @@ type StorageValues = {
   historicResponses: HistoricResponse[];
   activeWorkspaces: string[];
   collapsedWorkspaces: string[];
+  searchKeywords: string;
 };
 
 export const keys = {
@@ -14,6 +15,7 @@ export const keys = {
   historicResponses: "historic-responses",
   collapsedWorkspaces: "collapsed-workspaces",
   activeWorkspaces: "activeWorkspaces",
+  searchKeywords: "searchKeywords",
 } as const;
 
 type StorageKeys = {

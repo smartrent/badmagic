@@ -13,6 +13,8 @@ import { useGlobalContext } from "../context/GlobalContext";
 import Button from "../common/Button";
 
 import { HistoricResponse, HistoryMetadata } from "../types";
+import { useNavigate } from "react-router-dom";
+import { routeHref } from "../lib/routing";
 
 export function HistoricRecord({
   historicResponse,
@@ -33,13 +35,21 @@ export function HistoricRecord({
     setResponseExpanded(!responseExpanded);
   }, [responseExpanded]);
 
-  const { darkMode, setPartialRequestResponse, setActiveRoute } =
-    useGlobalContext();
+  const { darkMode, setPartialRequestResponse } = useGlobalContext();
+  const navigate = useNavigate();
 
   const onLoadRequest = useCallback(() => {
-    setActiveRoute(historicResponse.route);
     setPartialRequestResponse(historicResponse);
-  }, [historicResponse, setActiveRoute, setPartialRequestResponse]);
+    navigate(
+      routeHref(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        historicResponse.route.workspaceId!,
+        historicResponse.route.method,
+        historicResponse.route.path,
+        historicResponse.route.name
+      )
+    );
+  }, [historicResponse, navigate, setPartialRequestResponse]);
 
   const styles = useMemo(() => {
     return {
