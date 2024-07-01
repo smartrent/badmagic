@@ -19,7 +19,7 @@ export const keys = {
 } as const;
 
 type StorageKeys = {
-  [k in keyof typeof keys as typeof keys[k]]: k;
+  [k in keyof typeof keys as (typeof keys)[k]]: k;
 };
 type StorageKey = keyof StorageKeys;
 type StorageKeyOf<K extends StorageKey = StorageKey> = StorageKeys[K];
