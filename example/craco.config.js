@@ -8,10 +8,6 @@ module.exports = {
         type: "asset/source",
       });
 
-      console.log(webpackConfig.output);
-      const n = Date.now();
-      while (Date.now() < n + 1000) {}
-
       return webpackConfig;
     },
     devServer: (devServerConfig) => {
