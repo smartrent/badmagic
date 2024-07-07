@@ -1,4 +1,11 @@
-import React, { ReactNode, useCallback, useEffect, useMemo } from "react";
+import React, {
+  AnchorHTMLAttributes,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 
 import { Layout } from "../layout/Layout";
 
@@ -39,8 +46,6 @@ export function Router() {
 
     const handlePathChange = (): void => {
       const params = extractEndpointParams(location.pathname, basename ?? "");
-      console.log("handlePathChange", params);
-
       if (params) {
         const route = lookupRoute(
           params.workspaceId,
@@ -70,26 +75,37 @@ export function Router() {
   );
 }
 
-export function useNavigate() {
+export type NavigateFn = (
+  route: Route | null,
+  replace?: boolean | undefined
+) => void;
+
+export function useNavigate(): NavigateFn {
   const { basename } = useConfigContext();
-  const { setActiveRoute } = useGlobalContext();
+  const { activeHref, setActiveRoute } = useGlobalContext();
+  const activeHrefRef = useRef(activeHref);
+
+  activeHrefRef.current = activeHref;
 
   return useCallback(
-    (route: Route | null): void => {
-      if (route) {
-        history.pushState(
-          null,
-          "",
-          `${basename ?? ""}${routeHref(
-            route.workspaceId as string,
-            route.method,
-            route.path,
-            route.name
-          )}`
-        );
+    (route, replace): void => {
+      const href = routeHref(route, basename);
+
+      const push =
+        replace === undefined ? href !== activeHrefRef.current : !replace;
+
+      if (push) {
+        history.pushState({}, "", href);
       } else {
-        history.pushState(null, "", basename ?? "");
+        history.replaceState({}, "", href);
       }
+
+      [
+        window,
+        ...Array.from(document.querySelectorAll(".overflow-y-scroll")),
+      ].forEach((scrollContainer) => {
+        scrollContainer.scrollTo(0, 0);
+      });
 
       setActiveRoute(route);
     },
@@ -97,49 +113,48 @@ export function useNavigate() {
   );
 }
 
-type NavLinkProps = {
-  className: string | ((props: { isActive: boolean }) => string);
+type NavLinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & {
   to: Route | null;
+  replace?: boolean | undefined;
   children: ReactNode;
+  className: string;
+  activeClassName?: string | undefined;
 };
 
-export function NavLink({ className, to, children }: NavLinkProps) {
+export function NavLink({
+  to,
+  children,
+  className,
+  activeClassName,
+  onClick,
+  replace,
+  ...props
+}: NavLinkProps) {
   const { basename } = useConfigContext();
-  const { activeRoute } = useGlobalContext();
-  const activeHref = useMemo(() => {
-    if (!activeRoute) {
-      return "/";
-    }
-
-    return routeHref(
-      activeRoute.workspaceId as string,
-      activeRoute.method,
-      activeRoute.path,
-      activeRoute.name
-    );
-  }, [activeRoute]);
-  const linkHref = useMemo(() => {
-    if (!to) {
-      return "/";
-    }
-
-    return routeHref(to.workspaceId as string, to.method, to.path, to.name);
-  }, [to]);
-
+  const { activeHref } = useGlobalContext();
+  const linkHref = useMemo(() => routeHref(to, basename), [to, basename]);
   const navigate = useNavigate();
 
   return (
     <a
-      href={`${basename ?? ""}${linkHref}`}
-      className={
-        typeof className === "string"
-          ? className
-          : className({ isActive: activeHref === linkHref })
-      }
+      href={linkHref}
+      className={`${className}${
+        activeClassName && activeHref === linkHref ? ` ${activeClassName}` : ""
+      }`}
       onClick={(event) => {
-        event.preventDefault();
-        navigate(to);
+        onClick?.(event);
+
+        if (
+          !event.isDefaultPrevented() &&
+          (!props.target || props.target === "_self") &&
+          !event.metaKey &&
+          !event.ctrlKey
+        ) {
+          event.preventDefault();
+          navigate(to, replace);
+        }
       }}
+      {...props}
     >
       {children}
     </a>

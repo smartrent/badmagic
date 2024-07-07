@@ -11,7 +11,7 @@ type RouteLookupFn = (
 export function routeLookupFactory(workspaces: Workspace[]): RouteLookupFn {
   const allRoutes = workspaces.reduce((acc, workspace) => {
     for (const route of workspace.routes) {
-      const key = routeHref(workspace.id, route.method, route.path, route.name);
+      const key = routeHref(route, "");
 
       if (acc[key]) {
         console.warn("Duplicate route config:", acc[key], route);
@@ -24,20 +24,25 @@ export function routeLookupFactory(workspaces: Workspace[]): RouteLookupFn {
   }, {} as Record<string, Route>);
 
   return (workspaceId, method, path, name) => {
-    const key = routeHref(workspaceId, method, path, name);
+    const key = routeHref({ workspaceId, method, path, name }, "");
     return allRoutes[key] ?? undefined;
   };
 }
 
+type RouteHrefConfig = Pick<Route, "workspaceId" | "method" | "path" | "name">;
+
 export function routeHref(
-  workspaceId: string,
-  method: string | undefined,
-  path: string,
-  name: string
+  route: RouteHrefConfig | null,
+  basename: string | undefined
 ): string {
-  return `/${workspaceId}/${method?.toLowerCase() ?? "get"}/${
-    path.startsWith("/") ? path.substring(1) : path
-  }/${kebabCase(name)}`;
+  if (route) {
+    const { workspaceId, method, path, name } = route;
+    return `${basename ?? ""}/${workspaceId}/${
+      method?.toLowerCase() ?? "get"
+    }/${path.startsWith("/") ? path.substring(1) : path}/${kebabCase(name)}`;
+  } else {
+    return basename ?? "/";
+  }
 }
 
 export type EndpointRouteParams = {

@@ -83,15 +83,8 @@ export function SideBarWorkspace({
         routes.map((route, idx) => (
           <NavLink
             key={idx}
-            className={({ isActive }) =>
-              `block p-2 cursor-pointer border-b border-gray-300 ${
-                styles.sidebarRouteText
-              }${
-                isActive
-                  ? ` ${darkMode ? "bg-purple-700" : "bg-purple-300"}`
-                  : ""
-              }`
-            }
+            className={`block p-2 cursor-pointer border-b border-gray-300 ${styles.sidebarRouteText}`}
+            activeClassName={darkMode ? "bg-purple-700" : "bg-purple-300"}
             to={route}
           >
             <div className="flex items-baseline">

@@ -4,6 +4,7 @@ import * as storage from "../lib/storage";
 
 import { HistoricResponse, Route, Workspace } from "../types";
 import { useConfigContext } from "./ConfigContext";
+import { routeHref } from "../lib/routing";
 
 export const Context = React.createContext({
   workspaces: [] as Workspace[],
@@ -29,6 +30,7 @@ export const Context = React.createContext({
   },
 
   activeRoute: null as null | Route,
+  activeHref: "",
   setActiveRoute: (activeRoute: Route | null) => {
     // noop
   },
@@ -47,7 +49,7 @@ export const Context = React.createContext({
 export const useGlobalContext = () => useContext(Context);
 
 export function ContextProvider({ children }: { children: React.ReactNode }) {
-  const { workspaces } = useConfigContext();
+  const { workspaces, basename } = useConfigContext();
 
   const [activeRoute, setActiveRoute] = useState<null | Route>(null);
   const [keywords, setKeywordsInState] = useState(
@@ -58,6 +60,11 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
   >(() => storage.get(storage.keys.collapsedWorkspaces) || []);
   const [darkMode, setDarkModeInState] = useState<boolean>(
     () => storage.get(storage.keys.darkMode) || false
+  );
+
+  const activeHref = useMemo(
+    () => routeHref(activeRoute, basename),
+    [activeRoute, basename]
   );
 
   // Used to track the state of a Request for a particular Route before it becomes a HistoricResponse
@@ -210,6 +217,7 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
       partialRequestResponses,
       setPartialRequestResponse,
       activeRoute,
+      activeHref,
       setActiveRoute,
       keywords,
       setKeywords,
@@ -219,6 +227,7 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
     }),
     [
       activeRoute,
+      activeHref,
       collapsedWorkspaces,
       darkMode,
       hideDeprecatedRoutes,
