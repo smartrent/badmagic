@@ -1,11 +1,4 @@
-import React, {
-  useState,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-} from "react";
-import { getLinkedRouteFromUrl } from "../lib/links";
+import React, { useState, useCallback, useContext, useMemo } from "react";
 
 import * as storage from "../lib/storage";
 

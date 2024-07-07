@@ -97,6 +97,8 @@ export default function Config({
                 <div key={workspaceName}>
                   <label>
                     <input
+                      name="activeWorkspaces"
+                      value={workspaceName}
                       type="checkbox"
                       checked={
                         !!activeWorkspaceNames.find(
@@ -130,6 +132,8 @@ export default function Config({
             <div className="flex mt-3 pt-2 border-t border-gray-400 text-gray-400">
               <label>
                 <input
+                  name="hideDeprecatedRoutes"
+                  value="true"
                   type="checkbox"
                   checked={hideDeprecatedRoutes}
                   onChange={() =>

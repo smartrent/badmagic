@@ -41,34 +41,33 @@ export function routeHref(
 }
 
 export type EndpointRouteParams = {
-  workspace: string;
-  method: string;
-  "*": string;
-};
-
-export function isEndpointRouteParams(
-  params: Record<string, unknown>
-): params is EndpointRouteParams {
-  return "method" in params;
-}
-
-export function extractEndpointParams(params: EndpointRouteParams): {
   workspaceId: string;
   method: string;
   path: string;
   name: string;
-} {
-  const glob = params["*"].replace(/\/+$/, "");
-  let splitIndex = glob.lastIndexOf("/");
-  splitIndex = splitIndex < 0 ? glob.length : splitIndex;
+};
 
-  const path = glob.substring(0, splitIndex);
-  const name = glob.substring(splitIndex);
+export function extractEndpointParams(
+  pathname: string,
+  basename: string
+): EndpointRouteParams | null {
+  if (!pathname.startsWith(basename)) {
+    throw new Error(
+      `did not expect to handle popstate event outside of basename ${basename}, got: ${pathname}`
+    );
+  }
 
-  return {
-    workspaceId: params.workspace,
-    method: params.method,
-    path,
-    name,
-  };
+  pathname = pathname.substring(basename.length);
+  const parts = pathname.split("/").flatMap((part) => (part ? [part] : []));
+
+  if (parts.length < 4) {
+    return null;
+  }
+
+  const workspaceId = parts.shift() as string;
+  const method = parts.shift() as string;
+  const name = parts.pop() as string;
+  const path = `/${parts.join("/")}`;
+
+  return { workspaceId, method, path, name };
 }

@@ -107,11 +107,10 @@ export function SideBar({ workspaces }: { workspaces: Workspace[] }) {
             the Config menu to load routes.
           </div>
         ) : null}
-        {filteredWorkspaces.map(({ id, name, routes }) => (
+        {filteredWorkspaces.map(({ name, routes }) => (
           <SideBarWorkspace
             key={name}
             name={name}
-            workspaceId={id}
             routes={routes}
             displayExpandCollapseUI={displayExpandCollapseUI}
           />

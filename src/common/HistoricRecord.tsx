@@ -13,8 +13,7 @@ import { useGlobalContext } from "../context/GlobalContext";
 import Button from "../common/Button";
 
 import { HistoricResponse, HistoryMetadata } from "../types";
-import { useNavigate } from "react-router-dom";
-import { routeHref } from "../lib/routing";
+import { useNavigate } from "../context/Router";
 
 export function HistoricRecord({
   historicResponse,
@@ -40,15 +39,7 @@ export function HistoricRecord({
 
   const onLoadRequest = useCallback(() => {
     setPartialRequestResponse(historicResponse);
-    navigate(
-      routeHref(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        historicResponse.route.workspaceId!,
-        historicResponse.route.method,
-        historicResponse.route.path,
-        historicResponse.route.name
-      )
-    );
+    navigate(historicResponse.route);
   }, [historicResponse, navigate, setPartialRequestResponse]);
 
   const styles = useMemo(() => {

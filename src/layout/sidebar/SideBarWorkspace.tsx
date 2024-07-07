@@ -6,19 +6,16 @@ import { useGlobalContext } from "../../context/GlobalContext";
 import { Route } from "../../types";
 
 import Helpers from "../../lib/helpers";
-import { NavLink } from "react-router-dom";
-import { routeHref } from "../../lib/routing";
+import { NavLink } from "../../context/Router";
 
 export function SideBarWorkspace({
   name,
   routes,
   displayExpandCollapseUI,
-  workspaceId,
 }: {
   name: string;
   routes: Route[];
   displayExpandCollapseUI: boolean;
-  workspaceId: string;
 }) {
   const { darkMode, collapsedWorkspaces, setCollapsedWorkspaces, keywords } =
     useGlobalContext();
@@ -85,7 +82,7 @@ export function SideBarWorkspace({
       {!collapsed &&
         routes.map((route, idx) => (
           <NavLink
-            key={`${route.method || "GET"}-${route.path}-${idx}`}
+            key={idx}
             className={({ isActive }) =>
               `block p-2 cursor-pointer border-b border-gray-300 ${
                 styles.sidebarRouteText
@@ -95,8 +92,7 @@ export function SideBarWorkspace({
                   : ""
               }`
             }
-            end
-            to={routeHref(workspaceId, route.method, route.path, route.name)}
+            to={route}
           >
             <div className="flex items-baseline">
               {/* The extra div prevents vertical expansion if the route text wraps */}

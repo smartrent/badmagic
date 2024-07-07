@@ -1,22 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
-
-export function useStableCallback<
-  F extends (...args: readonly any[]) => unknown
->(
-  value: ((...args: Parameters<F>) => ReturnType<F>) | null | undefined,
-  fallback: (...args: Parameters<F>) => ReturnType<F>
-): (...args: Parameters<F>) => ReturnType<F> {
-  const ref = useRef({ value, fallback });
-  ref.current = { value, fallback };
-
-  return useCallback(
-    (...args) =>
-      ref.current.value
-        ? ref.current.value(...args)
-        : ref.current.fallback(...args),
-    []
-  );
-}
+import { useEffect, useRef } from "react";
 
 export function useShallowMemo<
   T extends Record<string, unknown> | readonly unknown[]

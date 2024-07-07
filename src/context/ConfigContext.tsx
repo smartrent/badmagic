@@ -1,6 +1,6 @@
 import React, { ReactNode, createContext, useContext } from "react";
 import { BadMagicProps } from "../types";
-import { useShallowMemo } from "../lib/hooks";
+import { useShallowMemo } from "../lib/shallowMemo";
 
 const ConfigContext = createContext<BadMagicProps>(undefined as any);
 
