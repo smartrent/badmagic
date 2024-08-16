@@ -15,12 +15,8 @@ export function Layout({
   HistoryMetadata,
   applyAxiosInterceptors,
 }: BadMagicProps) {
-  const {
-    darkMode,
-    historicResponses,
-    activeRoute,
-    workspaces,
-  } = useGlobalContext();
+  const { darkMode, historicResponses, activeRoute, workspaces } =
+    useGlobalContext();
   const [activeWorkspaceNames, setActiveWorkspaceNamesInState] = useState<
     string[]
   >([]);

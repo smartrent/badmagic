@@ -25,11 +25,8 @@ export function RequestResponse({
   route: Route;
   applyAxiosInterceptors?: ApplyAxiosInterceptors;
 }) {
-  const {
-    darkMode,
-    storeHistoricResponse,
-    setPartialRequestResponse,
-  } = useGlobalContext();
+  const { darkMode, storeHistoricResponse, setPartialRequestResponse } =
+    useGlobalContext();
 
   const requestResponse: HistoricResponse = useActiveResponse(route);
 
