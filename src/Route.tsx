@@ -28,11 +28,11 @@ export default function Route({
   HistoryMetadata?: HistoryMetadata;
   workspaceConfig: WorkspaceConfig;
 }) {
-  const { historicResponses } = useGlobalContext();
+  const { historicResponses, workspaces } = useGlobalContext();
 
   const filteredHistory = useMemo(
-    () => Helpers.filterHistory(historicResponses, route),
-    [historicResponses, route]
+    () => Helpers.filterHistory(historicResponses, workspaces, route),
+    [historicResponses, workspaces, route]
   );
 
   return (

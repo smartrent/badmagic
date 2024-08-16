@@ -30,6 +30,7 @@ export default function BodyPreview({ body }: BodyPreviewProps) {
         enableClipboard={true}
         displayObjectSize={false}
         displayDataTypes={false}
+        sortKeys
         src={{ ...body }}
         theme={Helpers.reactJsonViewTheme(darkMode)}
       />

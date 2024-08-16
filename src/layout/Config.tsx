@@ -53,7 +53,10 @@ export default function Config({
     [collapsed]
   );
 
-  const toggleDarkMode = useCallback(() => setDarkMode(!darkMode), [darkMode]);
+  const toggleDarkMode = useCallback(
+    () => setDarkMode(!darkMode),
+    [darkMode, setDarkMode]
+  );
 
   const styles = useMemo(() => {
     return {
@@ -94,6 +97,8 @@ export default function Config({
                 <div key={workspaceName}>
                   <label>
                     <input
+                      name="activeWorkspaces"
+                      value={workspaceName}
                       type="checkbox"
                       checked={
                         !!activeWorkspaceNames.find(
@@ -127,6 +132,8 @@ export default function Config({
             <div className="flex mt-3 pt-2 border-t border-gray-400 text-gray-400">
               <label>
                 <input
+                  name="hideDeprecatedRoutes"
+                  value="true"
                   type="checkbox"
                   checked={hideDeprecatedRoutes}
                   onChange={() =>

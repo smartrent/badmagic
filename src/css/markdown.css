@@ -217,7 +217,7 @@
   padding: 0.2em 0.4em;
 }
 
-.badmagic-markdown pre {
+.badmagic-markdown pre:not(:has(.highlighted)) {
   word-wrap: normal;
   background-color: #f6f8fa;
   border-radius: 0.25em;
@@ -227,7 +227,7 @@
   padding: 1rem;
 }
 
-.badmagic-markdown pre > code {
+.badmagic-markdown pre:not(:has(.highlighted)) > code {
   background: transparent;
   border: 0;
   font-size: 100%;
@@ -237,7 +237,7 @@
   word-break: normal;
 }
 
-.badmagic-markdown pre code {
+.badmagic-markdown pre:not(:has(.highlighted)) code {
   background-color: transparent;
   border: 0;
   display: inline;
@@ -250,9 +250,13 @@
 }
 
 /* Dark Mode */
-.badmagic-markdown.dark pre {
+.badmagic-markdown.dark pre:not(:has(.highlighted)) {
   color: #4a5568;
   background-color: #edf2f7;
+}
+
+.badmagic-markdown.dark pre:has(.highlighted) {
+  background-color: transparent;
 }
 
 .badmagic-markdown.dark {
