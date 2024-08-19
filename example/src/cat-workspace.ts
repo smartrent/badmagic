@@ -1,3 +1,5 @@
+import SearchBreedsDocumentation from "./documentation/cat-workspace/search-breeds.md";
+
 export const catWorkspace = {
   id: "cats",
   name: "Cats",
@@ -25,7 +27,8 @@ export const catWorkspace = {
   routes: [
     {
       name: "Search Breeds",
-      path: "/breeds/list/all",
+      path: "/v2/cats/breeds/list/all",
+      documentation: SearchBreedsDocumentation,
       responses: {
         "200": {
           description: "successful operation",
@@ -41,7 +44,7 @@ export const catWorkspace = {
 
     {
       name: "View Random Breed Image",
-      path: "/breeds/:breed/images",
+      path: "/v1/cats/breeds/:breed/images",
       qsParams: [
         {
           name: "sort",
@@ -50,6 +53,18 @@ export const catWorkspace = {
             { label: "Newest", value: "newest" },
             { label: "Random", value: "random" },
           ],
+        },
+        {
+          name: "since",
+          placeholder: "2024-06-01",
+        },
+        {
+          name: "time",
+          placeholder: "15:00:20",
+        },
+        {
+          name: "timestamp",
+          placeholder: "2024-06-01T15:00:20.123Z",
         },
       ],
       responses: {
@@ -69,7 +84,7 @@ export const catWorkspace = {
       name: "Add New Breed",
       description: "Create a new breed entry",
       summary: "A way to add new cat breeds",
-      path: "/breeds",
+      path: "/v1/cats/breeds",
       method: "POST",
       responses: {
         "200": {
@@ -187,7 +202,7 @@ export const catWorkspace = {
 
     {
       name: "Breeds (old)",
-      path: "/breeds/list/all",
+      path: "/v1/cats/breeds/list/all",
       responses: {
         "200": {
           description: "successful operation",

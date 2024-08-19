@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback, useEffect } from "react";
+import React, { useMemo, useCallback } from "react";
 import { get, without } from "lodash-es";
 
 import { useGlobalContext } from "../../context/GlobalContext";
@@ -6,6 +6,7 @@ import { useGlobalContext } from "../../context/GlobalContext";
 import { Route } from "../../types";
 
 import Helpers from "../../lib/helpers";
+import { NavLink } from "../../context/Router";
 
 export function SideBarWorkspace({
   name,
@@ -16,13 +17,8 @@ export function SideBarWorkspace({
   routes: Route[];
   displayExpandCollapseUI: boolean;
 }) {
-  const {
-    darkMode,
-    setActiveRoute,
-    collapsedWorkspaces,
-    setCollapsedWorkspaces,
-    keywords,
-  } = useGlobalContext();
+  const { darkMode, collapsedWorkspaces, setCollapsedWorkspaces, keywords } =
+    useGlobalContext();
 
   const styles = useMemo(() => {
     return {
@@ -44,7 +40,12 @@ export function SideBarWorkspace({
     } else {
       setCollapsedWorkspaces([...collapsedWorkspaces, name]);
     }
-  }, [name, collapsedWorkspaces, displayExpandCollapseUI]);
+  }, [
+    name,
+    collapsedWorkspaces,
+    displayExpandCollapseUI,
+    setCollapsedWorkspaces,
+  ]);
 
   const collapsed = useMemo(() => {
     // If there is only one active workspace and it's __actually__ collapsed in localstorage, ignore that
@@ -80,10 +81,11 @@ export function SideBarWorkspace({
       ) : null}
       {!collapsed &&
         routes.map((route, idx) => (
-          <div
-            key={`${route.method || "GET"}-${route.path}-${idx}`}
-            className={`mt-2 mb-2 pb-2 cursor-pointer border-b border-gray-300 ${styles.sidebarRouteText}`}
-            onClick={() => setActiveRoute(route)}
+          <NavLink
+            key={idx}
+            className={`block p-2 cursor-pointer border-b border-gray-300 ${styles.sidebarRouteText}`}
+            activeClassName={darkMode ? "bg-purple-700" : "bg-purple-300"}
+            to={route}
           >
             <div className="flex items-baseline">
               {/* The extra div prevents vertical expansion if the route text wraps */}
@@ -101,9 +103,17 @@ export function SideBarWorkspace({
                 </div>
               </div>
               <div className="font-bold">{route.name}</div>
+              {route.deprecated ? (
+                <>
+                  <div className="flex-grow" />
+                  <div className="flex flex-shrink-0 items-center justify-center text-xs text-white font-semibold p-1 mr-2 bg-red-700 rounded">
+                    DEPRECATED
+                  </div>
+                </>
+              ) : null}
             </div>
             <div className="italic">{route.path}</div>
-          </div>
+          </NavLink>
         ))}
     </div>
   );

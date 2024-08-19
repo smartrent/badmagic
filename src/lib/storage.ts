@@ -1,4 +1,34 @@
-export function get(key: string): any {
+import { HistoricResponse } from "../types";
+
+type StorageValues = {
+  darkMode: boolean;
+  hideDeprecatedRoutes: boolean;
+  historicResponses: HistoricResponse[];
+  activeWorkspaces: string[];
+  collapsedWorkspaces: string[];
+  searchKeywords: string;
+};
+
+export const keys = {
+  darkMode: "darkMode",
+  hideDeprecatedRoutes: "hideDeprecatedRoutes",
+  historicResponses: "historic-responses",
+  collapsedWorkspaces: "collapsed-workspaces",
+  activeWorkspaces: "activeWorkspaces",
+  searchKeywords: "searchKeywords",
+} as const;
+
+type StorageKeys = {
+  [k in keyof typeof keys as typeof keys[k]]: k;
+};
+type StorageKey = keyof StorageKeys;
+type StorageKeyOf<K extends StorageKey = StorageKey> = StorageKeys[K];
+type StorageValue<K extends StorageKey> =
+  StorageKeyOf<K> extends keyof StorageValues
+    ? StorageValues[StorageKeyOf<K>]
+    : never;
+
+export function get<K extends StorageKey>(key: K): StorageValue<K> | null {
   try {
     const item = localStorage.getItem(key);
 
@@ -13,16 +43,20 @@ export function get(key: string): any {
   }
 }
 
-export function set(key: string, value: any): any {
+export function set<K extends StorageKey, V extends StorageValue<K>>(
+  key: K,
+  value: V
+): V {
   try {
     localStorage.setItem(key, JSON.stringify(value));
     return value;
   } catch (err) {
     console.error("Unable to stringify JSON for localStorage", err);
+    return value;
   }
 }
 
-export function remove(key: string): void {
+export function remove<K extends StorageKey>(key: K): void {
   try {
     localStorage.removeItem(key);
   } catch (err) {

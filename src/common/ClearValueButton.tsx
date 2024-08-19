@@ -1,5 +1,5 @@
 import React from "react";
-import { set } from "lodash-es";
+import { cloneDeep, unset } from "lodash-es";
 
 import Button from "./Button";
 
@@ -29,7 +29,7 @@ export function ClearValueButton({
     <Button
       outline
       className="flex-shrink-0 ml-1"
-      onClick={() => setValues(set({ ...values }, pathToValue, undefined))}
+      onClick={() => setValues(unset(cloneDeep(values), pathToValue))}
     >
       Clear
     </Button>

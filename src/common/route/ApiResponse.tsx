@@ -4,7 +4,6 @@ import ReactJson from "react-json-view";
 
 import { useGlobalContext } from "../../context/GlobalContext";
 import Helpers from "../../lib/helpers";
-import { ApiResponseStatus } from "./ApiResponseStatus";
 
 import { ApiResponse } from "../../types";
 
@@ -33,6 +32,7 @@ export default function ApiResponse({
           enableClipboard={true}
           displayObjectSize={false}
           displayDataTypes={false}
+          sortKeys
           src={response.data}
           theme={Helpers.reactJsonViewTheme(darkMode)}
           shouldCollapse={({ type, src, namespace, name }) => {

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo, useCallback } from "react";
 
 import { useGlobalContext } from "../context/GlobalContext";
 import TextInput from "../common/TextInput";
@@ -6,6 +6,7 @@ import TextInput from "../common/TextInput";
 import { SideBarWorkspace } from "./sidebar/SideBarWorkspace";
 
 import { Workspace } from "../types";
+import { orderBy } from "lodash-es";
 
 export function SideBar({ workspaces }: { workspaces: Workspace[] }) {
   const {
@@ -19,16 +20,20 @@ export function SideBar({ workspaces }: { workspaces: Workspace[] }) {
   // If the user searches for a specific route, this filters to those keywords
   // If the user has Deprecated routes hidden, this filters out deprecated routes
   const filteredWorkspaces = useMemo(() => {
-    return workspaces.map(({ routes, name, config }) => {
+    return workspaces.map(({ id, routes, name, config }) => {
       return {
+        id,
         name,
-        routes: routes.filter(
-          ({ name, path, deprecated }) =>
-            (!keywords ||
-              name.toLowerCase().includes(keywords.toLowerCase()) ||
-              path.toLowerCase().includes(keywords.toLowerCase())) &&
-            ((hideDeprecatedRoutes && deprecated !== true) ||
-              !hideDeprecatedRoutes)
+        routes: orderBy(
+          routes.filter(
+            ({ name, path, deprecated }) =>
+              (!keywords ||
+                name.toLowerCase().includes(keywords.toLowerCase()) ||
+                path.toLowerCase().includes(keywords.toLowerCase())) &&
+              ((hideDeprecatedRoutes && deprecated !== true) ||
+                !hideDeprecatedRoutes)
+          ),
+          ["path", "method"]
         ),
       };
     });

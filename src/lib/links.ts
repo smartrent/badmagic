@@ -4,8 +4,12 @@ import { useActiveResponse } from "./activeResponse";
 
 export function useCopyCurrentRoute({
   activeRoute,
+  urlParams,
+  qsParams,
 }: {
   activeRoute: Route | null;
+  urlParams?: Record<string, unknown>;
+  qsParams?: Record<string, unknown>;
 }) {
   const [copied, setCopied] = useState(false);
   const activeResponse: HistoricResponse = useActiveResponse(
@@ -13,7 +17,11 @@ export function useCopyCurrentRoute({
   );
 
   const copy = useCallback(async () => {
-    const url = buildCurrentRouteUrl(activeResponse);
+    const url = buildCurrentRouteUrl({
+      ...activeResponse,
+      urlParams: urlParams ?? activeResponse.urlParams,
+      qsParams: qsParams ?? activeResponse.qsParams,
+    });
 
     try {
       await navigator.clipboard.writeText(url);
@@ -22,7 +30,7 @@ export function useCopyCurrentRoute({
     } catch {
       window.alert(url);
     }
-  }, [activeResponse]);
+  }, [activeResponse, urlParams, qsParams]);
 
   return { copy, copied };
 }

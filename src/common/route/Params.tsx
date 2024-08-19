@@ -21,13 +21,11 @@ import {
   Route,
   Param,
   ParamType,
-  Size,
   OnSubmitFn,
   RenderInputsProps,
   RenderInputByDataTypeProps,
   RenderObjectProps,
   RenderArrayOfInputsProps,
-  Option,
 } from "../../types";
 
 function RenderArrayOfInputs({
@@ -311,7 +309,7 @@ export default function Params({
   setValues: (values: any) => void;
 }) {
   const [customParams, setCustomParams] = useState<Param[]>([]);
-  let inputs = fetchInputsFromRouteDefinition(route, paramType, customParams);
+  const inputs = fetchInputsFromRouteDefinition(route, paramType, customParams);
 
   // As the user switches between routes, ensure the custom params created on the previous route don't persist
   useEffect(() => {

@@ -25,7 +25,7 @@ export const dogWorkspace = {
   routes: [
     {
       name: "Search Breeds",
-      path: "/breeds/list/all",
+      path: "/v2/dogs/breeds/list/all",
       responses: {
         "200": {
           description: "successful operation",
@@ -41,7 +41,7 @@ export const dogWorkspace = {
 
     {
       name: "View Random Breed Image",
-      path: "/breeds/:breed/images",
+      path: "/v1/dogs/breeds/:breed/images",
       qsParams: [
         {
           name: "sort",
@@ -69,7 +69,7 @@ export const dogWorkspace = {
       name: "Add New Breed",
       description: "Create a new breed entry",
       summary: "A way to add new dog breeds",
-      path: "/breeds",
+      path: "/v1/dogs/breeds",
       method: "POST",
       responses: {
         "200": {
@@ -187,7 +187,7 @@ export const dogWorkspace = {
 
     {
       name: "Breeds (old)",
-      path: "/breeds/list/all",
+      path: "/v1/dogs/breeds/list/all",
       responses: {
         "200": {
           description: "successful operation",

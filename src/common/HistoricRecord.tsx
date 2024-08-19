@@ -13,6 +13,7 @@ import { useGlobalContext } from "../context/GlobalContext";
 import Button from "../common/Button";
 
 import { HistoricResponse, HistoryMetadata } from "../types";
+import { useNavigate } from "../context/Router";
 
 export function HistoricRecord({
   historicResponse,
@@ -33,13 +34,13 @@ export function HistoricRecord({
     setResponseExpanded(!responseExpanded);
   }, [responseExpanded]);
 
-  const { darkMode, setPartialRequestResponse, setActiveRoute } =
-    useGlobalContext();
+  const { darkMode, setPartialRequestResponse } = useGlobalContext();
+  const navigate = useNavigate();
 
   const onLoadRequest = useCallback(() => {
-    setActiveRoute(historicResponse.route);
     setPartialRequestResponse(historicResponse);
-  }, [historicResponse]);
+    navigate(historicResponse.route);
+  }, [historicResponse, navigate, setPartialRequestResponse]);
 
   const styles = useMemo(() => {
     return {

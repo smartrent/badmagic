@@ -58,7 +58,7 @@ export function Request({
       }
     }
     return reFetch();
-  }, [urlParams, route]);
+  }, [urlParams, route, reFetch]);
 
   return (
     <div className="flex flex-col flex-grow mr-4">

@@ -1,5 +1,7 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import WorkspaceExample from "./WorkspaceExample";
 
-ReactDOM.render(<WorkspaceExample />, document.getElementById("root"));
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <WorkspaceExample />
+);

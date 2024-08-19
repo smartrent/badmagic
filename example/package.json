@@ -4,10 +4,11 @@
   "private": true,
   "dependencies": {
     "badmagic": "latest",
-    "react-scripts": "^4.0.3"
+    "react-scripts": "^5.0.1"
   },
+  "homepage": "/dev/api",
   "scripts": {
-    "start": "react-scripts start"
+    "start": "craco start"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -23,5 +24,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@craco/craco": "^7.1.0"
   }
 }

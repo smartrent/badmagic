@@ -4,12 +4,22 @@ import { Helpers } from "..";
 import { useGlobalContext } from "../context/GlobalContext";
 import { HistoricResponse, Route } from "../types";
 
-export function useActiveResponse(activeRoute: Route): HistoricResponse {
-  const { historicResponses, partialRequestResponses } = useGlobalContext();
+export function useActiveResponse(
+  activeRoute: Route,
+  includeIncomplete = false
+): HistoricResponse {
+  const { historicResponses, partialRequestResponses, workspaces } =
+    useGlobalContext();
 
   const filteredHistory = useMemo(
-    () => Helpers.filterHistory(historicResponses, activeRoute),
-    [historicResponses, activeRoute]
+    () =>
+      Helpers.filterHistory(
+        historicResponses,
+        workspaces,
+        activeRoute,
+        includeIncomplete
+      ),
+    [historicResponses, workspaces, activeRoute, includeIncomplete]
   );
 
   return useMemo(() => {

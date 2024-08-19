@@ -13,8 +13,8 @@ export function TopBar({
   qsParams,
 }: {
   route: Route;
-  urlParams: Record<string, any>;
-  qsParams: Record<string, any>;
+  urlParams?: Record<string, any>;
+  qsParams?: Record<string, any>;
 }) {
   const { darkMode } = useGlobalContext();
   const pathWithQS = useMemo(() => {
@@ -32,7 +32,11 @@ export function TopBar({
     };
   }, [darkMode]);
 
-  const { copy, copied } = useCopyCurrentRoute({ activeRoute: route });
+  const { copy, copied } = useCopyCurrentRoute({
+    activeRoute: route,
+    urlParams,
+    qsParams,
+  });
 
   if (!route) {
     return null;

@@ -25,13 +25,10 @@ export function RequestResponse({
   route: Route;
   applyAxiosInterceptors?: ApplyAxiosInterceptors;
 }) {
-  const {
-    darkMode,
-    storeHistoricResponse,
-    setPartialRequestResponse,
-  } = useGlobalContext();
+  const { darkMode, storeHistoricResponse, setPartialRequestResponse } =
+    useGlobalContext();
 
-  const requestResponse: HistoricResponse = useActiveResponse(route);
+  const requestResponse: HistoricResponse = useActiveResponse(route, true);
 
   const setUrlParams = useCallback(
     (urlParams: Record<string, any>) => {
@@ -84,7 +81,7 @@ export function RequestResponse({
           storeHistoricResponse: storeHistoricResponseWithRoute,
         })
       : axiosInstance;
-  }, [route, storeHistoricResponseWithRoute]);
+  }, [applyAxiosInterceptors, route?.baseUrl, storeHistoricResponseWithRoute]);
 
   const { response, loading, error, reFetch } = useAxios({
     axios: axiosInstance,
@@ -105,7 +102,7 @@ export function RequestResponse({
       error: null,
       response: null,
     });
-  }, [requestResponse]);
+  }, [requestResponse, setPartialRequestResponse]);
 
   const styles = useMemo(() => {
     return {

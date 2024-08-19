@@ -93,7 +93,7 @@ export type Route = {
   example?: Record<string, any>; // e.g. {first_name: "John", last_name: "Doe", ...}
   baseUrl?: string; // if not specified on the route but exists on workspace.config.baseUrl, it will default to that
   workspaceName?: string;
-
+  workspaceId?: string;
   responses?: OpenApiResponses; // OpenApi Responses
   tags?: string[];
   deprecated?: boolean;
@@ -247,4 +247,6 @@ export interface BadMagicProps {
 
   AuthForm?: AuthForm; // a form you can render to have the user specify their auth credentials
   HistoryMetadata?: HistoryMetadata; // a React component that can be rendered to display additional metadata
+
+  basename?: string;
 }

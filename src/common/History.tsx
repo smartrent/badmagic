@@ -15,7 +15,7 @@ export function History({
   HistoryMetadata?: HistoryMetadata;
   filteredHistory: HistoricResponse[];
 }) {
-  const { darkMode } = useGlobalContext();
+  const { darkMode, clearHistoricResponses } = useGlobalContext();
 
   // If user is on the History page, don't collapse
   // If user is on on a Route page, collapse by default to improve page performance
@@ -34,8 +34,18 @@ export function History({
   return (
     <>
       <div className={`p-4 border rounded ${styles.container}`}>
-        <div className={`text-xl ${styles.headerText}`}>
-          History ({filteredHistory.length})
+        <div className="flex items-center">
+          <div className={`flex-grow text-xl ${styles.headerText}`}>
+            History ({filteredHistory.length})
+          </div>
+          <Button
+            className="ml-4"
+            onClick={() => {
+              clearHistoricResponses(filteredHistory);
+            }}
+          >
+            Clear
+          </Button>
         </div>
 
         {!filteredHistory.length ? (
