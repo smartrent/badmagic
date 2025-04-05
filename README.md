@@ -45,6 +45,13 @@ In the `example directory` run the follow commands:
 - `yarn link "badmagic"`
 - `yarn start` (to start the example that will be running on port 3000 by default)
 
+#### Terminal Window 3
+
+In the `example-api directory` run the follow commands:
+
+- `yarn` to install node modules in the example folder
+- `yarn start` (to start the example that will be running on port 3333 by default)
+
 ## General Usage
 
 ```javascript
