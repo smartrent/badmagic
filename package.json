@@ -76,7 +76,7 @@
     "react-json-view": "^1.19.1",
     "react-markdown": "^8.0.3",
     "react-native-svg": "^13.4.0",
-    "react-syntax-highlighter": "^15.5.0",
+    "react-syntax-highlighter": "^15.5.13",
     "svgs": "^4.2.0",
     "yup": "^0.32.11"
   },
