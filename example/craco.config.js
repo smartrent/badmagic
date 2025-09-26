@@ -8,11 +8,13 @@ module.exports = {
         type: "asset/source",
       });
 
+      // Ensure React resolves to local node_modules to avoid hook conflicts
+      webpackConfig.resolve.modules = [
+        path.resolve(__dirname, "node_modules"),
+        ...webpackConfig.resolve.modules,
+      ];
+
       return webpackConfig;
-    },
-    devServer: (devServerConfig) => {
-      console.log(devServerConfig);
-      throw new Error("foo");
     },
   },
 };
