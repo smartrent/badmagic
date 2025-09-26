@@ -80,5 +80,8 @@
     "svgs": "^4.2.0",
     "yup": "^0.32.11"
   },
+  "resolutions": {
+    "prismjs": "^1.30.0"
+  },
   "packageManager": "yarn@1.22.1"
 }
